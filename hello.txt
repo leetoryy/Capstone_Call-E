@@ -18,5 +18,11 @@ hi
 안 될 때 git stash
 
 seorin
+<<<<<<< HEAD
 >>>>>>> c3065e2ca76d41ed04614ede9a06f8deb648836a
 이톨
+=======
+
+hello 
+>>>>>>> dbdd65e80fb6a23c2a07ec8e375f0c66c90f601d
+lee to
