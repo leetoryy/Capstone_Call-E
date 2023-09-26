@@ -11,3 +11,5 @@ hhhhhh'gg''
 hjjkkk
 
 hi
+
+안 될 때 git stash
