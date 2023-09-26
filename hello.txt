@@ -9,4 +9,14 @@ git clone
 >>>>>>> 229d8c0413c5f98d10f00e5764346cfe42b84e1b
 hhhhhh'gg''
 hjjkkk
+<<<<<<< HEAD
 이토리
+=======
+
+hi
+
+안 될 때 git stash
+
+seorin
+>>>>>>> c3065e2ca76d41ed04614ede9a06f8deb648836a
+이톨
