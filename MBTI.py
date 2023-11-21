@@ -10,8 +10,6 @@ def answers(questions):
 
 def mbti_type(answers):
     score = {key: 0 for key in ['E', 'I', 'S', 'N', 'T', 'F', 'J', 'P']}
-
-    strs = ['E', 'I', 'S', 'N','T','F','J','P']
     for index, answer in enumerate(answers):
         if answer == '1':
             if index == 0:
