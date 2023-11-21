@@ -1,7 +1,9 @@
 def answers(questions):
+    # 질문에 대한 답변 저장
     answers = []
     for question in questions:
         answer = input(question)
+        # 유효한 답변이 아닐 경우 다시 입력 요청
         while answer not in ['1', '2']:
             print('1 또는 2만 눌러주세요!')
             answer = input(question)
@@ -9,8 +11,11 @@ def answers(questions):
     return answers
 
 def mbti_type(answers):
+    # MBTI 항목별 점수 기록하는 딕셔너리 초기화
     score = {key: 0 for key in ['E', 'I', 'S', 'N', 'T', 'F', 'J', 'P']}
+    # MBTI 유형에 따라 점수 부여
     for index, answer in enumerate(answers):
+        # 답변이 1일 경우 MBTI 유형에 따라 점수 부여
         if answer == '1':
             if index == 0:
                 score['I'] += 1
@@ -44,6 +49,7 @@ def mbti_type(answers):
                 score['J'] += 1
             elif index == 15:
                 score['P'] += 1
+        # 답변이 2일 경우 MBTI 유형에 따라 점수 부여
         elif answer == '2':
             if index == 0:
                 score['E'] += 1
@@ -77,7 +83,7 @@ def mbti_type(answers):
                 score['P'] += 1
             elif index == 15:
                 score['J'] += 1
-
+    # 점수 비교하여 MBTI 유형 문자열 생성
     mbti_type = ""
     if score['E'] > score['I']:
         mbti_type += 'E'
@@ -99,6 +105,7 @@ def mbti_type(answers):
     return mbti_type
 
 def mbti_test():
+    # MBTI 검사지
     questions = [
         '1. 나는 새로운 친구를 사귈 때..\n(1) 친구가 먼저 다가오면 이야기를 하는 경우가 많아요.\n(2) 내가 먼저 다가가서 이야기를 하는 경우가 더 많아요.\n',
         '2. 새로운 모둠 반에 처음 들어가게 되었어요. 이때 나는..\n(1) 새로운 친구들을 만나게 되어 신이나요.\n(2) 새로운 친구들과 어떻게 지낼까 걱정이 돼요.\n',
