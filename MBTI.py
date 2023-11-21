@@ -124,8 +124,8 @@ def mbti_test():
         '15. 나는 물건을 사용하고 나서..\n(1) 정해진 자리에 둬요.\n(2) 바로 사용하기 쉽게 적당한 곳에 둬요.\n',
         '16. 나는 하루를 보낼 때..\n(1) 특별한 계획 없이 즐겁게 보내는 것이 좋아요.\n(2) 미리 정해놓은 계획에 따라 보내는 것이 좋아요.\n'
     ]
-
-    print(f'당신의 유형은: {mbti_type(answers(questions))}')
+    # 유형 출력
+    print(f'당신의 MBTI는.. {mbti_type(answers(questions))}')
 
 if __name__ == "__main__":
     mbti_test()
