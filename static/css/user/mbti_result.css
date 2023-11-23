@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
+
+html {   
+    background: url('/static/images/5385117.jpg') no-repeat center fixed;  
+    background-size: cover;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 98vw;
+    font-family: 'Jua';
+    animation: fadein 2s;
+}
+
+@keyframes fadein {
+    from{
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.css-header{
+    position: relative;
+    display: block;
+}
+
+.css-title{
+    margin-top: 15vh;
+    font-size: 30px;
+    text-align: center;
+    color: black;
+}
+
+.css-border{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: white;
+    /* margin-top: 4vh; */
+    width: 60vw;
+    height: 200vh;
+    border-radius: 10px;
+}
+
+.css-resultImg{
+    position: relative;
+    width: 50vh;
+}
+
+.css-resultTitle{
+    position: relative;
+    margin-top: -3vh;
+    color: black;
+    font-size: 21px;
+    opacity: 0.5;
+    font-family: 'Jua';
+}
+
+.css-ratings{
+    position: relative;
+    text-align: center;
+    margin-top: 4vh;
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.css-resultExplain{
+    position: relative;
+    margin-top: 10vh;
+    width: 50vh;
+    color: black;
+    font-size: 20px;
+    font-family: 'Jua';
+}
+
+.css-match{
+    position:relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    margin-top: 10vh;
+    margin-bottom: 30vh;
+    width: 100%;
+}
+
+.css-bestMatch{
+    position: relative;
+    background-color: rgb(36, 39, 38);
+    width: 20%;
+    border-radius: 10px;
+    padding: 5px 20px;
+    text-align: center;
+    color:white;
+}
+
+.css-worstMatch{
+    position: relative;
+    background-color: rgb(36, 39, 38);
+    margin-left: 50px;
+    width: 20%;
+    border-radius: 10px;
+    padding: 5px 20px;
+    text-align: center;
+    color:white;
+}
+
+.css-bestMatchImg{
+    position: absolute;
+    transform: translate(-50%, -50%);
+    margin-top: 10px;
+    top:320%;
+    left: 50%;
+    width: 20vh;
+}
+
+.css-worstMatchImg{
+    position: absolute;
+    transform: translate(-50%, -50%);
+    margin-top: 10px;
+    top: 320%;
+    left: 50%;
+    width: 20vh;
+}
+
+.css-restart{
+    position: relative;
+    margin-top: 7vh;
+    bottom: 10vh;
+    width: 60%;
+    padding: 16px 48px;
+    font-size: large;
+    background-color: white;
+    color: black;
+    border: 2px solid #3d3d3d;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Jua';
+}
+
+.css-restart:hover{
+    transition-duration: 0.4s;
+    background-color: #3d3d3d;
+    color: white;
+}
+.css-footer{
+    position: relative;
+    margin-top: 4vh;
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+    body{
+        height: 230vh;
+    }
+    .css-title{
+        margin-top: 5vh;
+        padding: 2px;
+        font-size: 25px;
+    }
+    .css-border{
+        width: 90vw;
+        height: 180vh;
+        font-size: 12px;
+    }
+    .css-resultImg{
+        padding: 10px;
+        margin-top: 20px;
+        width: 70vw;
+    } 
+    .css-resultTitle .css-ratings{
+        padding: 10px;
+    } 
+    .css-resultExplain{
+        margin-top: 5vh;
+        width: 70vw;
+    } 
+    .css-worstMatch{
+        margin-left: 40px;
+    }
+    
+}
