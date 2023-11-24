@@ -1,131 +1,154 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Call-E</title>
-  <link rel="stylesheet" type="text/css" href="/static/css/counselor/join.css">
-</head>
-<body>
-<div id="container" class="container">
-    <!-- FORM SECTION -->
-    <div class="row">
-      <!-- 회원가입 -->
-      <div class="col align-items-center flex-col sign-up">
-        <div class="form-wrapper align-items-center">
-          <div class="form sign-up">
-            <div class="input-group">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Call-E</title>
+    <!-- Fontawesome CDN Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/counselor/join.css" />
+  </head>
+  <body>
+    <div id="container" class="container">
+      <!-- FORM SECTION -->
+      <div class="row">
+        <!-- 회원가입 -->
+        <div class="col align-items-center flex-col sign-up">
+          <div class="form-wrapper align-items-center">
+            <div class="form sign-up">
+              <div class="input-group">
                 <div id="user-type-options" class="user-type-options">
-                    <button value="child" onclick="updateUserType(this)">아동</button>
-                    <button value="counselor" onclick="updateUserType(this)">상담사</button>
+                  <button value="child" onclick="updateUserType(this)">아동</button>
+                  <button value="counselor" onclick="updateUserType(this)">상담사</button>
                 </div>
-                <input type="hidden" id="user-type" name="user-type" value="child">
-            </div>
-            <!-- 아동 -->
-            <div class="input-group" id="child-info-group">
-              <i class='bx bxs-child'></i>
-              <input type="text" placeholder="이름">
-              <input type="text" placeholder="아이디">
-              <input type="password" placeholder="비밀번호">
-              <input type="password" id="confirm-password" placeholder="비밀번호 확인">
-              <span id="password-error" class="error-message"></span>
-              <input type="text" placeholder="전화번호">
-              <input type="email" placeholder="이메일">
-              <div id="birth-flex">
-              <input type="text" id="birth-year" placeholder="출생연도">
-              <input type="text" id="birth-month" placeholder="월">
-              <input type="text" id="birth-day" placeholder="일">
-            </div>
-              <input type="text" placeholder="주소">
-            </div>
-            <!-- 상담사 -->
-            <div class="input-group" id="counselor-info-group" style="display: none;">
-              <i class='bx bxs-counselor'></i>
-              <input type="text" placeholder="이름">
-              <input type="text" placeholder="사번">
-              <input type="password" placeholder="비밀번호">
-              <input type="password" id="confirm-password" placeholder="비밀번호 확인">
-              <input type="text" placeholder="전화번호">
-              <input type="email" placeholder="이메일">
-              <div id="birth-flex">
-                <input type="text" id="birth-year" placeholder="출생연도">
-                <input type="text" id="birth-month" placeholder="월">
-                <input type="text" id="birth-day" placeholder="일">
+                <input type="hidden" id="user-type" name="user-type" value="child" />
               </div>
-              <input type="text" placeholder="상담 분야">
+              <!-- 아동 -->
+              <div class="input-group" id="child-info-group">
+                <i class="bx bxs-child"></i>
+                <input type="text" placeholder="이름" />
+                <input type="text" placeholder="아이디" />
+                <input type="password" placeholder="비밀번호" />
+                <input type="password" id="confirm-password" placeholder="비밀번호 확인" />
+                <input type="text" placeholder="전화번호" />
+                <input type="email" placeholder="이메일" />
+                <div id="birth-flex">
+                  <input type="text" id="birth-year" placeholder="출생연도" />
+                  <input type="text" id="birth-month" placeholder="월" />
+                  <input type="text" id="birth-day" placeholder="일" />
+                </div>
+                <input type="text" placeholder="주소" />
+              </div>
+              <!-- 상담사 -->
+              <div class="input-group" id="counselor-info-group" style="display: none">
+                <i class="bx bxs-counselor"></i>
+                <input type="text" placeholder="이름" />
+                <input type="text" placeholder="사번" />
+                <input type="password" placeholder="비밀번호" />
+                <input type="password" id="confirm-password" placeholder="비밀번호 확인" />
+                <input type="text" placeholder="전화번호" />
+                <input type="email" placeholder="이메일" />
+                <div id="birth-flex">
+                  <input type="text" id="birth-year" placeholder="출생연도" />
+                  <input type="text" id="birth-month" placeholder="월" />
+                  <input type="text" id="birth-day" placeholder="일" />
+                </div>
+                <!-- <div class="input-group-checkbox">
+                  <input type="checkbox" id="area1" />
+                  <label for="area1" class="cb1"></label>
+                  <div>발달 상담</div>
+
+                  <input type="checkbox" id="area2" />
+                  <label for="area2" class="cb1"></label>
+                  <div>학교 상담</div>
+
+                  <input type="checkbox" id="area3" />
+                  <label for="area3" class="cb1"></label>
+                  <div>문제행동 상담</div>
+
+                  <input type="checkbox" id="area4" />
+                  <label for="area4" class="cb1"></label>
+                  <div>정서 상담</div>
+                </div> -->
+                <div class="input-group-checkbox">
+                  <div class="checkbox-group">
+                    <input type="checkbox" id="area1" />
+                    <label for="area1" class="cb1"></label>
+                    <div>발달 상담</div>
+                  </div>
+
+                  <div class="checkbox-group">
+                    <input type="checkbox" id="area2" />
+                    <label for="area2" class="cb1"></label>
+                    <div>학교 상담</div>
+                  </div>
+
+                  <div class="checkbox-group">
+                    <input type="checkbox" id="area3" />
+                    <label for="area3" class="cb1"></label>
+                    <div>문제행동 상담</div>
+                  </div>
+
+                  <div class="checkbox-group">
+                    <input type="checkbox" id="area4" />
+                    <label for="area4" class="cb1"></label>
+                    <div>정서 상담</div>
+                  </div>
+                </div>
+              </div>
+              <button>회원가입</button>
+              <p>
+                <span> 이미 회원이신가요? </span>
+                <b onclick="toggle()" class="pointer"> 로그인하기 </b>
+              </p>
             </div>
-            <button>
-              회원가입
-            </button>
-            <p>
-              <span>
-                이미 회원이신가요?
-              </span>
-              <b onclick="toggle()" class="pointer">
-                로그인하기
-              </b>
-            </p>
           </div>
         </div>
+        <!-- END 회원가입 -->
+        <!-- 로그인 -->
+        <div class="col align-items-center flex-col sign-in">
+          <div class="form-wrapper align-items-center">
+            <div class="form sign-in">
+              <div class="input-group">
+                <i class="bx bxs-counselor"></i>
+                <input type="text" placeholder="아이디" />
+              </div>
+              <div class="input-group">
+                <i class="bx bxs-lock-alt"></i>
+                <input type="password" placeholder="비밀번호" />
+              </div>
+              <button>로그인</button>
+              <p>
+                <span> 계정이 없으신가요? </span>
+                <b onclick="toggle()" class="pointer"> 가입하기 </b>
+              </p>
+            </div>
+          </div>
+          <div class="form-wrapper"></div>
+        </div>
+        <!-- END 로그인 -->
       </div>
-      <!-- END 회원가입 -->
-      <!-- 로그인 -->
-      <div class="col align-items-center flex-col sign-in">
-        <div class="form-wrapper align-items-center">
-          <div class="form sign-in">
-            <div class="input-group">
-              <i class='bx bxs-counselor'></i>
-              <input type="text" placeholder="아이디">
-            </div>
-            <div class="input-group">
-              <i class='bx bxs-lock-alt'></i>
-              <input type="password" placeholder="비밀번호">
-            </div>
-            <button>
-              로그인
-            </button>
-            <p>
-              <span>
-                계정이 없으신가요?
-              </span>
-              <b onclick="toggle()" class="pointer">
-                가입하기
-              </b>
-            </p>
+      <!-- END FORM SECTION -->
+      <!-- CONTENT SECTION -->
+      <div class="row content-row">
+        <!-- 로그인 CONTENT -->
+        <div class="col align-items-center flex-col">
+          <div class="text sign-in">
+            <h2>반가워요 :)</h2>
+          </div>
+          <div class="img sign-in"></div>
+        </div>
+        <!-- END 로그인 CONTENT -->
+        <!-- 회원가입 CONTENT -->
+        <div class="col align-items-center flex-col">
+          <div class="img sign-up"></div>
+          <div class="text sign-up">
+            <h2>회원가입</h2>
           </div>
         </div>
-        <div class="form-wrapper">
-        </div>
+        <!-- END 회원가입 CONTENT -->
       </div>
-      <!-- END 로그인 -->
+      <!-- END CONTENT SECTION -->
     </div>
-    <!-- END FORM SECTION -->
-    <!-- CONTENT SECTION -->
-    <div class="row content-row">
-      <!-- 로그인 CONTENT -->
-      <div class="col align-items-center flex-col">
-        <div class="text sign-in">
-          <h2>
-            반가워요 :)
-          </h2>
-        </div>
-        <div class="img sign-in">
-        </div>
-      </div>
-      <!-- END 로그인 CONTENT -->
-      <!-- 회원가입 CONTENT -->
-      <div class="col align-items-center flex-col">
-        <div class="img sign-up">
-        </div>
-        <div class="text sign-up">
-          <h2>
-            회원가입
-          </h2>
-        </div>
-      </div>
-      <!-- END 회원가입 CONTENT -->
-    </div>
-    <!-- END CONTENT SECTION -->
-  </div>
-</body>
-<script src="/static/javascript/counselor/join.js"></script>
+  </body>
+  <script src="/static/javascript/counselor/join.js"></script>
 </html>
