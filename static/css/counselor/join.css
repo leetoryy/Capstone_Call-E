@@ -7,10 +7,10 @@
   --gray-2: #757575;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap');
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
 
 * {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Nanum Gothic';
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -78,7 +78,7 @@ body {
 
 .input-group input {
   width: 100%;
-  padding: 1rem 3rem;
+  padding: 1rem 2.5rem;
   font-size: 1rem;
   background-color: var(--gray);
   border-radius: 0.5rem;
@@ -241,7 +241,7 @@ body {
 
 #MBTI-flex select {
   width: 100%;
-  padding: 1rem 3rem;
+  padding: 1rem 2.5rem;
   font-size: 1rem;
   background-color: var(--gray);
   border-radius: 0.5rem;
@@ -300,11 +300,11 @@ body {
   width: calc(50% - 16px); /* 각 그룹의 너비를 50%로 설정 */
   box-sizing: border-box; /* 패딩과 테두리를 너비에 포함시킴 */
   margin-left: 16px;
+  margin-bottom: 6px;
 }
 
 .checkbox-group label {
   margin-right: 6px;
-  margin-bottom: 6px;
 }
 
 .input-group-checkbox input {
