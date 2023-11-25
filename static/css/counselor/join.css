@@ -239,6 +239,20 @@ body {
   gap: 2px;
 }
 
+#MBTI-flex select {
+  width: 100%;
+  padding: 1rem 3rem;
+  font-size: 1rem;
+  background-color: var(--gray);
+  border-radius: 0.5rem;
+  border: 0.125rem solid var(--white);
+  outline: none;
+}
+
+#MBTI-flex select:focus {
+  border: 0.125rem solid var(--primary-color);
+}
+
 /* 출생연도/월/일 */
 #birth-flex {
   display: flex;

@@ -60,9 +60,7 @@ function updateUserType(button) {
   })
 
   // 체크박스 초기화
-  const checkboxes = document.querySelectorAll(
-    '#child-info-group input[type="checkbox"], #counselor-info-group input[type="checkbox"]',
-  )
+  const checkboxes = document.querySelectorAll('#child-info-group input[type="checkbox"], #counselor-info-group input[type="checkbox"]')
   checkboxes.forEach((checkbox) => {
     checkbox.checked = false
   })
