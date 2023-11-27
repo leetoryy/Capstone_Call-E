@@ -254,17 +254,17 @@ body {
 }
 
 /* 출생연도/월/일 */
-#birth-flex {
+.birth-flex {
   display: flex;
   gap: 2px;
 }
 
-#birth-year {
+.birth-year {
   flex: 2;
 }
 
-#birth-month,
-#birth-day {
+.birth-month,
+.birth-day {
   flex: 1;
 }
 
