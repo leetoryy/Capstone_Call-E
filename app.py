@@ -1,8 +1,21 @@
-from flask import Flask, render_template
+import datetime
+from multiprocessing import connection
+from flask import Flask, jsonify, render_template, request, redirect, session, url_for
+import pymysql
 
-app = Flask(__name__)
+import dbcl
 
-@app.route('/join') 
+
+app = Flask(__name__, static_url_path='/static')
+
+#DB======
+userdb = dbcl.DBconnector('USER')
+counselordb = dbcl.DBconnector('COUNSELOR')
+calledb = dbcl.DBconnector('CALL_E')
+surveydb = dbcl.DBconnector('SURVEY')
+#========
+
+@app.route('/') 
 def join_html():
     return render_template('counselor/join.html')
 
@@ -34,5 +47,6 @@ def mbti_result_html():
 def mbti_test_html():
     return render_template('user/mbti_test.html')
 
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3001, debug=False)
+    app.run(host='0.0.0.0', port=3003, debug=False)
