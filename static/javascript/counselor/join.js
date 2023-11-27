@@ -65,6 +65,10 @@ function updateUserType(button) {
     checkbox.checked = false
   })
 
+  // MBTI 드롭다운 초기화
+  const mbtiDropdown = document.getElementById('mbti-dropdown')
+  mbtiDropdown.value = ''
+
   document.getElementById('user-type').value = selectedUserType
 }
 // ---------------------------------------------------------------------
