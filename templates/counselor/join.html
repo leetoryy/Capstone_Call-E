@@ -5,6 +5,7 @@
     <title>Call-E</title>
     <!-- Fontawesome CDN Link -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="/static/css/counselor/join.css" />
   </head>
   <body>
@@ -16,7 +17,7 @@
           <div class="form-wrapper align-items-center">
             <div class="form sign-up">
               <div class="input-group">
-                <div id="user-type-options" class="user-type-options">
+                <div id="user-type-options-join" class="user-type-options">
                   <button value="child" onclick="updateUserType(this)">아동</button>
                   <button value="counselor" onclick="updateUserType(this)">상담사</button>
                 </div>
@@ -28,7 +29,7 @@
                 <input type="text" placeholder="이름" />
                 <input type="text" placeholder="아이디" />
                 <input type="password" placeholder="비밀번호" />
-                <input type="password" id="confirm-password" placeholder="비밀번호 확인" />
+                <input type="password" id="child-confirm-password" placeholder="비밀번호 확인" />
                 <input type="text" placeholder="전화번호" />
                 <input type="email" placeholder="이메일" />
                 <div class="birth-flex" id="child-birth-flex">
@@ -47,25 +48,28 @@
                     <option value="" disabled selected>MBTI</option>
                     <option value="ISTJ">ISTJ</option>
                     <option value="ISFJ">ISFJ</option>
-                    <option value="ISFJ">INFJ</option>
-                    <option value="ISFJ">INTJ</option>
-                    <option value="ISFJ">ISTP</option>
-                    <option value="ISFJ">ISFP</option>
-                    <option value="ISFJ">INFP</option>
-                    <option value="ISFJ">INTP</option>
-                    <option value="ISFJ">ESTP</option>
-                    <option value="ISFJ">ESFP</option>
-                    <option value="ISFJ">ENFP</option>
-                    <option value="ISFJ">ENTP</option>
-                    <option value="ISFJ">ESTJ</option>
-                    <option value="ISFJ">ESFJ</option>
-                    <option value="ISFJ">ENFJ</option>
-                    <option value="ISFJ">ENTJ</option>
+                    <option value="INFJ">INFJ</option>
+                    <option value="INIJ">INTJ</option>
+                    <option value="ISTP">ISTP</option>
+                    <option value="ISFP">ISFP</option>
+                    <option value="INFP">INFP</option>
+                    <option value="INTP">INTP</option>
+                    <option value="ESTP">ESTP</option>
+                    <option value="ESFP">ESFP</option>
+                    <option value="ENFP">ENFP</option>
+                    <option value="ENTP">ENTP</option>
+                    <option value="ESTH">ESTJ</option>
+                    <option value="ESFJ">ESFJ</option>
+                    <option value="ENFJ">ENFJ</option>
+                    <option value="ENTJ">ENTJ</option>
                   </select>
                 </div>
-                <input type="text" placeholder="사번" />
+                <div id="counselor_id-flex">
+                  <input type="text" id="counselor_id" name="co_id" placeholder="사번" required />
+                  <button id="Registration_id_check" type="button" onclick="RegistrationID()">사원확인</button>
+                </div>
                 <input type="password" placeholder="비밀번호" />
-                <input type="password" id="confirm-password" placeholder="비밀번호 확인" />
+                <input type="password" id="counselor-confirm-password" placeholder="비밀번호 확인" />
                 <input type="text" placeholder="전화번호" />
                 <input type="email" placeholder="이메일" />
                 <div class="birth-flex" id="counselor-birth-flex">
@@ -109,13 +113,29 @@
         <div class="col align-items-center flex-col sign-in">
           <div class="form-wrapper align-items-center">
             <div class="form sign-in">
-              <div class="input-group">
-                <i class="bx bxs-counselor"></i>
-                <input type="text" placeholder="아이디" />
+              <div id="user-type-options-login" class="user-type-options">
+                <button value="child" onclick="updateUserType(this)">아동</button>
+                <button value="counselor" onclick="updateUserType(this)">상담사</button>
               </div>
-              <div class="input-group">
-                <i class="bx bxs-lock-alt"></i>
-                <input type="password" placeholder="비밀번호" />
+              <div class="input-group" id="child-login-group">
+                <div class="input-group">
+                  <i class="bx bxs-counselor"></i>
+                  <input type="text" placeholder="아이디" />
+                </div>
+                <div class="input-group">
+                  <i class="bx bxs-lock-alt"></i>
+                  <input type="password" placeholder="비밀번호" />
+                </div>
+              </div>
+              <div class="input-group" id="counselor-login-group" style="display: none">
+                <div class="input-group">
+                  <i class="bx bxs-counselor"></i>
+                  <input type="text" placeholder="사번" />
+                </div>
+                <div class="input-group">
+                  <i class="bx bxs-lock-alt"></i>
+                  <input type="password" placeholder="비밀번호" />
+                </div>
               </div>
               <button>로그인</button>
               <p>

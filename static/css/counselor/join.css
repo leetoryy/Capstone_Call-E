@@ -233,6 +233,19 @@ body {
   border: 2px solid var(--primary-color);
 }
 
+/* 사원 확인 버튼 */
+#counselor_id-flex {
+  display: flex;
+  gap: 2px;
+}
+
+#Registration_id_check {
+  font-size: 16px;
+  width: 50%;
+  border: 2px solid var(--white);
+  outline: none;
+}
+
 /* MBTI */
 #MBTI-flex {
   display: flex;
