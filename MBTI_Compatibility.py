@@ -1,28 +1,71 @@
 def Compatibility(user, counselor):
-    score = 0
-    if user[0] == counselor[0]:
-        score += 1
-    else:
-        score += 0.5
-    
-    if user[1] == counselor[1]:
-        score += 1
-    else:
-        score += 0.5
-    
-    if user[2] == counselor[2]:
-        score += 1
-    else:
-        score += 0.5
-    
-    if user[3] == counselor[3]:
-        score += 1
-    else:
-        score += 0.5
-    
-    compatibility = (score / 4) * 100
-    return compatibility
+    # 궁합 점수
+    MBTI_SCORE=[
+        [3, 3, 3, 4, 3, 4, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0],
+        [3, 3, 4, 3, 4, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0],
+        [3, 4, 3, 3, 3, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0],
+        [4, 3, 3, 3, 3, 3, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0],
+        [3, 4, 3, 3, 3, 3, 3, 4, 2, 2, 2, 2, 1, 1, 1, 1],
+        [4, 3, 3, 3, 3, 3, 4, 3, 2, 2, 2, 2, 2, 2, 2, 2],
+        [3, 3, 3, 3, 3, 4, 3, 3, 2, 2, 2, 2, 1, 1, 1, 4],
+        [3, 3, 4, 3, 4, 3, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1],
+        [0, 0, 0, 4, 2, 2, 2, 2, 1, 1, 1, 1, 2, 4, 2, 4],
+        [0, 0, 0, 0, 2, 2, 2, 2, 1, 1, 1, 1, 4, 2, 4, 2],
+        [0, 0, 0, 0, 2, 2, 2, 2, 1, 1, 1, 1, 2, 4, 2, 4],
+        [0, 0, 0, 0, 2, 2, 2, 2, 1, 1, 1, 1, 4, 2, 4, 2],
+        [0, 0, 0, 0, 1, 2, 1, 1, 2, 4, 2, 4, 3, 3, 3, 3],
+        [0, 0, 0, 0, 1, 2, 1, 1, 4, 2, 4, 2, 3, 3, 3, 3],
+        [0, 0, 0, 0, 1, 2, 1, 1, 2, 4, 2, 4, 3, 3, 3, 3],
+        [0, 0, 0, 0, 1, 2, 4, 1, 4, 2, 4, 2, 3, 3, 3, 3]
+]
+    # MBTI 유형
+    MBTI = {
+        'INFP': 0,
+        'ENFP': 1,
+        'INFJ': 2,
+        'ENFJ': 3,
+        'INTJ': 4,
+        'ENTJ': 5,
+        'INTP': 6,
+        'ENTP': 7,
+        'ISFP': 8,
+        'ESFP': 9,
+        'ISTP': 10,
+        'ESTP': 11,
+        'ISFJ': 12,
+        'ESFJ': 13,
+        'ISTJ': 14,
+        'ESTJ': 15
+    }
 
+    # 궁합 결과
+    MBTI_CP = [
+        '진짜 궁합 최악! 지구 멸망의 길',
+        '뭐.. 최악은 면했지만. 그닥..',
+        '안 맞는 것 맞는 것 딱 반반',
+        '아주 좋은 관계가 될 수 있음!',
+        '우리 인연 영원히 뽀에버! 천생연분'
+    ]
+
+    # 사용자 MBTI, 상담사 MBTI 궁합
+    idx1 = MBTI[user]
+    idx2 = MBTI[counselor]
+    score = MBTI_SCORE[idx1][idx2]
+
+    # 궁합 점수에 따라 결과 부여
+    if score == 4:
+        return MBTI_CP[4]
+    elif score == 3:
+        return MBTI_CP[3]
+    elif score == 2:
+        return MBTI_CP[2]
+    elif score == 1:
+        return MBTI_CP[1]
+    elif score == 0:
+        return MBTI_CP[0]
+
+# main문
 if __name__ == "__main__":
-    compatibility = Compatibility(input("사용자 MBTI: ").upper(), input('상담사 MBTI: ').upper())
-    print(f"궁합도: {compatibility:.2f}%")
+    user = input("아동 MBTI: ").upper()
+    counselor = input("상담사 MBTI: ").upper()
+    print(f'두 사람의 궁합은.. "{Compatibility(user, counselor)}"')
