@@ -22,9 +22,6 @@ allDropdown.forEach(item=> {
 })
 
 
-
-
-
 // SIDEBAR COLLAPSE
 const toggleSidebar = document.querySelector('nav .toggle-sidebar');
 const allSideDivider = document.querySelectorAll('#sidebar .divider');

@@ -5,17 +5,18 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Call-E</title>
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-	<link rel="stylesheet" href="/static/css/counselor/home.css">
+	<!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/counselor/counselor_home.css') }}" />
 </head>
 <body>
 	<!-- SIDEBAR -->
 	<section id="sidebar">
 		<a href="/counselor/home.html" class="brand"><i class='bx bxs-smile icon'></i>Call-E</a>
 		<ul class="side-menu">
-			<li><a href="/counselor/home.html" class="active"><i class='bx bxs-dashboard icon' ></i> Dashboard</a></li>
+			<li><a href="/counselor/home.html"><i class='bx bxs-dashboard icon' ></i> Dashboard</a></li>
 			<li class="divider" data-text="main">Main</li>
 			<li>
-				<a href="#"><i class='bx bxs-widget icon' ></i> 아동 조회 <i class='bx bx-chevron-right icon-right' ></i></a>
+				<a href="#" class="active"><i class='bx bxs-widget icon' ></i> 아동 조회 <i class='bx bx-chevron-right icon-right' ></i></a>
 				<ul class="side-dropdown">
 					<li><a href="/counselor/child_list.html">모든 아동 조회</a></li>
 					<li><a href="/counselor/child_list.html">담당 아동 조회</a></li>
@@ -65,6 +66,6 @@
 			</div>
 		</nav>
 		<!-- NAVBAR -->
-<script src="/static/javascript/counselor/home.js"></script>
+		<script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>
 </body>
 </html>

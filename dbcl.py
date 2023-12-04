@@ -17,12 +17,15 @@ class DBconnector:
         self.cur = self.conn.cursor()
     
     def __disconnect__(self):
-        self.conn.close()
+        if self.conn is not None and self.conn.open:
+            self.conn.close()
     
     def execute(self, sql):
         self.__connect__()
         self.cur.execute(sql)
+        result = self.cur.fetchall()  # 모든 결과를 받아옴
         self.__disconnect__()
+        return result  # 결과 반환
         
     def fetch_all(self, sql):
         self.__connect__()
@@ -65,3 +68,11 @@ class DBconnector:
         self.conn.commit()
         self.__disconnect__()
         return result
+    
+
+    def commit(self):
+        self.conn.commit()
+        
+      
+
+print(pymysql.__version__)

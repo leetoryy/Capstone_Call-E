@@ -1,0 +1,78 @@
+@font-face {
+    font-family: 'GangwonEduSaeeum_OTFMediumA';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduSaeeum_OTFMediumA.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  html {
+    background: url('/static/images/MBTI_background.png') no-repeat center fixed;
+    background-size: cover;
+    background-position: center bottom;
+  }
+  
+  body {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    animation: fadein 2s;
+  }
+  
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .css-header {
+    position: relative;
+    display: block;
+  }
+  
+  .css-title {
+    font-family: 'Bagel Fat One';
+    margin-top: 10vh;
+    font-size: 5rem;
+    text-align: center;
+    color: white;
+    font-family: 'GangwonEduSaeeum_OTFMediumA';
+  }
+  
+  .css-border {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.9);
+    margin-top: 4vh;
+    width: 60vw;
+    height: 100vh;
+    border-radius: 10px;
+  }
+  
+  .css-resultTitle {
+    position: relative;
+    margin-top: -3vh;
+    color: black;
+    font-size: 70px;
+    font-family: 'GangwonEduSaeeum_OTFMediumA';
+  }
+  
+  .css-resultExplain {
+    position: relative;
+    margin-top: 10vh;
+    width: 70%;
+    color: black;
+    font-size: 25px;
+    font-family: 'GangwonEduSaeeum_OTFMediumA';
+  }
+  
+  .css-footer {
+    position: relative;
+    margin-top: 4vh;
+  }
+  

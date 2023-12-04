@@ -5,7 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Call-E</title>
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-	<link rel="stylesheet" href="/static/css/counselor/home.css">
+	<!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/counselor/counselor_home.css') }}" />
 </head>
 <body>
 	<!-- SIDEBAR -->
@@ -57,6 +58,7 @@
 				<i class='bx bxs-bell icon' ></i>
 			</a>
 			<span class="divider"></span>
+			<span>Name</span>
 			<div class="profile">
 				<img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="">
 				<ul class="profile-link">
@@ -183,6 +185,6 @@
 		<!-- MAIN -->
 	</section>
 	<!-- NAVBAR -->
-	<script src="/static/javascript/counselor/home.js"></script>
+	<script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>
 </body>
 </html>

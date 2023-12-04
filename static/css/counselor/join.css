@@ -233,6 +233,19 @@ body {
   border: 2px solid var(--primary-color);
 }
 
+/* 사원 확인 버튼 */
+#counselor_id-flex {
+  display: flex;
+  gap: 2px;
+}
+
+#Registration_id_check {
+  font-size: 16px;
+  width: 50%;
+  border: 2px solid var(--white);
+  outline: none;
+}
+
 /* MBTI */
 #MBTI-flex {
   display: flex;
@@ -254,17 +267,17 @@ body {
 }
 
 /* 출생연도/월/일 */
-#birth-flex {
+.birth-flex {
   display: flex;
   gap: 2px;
 }
 
-#birth-year {
+.birth-year {
   flex: 2;
 }
 
-#birth-month,
-#birth-day {
+.birth-month,
+.birth-day {
   flex: 1;
 }
 
