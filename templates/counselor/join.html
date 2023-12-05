@@ -494,8 +494,15 @@ function submitForm() {
       processData: false,
       success: function (response) {
         console.log('서버 응답:', response);
-        window.location.href = '/';
-        alert('로그인 해주세요!');
+        if (response && response.user_type === 'child') {
+          console.log('아동 회원가입 성공');
+          window.location.href = '/survey_pre';
+        } else if (response && response.user_type === 'counselor') {
+          console.log('상담사 회원가입 성공');
+          window.location.href = '/';
+        } else {
+          console.log('조건에 맞는 경우 없음');
+        }
 
       },
       error: function (error) {

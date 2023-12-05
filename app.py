@@ -117,7 +117,7 @@ def join_html():
 
                 userdb.insert(insert_query)
                 print(f"Query: {insert_query}")
-                return redirect(url_for('index'))
+                return jsonify({'user_type': 'child'})
                 
                 
                 
@@ -167,7 +167,7 @@ def join_html():
 
                 counselordb.insert(insert_query)
                 print(f"Query: {insert_query}")
-                return redirect(url_for('index'))
+                return jsonify({'user_type': 'counselor'})
                 
                 
                 
@@ -272,4 +272,4 @@ def mbti_test_html():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3001, debug=True)
+    app.run(host='0.0.0.0', port=3000, debug=True)
