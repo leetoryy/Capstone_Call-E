@@ -4,23 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
+    <!-- favicon -->
+    <link rel="icon" href="/static/images/icon2.png" />
+    <link rel="apple-touch-icon" href="/static/images/icon2.png" />
+    <!-- boxicon -->
     <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/css/counselor/home.css" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/counselor/counselor_home.css" />
   </head>
   <body>
     <!-- SIDEBAR -->
     <section id="sidebar">
-      <a href="/counselor/home.html" class="brand"><i class="bx bxs-smile icon"></i>Call-E</a>
+      <a href="/templates/counselor/counselor_home.html" class="brand"><img src="/static/images/icon.png" width="50" alt="" />Call-E</a>
       <ul class="side-menu">
         <li>
-          <a href="/counselor/home.html" class="active"><i class="bx bxs-dashboard icon"></i> Dashboard</a>
+          <a href="/templates/counselor/counselor_home.html" class="active"> <i class="bx bxs-dashboard icon"></i> Dashboard</a>
         </li>
         <li class="divider" data-text="main">Main</li>
         <li>
           <a href="#"><i class="bx bxs-widget icon"></i> 아동 조회 <i class="bx bx-chevron-right icon-right"></i></a>
           <ul class="side-dropdown">
-            <li><a href="/counselor/child_list.html">모든 아동 조회</a></li>
-            <li><a href="/counselor/child_list.html">담당 아동 조회</a></li>
+            <li><a href="/templates/counselor/child_list.html">모든 아동 조회</a></li>
+            <li><a href="/templates/counselor/child_list.html">매칭 아동 조회</a></li>
           </ul>
         </li>
         <li>
@@ -33,8 +38,8 @@
         <li>
           <a href="#"><i class="bx bxs-notepad icon"></i> 일정 확인 <i class="bx bx-chevron-right icon-right"></i></a>
           <ul class="side-dropdown">
-            <li><a href="#">월별 일정 확인</a></li>
-            <li><a href="#">주간 일정 확인</a></li>
+            <li><a href="#">월별 일정</a></li>
+            <li><a href="#">주간 일정</a></li>
           </ul>
         </li>
         <li>
@@ -63,6 +68,7 @@
           <i class="bx bxs-bell icon"></i>
         </a>
         <span class="divider"></span>
+        <span>Name</span>
         <div class="profile">
           <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="" />
           <ul class="profile-link">
@@ -195,6 +201,6 @@
       <!-- MAIN -->
     </section>
     <!-- NAVBAR -->
-    <script src="/static/javascript/counselor/home.js"></script>
+    <script src="/static/javascript/counselor/counselor_home.js"></script>
   </body>
 </html>
