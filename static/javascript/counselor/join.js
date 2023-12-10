@@ -146,4 +146,5 @@ function updateUserType(button) {
   document.getElementById('user-type').value = selectedUserType
 }
 
+
 // ---------------------------------------------------------------------

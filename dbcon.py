@@ -1,15 +1,15 @@
 import pymysql
 
-user_conn = None
-user_cur = None
+child_conn = None
+child_cur = None
 
-user_conn = pymysql.connect(host='orion.mokpo.ac.kr',
+child_conn = pymysql.connect(host='orion.mokpo.ac.kr',
                        port=8397,
                        user='root',
                        passwd='ScE1234**',
-                       db='USER', 
+                       db='CHILD', 
                        charset='utf8')
-user_cur = user_conn.cursor()
+child_cur = child_conn.cursor()
 
 #=====
 

@@ -10,7 +10,7 @@ import datetime
 app = Flask(__name__, static_url_path='/static')
 
 # DB 연결 객체 생성
-userdb = DBconnector('USER')
+childdb = DBconnector('CHILD')
 calledb = DBconnector('CALL_E')
 counselordb = DBconnector('COUNSELOR')
 surveydb = DBconnector('SURVEY')
@@ -21,15 +21,18 @@ surveydb = DBconnector('SURVEY')
 def index():
     return render_template('counselor/join.html')
 
+#아이디 패스워드 검사
 def authenticate_child(child_ID, child_pw):
-    query = f"SELECT COUNT(*) FROM USER.user_list WHERE user_id = '{child_ID}' AND user_password = '{child_pw}'"
-    result = userdb.execute(query)
+    query = f"SELECT COUNT(*) FROM CHILD.child_list WHERE child_id = '{child_ID}' AND child_password = '{child_pw}'"
+    result = childdb.execute(query)
     return result and result[0][0] == 1
 
 def authenticate_counselor(counselor_ID, counselor_pw):
-    query = f"SELECT COUNT(*) FROM COUNSELOR.counselor_list WHERE co_id = '{counselor_ID}' AND co_password = '{counselor_pw}'"
+    query = f"SELECT COUNT(*), co_name FROM COUNSELOR.counselor_list WHERE co_id = '{counselor_ID}' AND co_password = '{counselor_pw}'"
     result = counselordb.execute(query)
-    return result and result[0][0] == 1
+    return result and result[0][0] == 1, result[0][1] if result else None
+
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -57,9 +60,13 @@ def login():
             counselor_pw = request.form.get('co_pw_2')
             
             try:
-                if authenticate_counselor(counselor_ID, counselor_pw):
+                auth_result, counselor_name = authenticate_counselor(counselor_ID, counselor_pw)
+                
+                if auth_result:
                     print("성공")
-                    return jsonify({'user_type': 'counselor'})
+                    print(counselor_name)
+                    return jsonify({'user_type': 'counselor', 'counselor_name': counselor_name})
+                    
                 else:
                     print("실패")
                     return "아이디 또는 비밀번호가 일치하지 않습니다."
@@ -109,13 +116,13 @@ def join_html():
                 birth_date_int = int(birth_date_string)
 
                 insert_query = f"""
-                    INSERT INTO USER.user_list (user_name, user_id, user_password, user_phone, user_email,
-                                    user_birth, user_address)
+                    INSERT INTO CHILD.child_list (child_name, child_id, child_password, child_phone, child_email,
+                                    child_birth, child_address)
                     VALUES ('{childName}', '{childId}', '{childPassword}', '{childPhoneNum}', '{childEmail}',
                             {birth_date_int}, '{childAddress}');
                 """
 
-                userdb.insert(insert_query)
+                childdb.insert(insert_query)
                 print(f"Query: {insert_query}")
                 return jsonify({'user_type': 'child'})
                 
@@ -188,8 +195,8 @@ def check_id_duplicate():
         child_id = request.form.get('child_id')
 
         # 데이터베이스에서 아이디 중복 확인
-        query = f"SELECT COUNT(*) FROM USER.user_list WHERE user_id = '{child_id}'"
-        result = userdb.execute(query)
+        query = f"SELECT COUNT(*) FROM CHILD.child_list WHERE child_id = '{child_id}'"
+        result = childdb.execute(query)
 
         # 디버깅: 쿼리와 결과 확인
         print(f"Query: {query}")
@@ -197,7 +204,7 @@ def check_id_duplicate():
 
         # 결과가 없는 경우에 대한 예외 처리
         if result is None or not result:
-            raise Exception(f"Query returned no result for user_id '{child_id}'. Full result: {result}")
+            raise Exception(f"Query returned no result for child_id '{child_id}'. Full result: {result}")
 
         # 결과를 JSON 형식으로 반환
         is_duplicate = result[0][0] > 0
@@ -238,9 +245,10 @@ def check_name_and_id_association():
 
 @app.route('/counselor_home') 
 def counselor_home_html():
-    return render_template('counselor/counselor_home.html')
+    counselor_name = request.args.get('counselor_name', '')  # URL 파라미터로부터 counselor_name을 가져옴
+    return render_template('counselor/counselor_home.html', counselor_name=counselor_name)
 
-@app.route('/child_listl') 
+@app.route('/child_list') 
 def child_list_html():
     return render_template('counselor/child_list.html')
 

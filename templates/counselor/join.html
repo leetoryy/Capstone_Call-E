@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Call-E</title>
+    <!-- favicon -->
+	  <link rel="icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
+	  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
     <!-- Fontawesome CDN Link -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
     <!-- jQuery CDN Link -->
@@ -539,23 +541,28 @@ function submitloginForm() {
     contentType: false,
     processData: false,
     success: function (response) {
-      console.log('서버 응답:', response);
-      if (response && response.user_type === 'child') {
-        console.log('아동 로그인 성공');
-        window.location.href = '/survey_pre';
-      } else if (response && response.user_type === 'counselor') {
-        console.log('상담사 로그인 성공');
-        window.location.href = '/counselor_home';
-      } else {
-        console.log('조건에 맞는 경우 없음');
-      }
+        console.log('서버 응답:', response);
+
+        if (response && response.user_type === 'child') {
+            console.log('아동 로그인 성공');
+            window.location.href = '/survey_pre';
+        } else if (response && response.user_type === 'counselor') {
+            console.log('상담사 로그인 성공');
+            var counselorName = response.counselor_name;
+            console.log('상담사 이름:', counselorName);
+
+            // 페이지 이동
+            window.location.href = '/counselor_home?counselor_name=' + encodeURIComponent(counselorName);
+        } else {
+            console.log('조건에 맞는 경우 없음');
+        }
     },
     error: function (error) {
-      console.error('폼 제출 중 오류:', error);
+        console.error('폼 제출 중 오류:', error);
     }
-  });
-}
+});
 
+}
 
 </script>
 </html>
