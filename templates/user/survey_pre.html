@@ -24,7 +24,8 @@
               <div class="row g-3">
                 <div class="col-sm-6">
                   <label for="childName" class="form-label">아동 이름</label>
-                  <input type="text" class="form-control" id="childName" placeholder="" value="" />
+                  <!-- 서버로부터 받은 아동 이름을 표시 -->
+                  <input type="text" class="form-control" id="childName" placeholder="" value="{{ child_name }}" />
                 </div>
 
                 <div class="col-sm-6">

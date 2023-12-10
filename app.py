@@ -124,7 +124,8 @@ def join_html():
 
                 childdb.insert(insert_query)
                 print(f"Query: {insert_query}")
-                return jsonify({'user_type': 'child'})
+                print(childName)
+                return jsonify({'user_type': 'child', 'child_name': childName})
                 
                 
                 
@@ -254,7 +255,8 @@ def child_list_html():
 
 @app.route('/survey_pre')
 def survey_pre_html():
-    return render_template('user/survey_pre.html')
+    child_name = request.args.get('child_name', default=None)
+    return render_template('user/survey_pre.html', child_name=child_name)
 
 @app.route('/user_home')
 def user_home_html():

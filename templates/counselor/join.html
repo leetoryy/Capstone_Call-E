@@ -498,7 +498,8 @@ function submitForm() {
         console.log('서버 응답:', response);
         if (response && response.user_type === 'child') {
           console.log('아동 회원가입 성공');
-          window.location.href = '/survey_pre';
+          var childName = response.child_name;
+          window.location.href = '/survey_pre?child_name=' + childName;
         } else if (response && response.user_type === 'counselor') {
           console.log('상담사 회원가입 성공');
           window.location.href = '/';
