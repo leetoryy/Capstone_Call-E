@@ -267,7 +267,7 @@ body {
 }
 
 /* 출생연도/월/일 */
-.birth-flex {
+.input-flex {
   display: flex;
   gap: 2px;
 }

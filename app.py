@@ -96,6 +96,7 @@ def join_html():
             childBirthMonth = request.form.get('ch_bm')
             childBirthDay = request.form.get('ch_bd')
             childAddress = request.form.get('ch_address')
+            parentName = request.form.get('pa_name')
             
             
             
@@ -110,6 +111,7 @@ def join_html():
             print(f"childBirthMonth: {childBirthMonth}")
             print(f"childBirthDay: {childBirthDay}")
             print(f"childAddress: {childAddress}")
+            print(f"parentName: {parentName}")
             
             try:
                 birth_date_string = f"{childBirthYear}{childBirthMonth.zfill(2)}{childBirthDay.zfill(2)}"
@@ -117,15 +119,15 @@ def join_html():
 
                 insert_query = f"""
                     INSERT INTO CHILD.child_list (child_name, child_id, child_password, child_phone, child_email,
-                                    child_birth, child_address)
+                                    child_birth, child_address, parent_name)
                     VALUES ('{childName}', '{childId}', '{childPassword}', '{childPhoneNum}', '{childEmail}',
-                            {birth_date_int}, '{childAddress}');
+                            {birth_date_int}, '{childAddress}', '{parentName}');
                 """
 
                 childdb.insert(insert_query)
                 print(f"Query: {insert_query}")
                 print(childName)
-                return jsonify({'user_type': 'child', 'child_name': childName})
+                return jsonify({'user_type': 'child', 'child_name': childName, 'parent_name': parentName})
                 
                 
                 
@@ -256,7 +258,8 @@ def child_list_html():
 @app.route('/survey_pre')
 def survey_pre_html():
     child_name = request.args.get('child_name', default=None)
-    return render_template('user/survey_pre.html', child_name=child_name)
+    parent_name = request.args.get('parent_name', default=None)
+    return render_template('user/survey_pre.html', child_name=child_name, parent_name=parent_name)
 
 @app.route('/user_home')
 def user_home_html():

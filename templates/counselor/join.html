@@ -101,9 +101,10 @@
               <!-- 아동 -->
               <div class="input-group" id="child-info-group">
                 <i class="bx bxs-child"></i>
-                
-                
-                <input type="text" id="child_name" name="ch_name" placeholder="이름" required/>
+                <div class="input-flex">
+                  <input type="text" id="child_name" name="ch_name" placeholder="아동 이름" required/>
+                  <input type="text" id="parent_name" name="pa_name" placeholder="보호자 이름" required/>
+                </div>
                 <input type="text" id="child_id" name="ch_id" placeholder="아이디" oninput="checkID()" required/>
                 
                 <!-- 중복 확인 결과를 나타낼 메시지 추가 -->
@@ -112,9 +113,9 @@
                 <input type="password" id="child-password" name="ch_pw" placeholder="비밀번호" />
                 <input type="password" id="child-confirm-password" name="ch_pw2" placeholder="비밀번호확인" oninput="childcheckPasswordMatch()" required/>
                 <div id="password-match-message" style="color: red; font-size: 12px;"></div>
-                <input type="text" id="child_phone_num" name="ch_ph" placeholder="전화번호" required/>
-                <input type="email" id="child_email" name="ch_email" placeholder="이메일" required/>
-                <div class="birth-flex" id="child-birth-flex">
+                <input type="text" id="child_phone_num" name="ch_ph" placeholder="보호자 전화번호" required/>
+                <input type="email" id="child_email" name="ch_email" placeholder="보호자 이메일" required/>
+                <div class="input-flex" id="child-birth-flex">
                   <input type="text" class="birth-year" id="child-birth-year" name="ch_by" placeholder="출생연도" required/>
                   <input type="text" class="birth-month" id="child-birth-month" name="ch_bm" placeholder="월" required />
                   <input type="text" class="birth-day" id="child-birth-day" name="ch_bd" placeholder="일" required />
@@ -157,7 +158,7 @@
                 <div id="co_password-match-message" style="color: red; font-size: 12px;"></div>
                 <input type="text" id = "counselor_phone" name = "co_phone" placeholder="전화번호" required/>
                 <input type="email" id = "counselor_email" name = "co_email" placeholder="이메일" required />
-                <div class="birth-flex" id="counselor-birth-flex">
+                <div class="input-flex" id="counselor-birth-flex">
                   <input type="text" class="birth-year" id="counselor-birth-year" placeholder="출생연도" required/>
                   <input type="text" class="birth-month" id="counselor-birth-month" placeholder="월" required/>
                   <input type="text" class="birth-day" id="counselor-birth-day" placeholder="일" required/>
@@ -456,6 +457,7 @@ function submitForm() {
       formData.append('ch_bm', document.getElementById('child-birth-month').value);
       formData.append('ch_bd', document.getElementById('child-birth-day').value);
       formData.append('ch_address', document.getElementById('child-address').value);
+      formData.append('pa_name',document.getElementById('parent_name').value);
 
     } else if (document.getElementById('counselor-info-group').style.display !== 'none') {
       // 상담사 회원가입 폼 필드 추가
@@ -499,7 +501,12 @@ function submitForm() {
         if (response && response.user_type === 'child') {
           console.log('아동 회원가입 성공');
           var childName = response.child_name;
-          window.location.href = '/survey_pre?child_name=' + childName;
+          var parentName = response.parent_name;
+          // parentName 값을 guardianName 입력란에 설정
+          $('#guardianName').val(parentName);
+
+      // 페이지 이동
+          window.location.href = '/survey_pre?child_name=' + childName + '&parent_name=' + parentName;
         } else if (response && response.user_type === 'counselor') {
           console.log('상담사 회원가입 성공');
           window.location.href = '/';
