@@ -1,0 +1,5 @@
+python -m pip install opencv-python 로 opencv를 설치하기
+설치가 안된다면 python -m pip install --upgrade pip 로 pip 업그레이드 후 다시 시도
+설치가 완료되면 
+import cv2
+print(cv2.__version__) 으로 opencv2 버전 확인 
