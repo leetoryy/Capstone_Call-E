@@ -13,13 +13,53 @@ app = Flask(__name__, static_url_path='/static')
 childdb = DBconnector('CHILD')
 calledb = DBconnector('CALL_E')
 counselordb = DBconnector('COUNSELOR')
-surveydb = DBconnector('SURVEY')
+child_infodb = DBconnector('CHILD_INFO') #아동mbti, 아동사전설문지 내용, 아동매칭상담사및상담날짜 포함
 
+# 아동 상담 분야 가져오기
+def get_all_child_survey_consulting():
+    query = "SELECT child_id, survey_consulting FROM CHILD_INFO.child_info_list"
+    result = child_infodb.execute(query)
+    print(result)
+    return result
+
+# 상담사 상담 분야 가져오기
+def get_all_counselor_survey_consulting():
+    query = "SELECT co_id, co_consulting FROM COUNSELOR.counselor_list"
+    result = counselordb.execute(query)
+    print(result)
+    return result
+
+# child_id 별로 아동 상담 분야가 상담사 상담 분야에 포함되어 있는 경우 출력
+def print_matching_counselors():
+    child_survey_consulting = get_all_child_survey_consulting()
+    counselor_survey_consulting = get_all_counselor_survey_consulting()
+
+    for child_row in child_survey_consulting:
+        child_id, child_consulting = child_row
+
+        matching_counselors = [
+            (co_id, co_consulting) for co_id, co_consulting in counselor_survey_consulting
+            if all(survey_consulting in co_consulting.split(', ') for survey_consulting in child_consulting.split(', '))
+        ]
+
+        if matching_counselors:
+            print(f"Child ID: {child_id}, Child Consulting: {child_consulting}")
+            for co_id, co_consulting in matching_counselors:
+                print(f"  - Counselor ID: {co_id}, Counselor Consulting: {co_consulting}")
+        else:
+            print(f"No matching counselors found for Child ID: {child_id}")
+
+# 결과 출력
+print_matching_counselors()
 
 # HTML 렌더링을 위한 기본 경로
 @app.route('/')
 def index():
+    get_all_child_survey_consulting()
+    get_all_counselor_survey_consulting()
+    print_matching_counselors()
     return render_template('counselor/join.html')
+    
 
 #아이디 패스워드 검사
 def authenticate_child(child_ID, child_pw):
@@ -118,7 +158,7 @@ def join_html():
                 birth_date_int = int(birth_date_string)
 
                 insert_query = f"""
-                    INSERT INTO CHILD.child_list (child_name, child_id, child_password, child_phone, child_email,
+                    INSERT INTO CHILD.child_list (child_name, child_id, child_password, parent_phone, parent_email,
                                     child_birth, child_address, parent_name)
                     VALUES ('{childName}', '{childId}', '{childPassword}', '{childPhoneNum}', '{childEmail}',
                             {birth_date_int}, '{childAddress}', '{parentName}');
@@ -126,8 +166,8 @@ def join_html():
 
                 childdb.insert(insert_query)
                 print(f"Query: {insert_query}")
-                print(childName)
-                return jsonify({'user_type': 'child', 'child_name': childName, 'parent_name': parentName})
+                print(childId)
+                return jsonify({'user_type': 'child', 'child_id': childId, 'parent_name': parentName})
                 
                 
                 
@@ -255,11 +295,51 @@ def counselor_home_html():
 def child_list_html():
     return render_template('counselor/child_list.html')
 
-@app.route('/survey_pre')
+@app.route('/survey_pre',  methods=[ 'GET','POST'])
 def survey_pre_html():
-    child_name = request.args.get('child_name', default=None)
+    child_id = request.args.get('child_id', default=None)
     parent_name = request.args.get('parent_name', default=None)
-    return render_template('user/survey_pre.html', child_name=child_name, parent_name=parent_name)
+    if request.method == 'POST':
+        # 폼이 제출된 경우에만 처리
+        child_id = request.form.get('childID', default=None)
+        parent_name = request.form.get('guardianName', default=None)
+        priority1 = request.form.get('paymentMethod1', default=None)
+        priority2 = request.form.get('paymentMethod2', default=None)
+        priority3 = request.form.get('paymentMethod3', default=None)
+        priority4 = request.form.get('paymentMethod4', default=None)
+        subject = request.form.get('paymentMethod', default=None)
+        medicine_name = request.form.get('medicineName', default=None)
+        additional_notes = request.form.get('additionalNotes', default=None)
+
+        # 데이터를 출력
+        print("Child ID:", child_id)
+        print("Parent Name:", parent_name)
+        print("Priority 1:", priority1)
+        print("Priority 2:", priority2)
+        print("Priority 3:", priority3)
+        print("Priority 4:", priority4)
+        print("Subject:", subject)
+        print("Medicine Name:", medicine_name)
+        print("Additional Notes:", additional_notes)
+        
+        try:
+            
+            insert_query = f"""
+                    INSERT INTO CHILD_INFO.child_info_list (child_id, survey_priority_1, survey_priority_2, survey_priority_3, survey_priority_4,
+                                    survey_consulting, survey_diagnosis, survey_etc)
+                    VALUES ('{child_id}',  '{priority1}', '{priority2}', '{priority3}',
+                            '{priority4}', '{subject}', '{medicine_name}', '{additional_notes}');
+                """
+
+            child_infodb.insert(insert_query)
+            print(f"Query: {insert_query}")
+                
+        except Exception as e:
+            error_message = '오류가 발생했습니다.'
+            print(f"Error Type: {type(e)}")
+            print(f"Error Details: {e.args}")
+                
+    return render_template('user/survey_pre.html', child_id=child_id, parent_name=parent_name)
 
 @app.route('/user_home')
 def user_home_html():

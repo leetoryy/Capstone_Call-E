@@ -500,13 +500,13 @@ function submitForm() {
         console.log('서버 응답:', response);
         if (response && response.user_type === 'child') {
           console.log('아동 회원가입 성공');
-          var childName = response.child_name;
+          var childID = response.child_id;
           var parentName = response.parent_name;
           // parentName 값을 guardianName 입력란에 설정
           $('#guardianName').val(parentName);
 
       // 페이지 이동
-          window.location.href = '/survey_pre?child_name=' + childName + '&parent_name=' + parentName;
+          window.location.href = '/survey_pre?child_id=' + childID + '&parent_name=' + parentName;
         } else if (response && response.user_type === 'counselor') {
           console.log('상담사 회원가입 성공');
           window.location.href = '/';

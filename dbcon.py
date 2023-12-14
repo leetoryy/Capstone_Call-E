@@ -37,13 +37,13 @@ counselor_conn = pymysql.connect(host='orion.mokpo.ac.kr',
 counselor_cur = counselor_conn.cursor()
 
 #=====
-survey_conn = None
-survey_cur = None
+child_info_conn = None
+child_info_cur = None
 
-survey_conn = pymysql.connect(host='orion.mokpo.ac.kr',
+child_info_conn = pymysql.connect(host='orion.mokpo.ac.kr',
                        port=8397,
                        user='root',
                        passwd='ScE1234**',
-                       db='SURVEY', 
+                       db='CHILD_INFO', 
                        charset='utf8')
-survey_cur = survey_conn.cursor()
+child_info_cur = child_info_conn.cursor()

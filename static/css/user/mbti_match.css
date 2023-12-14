@@ -1,78 +1,155 @@
-@font-face {
-    font-family: 'GangwonEduSaeeum_OTFMediumA';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduSaeeum_OTFMediumA.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
+* {
+  font-family: 'Nanum Gothic';
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --grey: #f1f0f6;
+  --dark-grey: #8d8d8d;
+  --primary-color: #4ea685;
+  --secondary-color: #57b894;
+  --font-size-lg: clamp(2rem, 4vw, 3.5rem);
+  --font-size-md: clamp(1.2rem, 3vw, 1.5rem);
+  --font-size-sm: clamp(0.8rem, 2vw, 1.2rem);
   
-  html {
-    background: url('/static/images/MBTI_background.png') no-repeat center fixed;
-    background-size: cover;
-    background-position: center bottom;
-  }
-  
-  body {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    animation: fadein 2s;
-  }
-  
-  @keyframes fadein {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  
-  .css-header {
-    position: relative;
-    display: block;
-  }
-  
-  .css-title {
-    font-family: 'Bagel Fat One';
-    margin-top: 10vh;
-    font-size: 5rem;
-    text-align: center;
-    color: white;
-    font-family: 'GangwonEduSaeeum_OTFMediumA';
-  }
-  
-  .css-border {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    background-color: rgba(255, 255, 255, 0.9);
-    margin-top: 4vh;
-    width: 60vw;
-    height: 100vh;
-    border-radius: 10px;
-  }
-  
-  .css-resultTitle {
-    position: relative;
-    margin-top: -3vh;
-    color: black;
-    font-size: 70px;
-    font-family: 'GangwonEduSaeeum_OTFMediumA';
-  }
-  
-  .css-resultExplain {
-    position: relative;
-    margin-top: 10vh;
-    width: 70%;
-    color: black;
-    font-size: 25px;
-    font-family: 'GangwonEduSaeeum_OTFMediumA';
-  }
-  
-  .css-footer {
-    position: relative;
-    margin-top: 4vh;
-  }
-  
+}
+
+.team .member {
+  position: relative;
+  box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.team .member .teampic {
+  overflow: hidden;
+  width: 180px;
+  border-radius: 50%;
+}
+
+.team .member .member-info {
+  padding-left: 30px;
+}
+
+.team .member h4 {
+  font-weight: 700;
+  margin-bottom: 5px;
+  font-size: var(--font-size-md);
+  color: var(--primary-color);
+}
+
+.team .member span {
+  display: block;
+  font-size: 15px;
+  padding-bottom: 10px;
+  position: relative;
+  font-weight: 500;
+}
+
+.team .member span::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 50px;
+  height: 2px;
+  background: black;
+  bottom: 0;
+  left: 0;
+}
+
+.team .member p {
+  margin: 10px 0 0 0;
+  font-size: 14px;
+}
+
+section {
+  padding: 60px 0;
+  overflow: hidden;
+}
+
+.section-title {
+  text-align: center;
+  padding-bottom: 30px;
+}
+
+.section-title h2 {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  position: relative;
+  color: var(--primary-color);
+}
+
+.underline {
+  width: 150px;
+  height: 1px;
+  background-color: black;
+  margin: auto;
+  margin-top: -30px;
+}
+
+.section-title p {
+  font-size: var(--font-size-sm);
+  margin-top: 20px;
+}
+
+/* 드롭다운 */
+.container select {
+  width: 150px;
+  /* margin-left: auto;
+  margin-right: 0; */
+}
+
+/* 별점 */
+.rate {
+  display: inline-block;
+  border: 0;
+  margin-right: 15px;
+}
+
+.rate > input {
+  display: none;
+}
+
+.rate > label {
+  float: right;
+  color: #ddd;
+}
+
+.rate > label:before {
+  display: inline-block;
+  font-size: 1rem;
+  padding: .3rem .2rem;
+  margin: 0;
+  cursor: pointer;
+  font-family: FontAwesome;
+  content: "\f005 ";
+}
+
+.rate .half:before {
+  content: "\f089 ";
+  position: absolute;
+  padding-right: 0;
+}
+
+.rate input:checked ~ label,
+.rate label:hover,
+.rate label:hover ~ label {
+  color: var(--primary-color) !important;
+}
+
+.rate input:checked + .rate label:hover,
+.rate input input:checked ~ label:hover,
+.rate input:checked ~ .rate label:hover ~ label,
+.rate label:hover ~ input:checked ~ label {
+  color: var(--primary-color) !important;
+}

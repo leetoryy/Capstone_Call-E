@@ -20,17 +20,18 @@
             이 설문은 내담자의 상태를 종합적으로 고려하여 맞춤형 상담을 제공하는 데 활용됩니다.
           </p>
         </div>
-            <form class="needs-validation" novalidate>
+        <form class="needs-validation" novalidate action="{{ url_for('survey_pre_html') }}" method="POST">
+
               <div class="row g-3">
                 <div class="col-sm-6">
-                  <label for="childName" class="form-label">아동 이름</label>
+                  <label for="childID" class="form-label">아동 이름</label>
                   <!-- 서버로부터 받은 아동 이름을 표시 -->
-                  <input type="text" class="form-control" id="childName" placeholder="" value="{{ child_name }}" />
+                  <input type="text" class="form-control" id="childID" name="childID" placeholder="" value="{{ child_id }}" />
                 </div>
 
                 <div class="col-sm-6">
                   <label for="guardianName" class="form-label">보호자 성함</label>
-                  <input type="text" class="form-control" id="guardianName" placeholder="" value="{{parent_name}}"   />
+                  <input type="text" class="form-control" id="guardianName" name="guardianName" placeholder="" value="{{parent_name}}"   />
                   <div class="invalid-feedback">Your name is required.</div>
                 </div>
               </div>
@@ -43,23 +44,23 @@
                   <label for="priority1" class="form-label">상담에서 1순위로 생각하는 것을 한 가지 고르세요</label>
 
                   <div class="form-check">
-                    <input id="priority1-1" name="paymentMethod1" type="radio" class="form-check-input" required />
+                    <input id="priority1-1" name="paymentMethod1" type="radio" class="form-check-input" value="공감과 위로" required />
                     <label class="form-check-label" for="priority1-1">공감과 위로</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority1-2" name="paymentMethod1" type="radio" class="form-check-input" required />
+                    <input id="priority1-2" name="paymentMethod1" type="radio" class="form-check-input" value="현실적인 조언" required />
                     <label class="form-check-label" for="priority1-2">현실적인 조언</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority1-3" name="paymentMethod1" type="radio" class="form-check-input" required />
+                    <input id="priority1-3" name="paymentMethod1" type="radio" class="form-check-input" value="능동적인 참여유도" required />
                     <label class="form-check-label" for="priority1-3">능동적인 참여유도</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority1-4" name="paymentMethod1" type="radio" class="form-check-input" required />
+                    <input id="priority1-4" name="paymentMethod1" type="radio" class="form-check-input" value="성장지향적 접근성" required />
                     <label class="form-check-label" for="priority1-4">성장지향적 접근성</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority1-5" name="paymentMethod1" type="radio" class="form-check-input" required />
+                    <input id="priority1-5" name="paymentMethod1" type="radio" class="form-check-input" value="위기대응 및 안정화" required />
                     <label class="form-check-label" for="priority1-5">위기대응 및 안정화</label>
                   </div>
                 </div>
@@ -67,23 +68,23 @@
                 <div class="col-sm-6">
                   <label for="priority2" class="form-label">상담에서 2순위로 생각하는 것을 한 가지 고르세요</label>
                   <div class="form-check">
-                    <input id="priority2-1" name="paymentMethod2" type="radio" class="form-check-input" required />
+                    <input id="priority2-1" name="paymentMethod2" type="radio" class="form-check-input"value="공감과 위로" required />
                     <label class="form-check-label" for="priority2-1">공감과 위로</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority2-2" name="paymentMethod2" type="radio" class="form-check-input" required />
+                    <input id="priority2-2" name="paymentMethod2" type="radio" class="form-check-input"value="현실적인 조언" required />
                     <label class="form-check-label" for="priority2-2">현실적인 조언</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority2-3" name="paymentMethod2" type="radio" class="form-check-input" required />
+                    <input id="priority2-3" name="paymentMethod2" type="radio" class="form-check-input" value="능동적인 참여유도" required />
                     <label class="form-check-label" for="priority2-3">능동적인 참여유도</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority2-4" name="paymentMethod2" type="radio" class="form-check-input" required />
+                    <input id="priority2-4" name="paymentMethod2" type="radio" class="form-check-input" value="성장지향적 접근성" required />
                     <label class="form-check-label" for="priority2-4">성장지향적 접근성</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority2-5" name="paymentMethod2" type="radio" class="form-check-input" required />
+                    <input id="priority2-5" name="paymentMethod2" type="radio" class="form-check-input" value="위기대응 및 안정화" required />
                     <label class="form-check-label" for="priority2-5">위기대응 및 안정화</label>
                   </div>
                 </div>
@@ -96,23 +97,23 @@
                   <label for="priority3" class="form-label">상담에서 3순위로 생각하는 것을 한 가지 고르세요</label>
 
                   <div class="form-check">
-                    <input id="priority3-1" name="paymentMethod3" type="radio" class="form-check-input" required />
+                    <input id="priority3-1" name="paymentMethod3" type="radio" class="form-check-input" value="공감과 위로" required />
                     <label class="form-check-label" for="priority3-1">공감과 위로</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority3-2" name="paymentMethod3" type="radio" class="form-check-input" required />
+                    <input id="priority3-2" name="paymentMethod3" type="radio" class="form-check-input" value="현실적인 조언" required />
                     <label class="form-check-label" for="priority3-2">현실적인 조언</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority3-3" name="paymentMethod3" type="radio" class="form-check-input" required />
+                    <input id="priority3-3" name="paymentMethod3" type="radio" class="form-check-input" value="능동적인 참여유도" required />
                     <label class="form-check-label" for="priority3-3">능동적인 참여유도</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority3-4" name="paymentMethod3" type="radio" class="form-check-input" required />
+                    <input id="priority3-4" name="paymentMethod3" type="radio" class="form-check-input" value="성장지향적 접근성" required />
                     <label class="form-check-label" for="priority3-4">성장지향적 접근성</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority3-5" name="paymentMethod3" type="radio" class="form-check-input" required />
+                    <input id="priority3-5" name="paymentMethod3" type="radio" class="form-check-input" value="위기대응 및 안정화" required />
                     <label class="form-check-label" for="priority3-5">위기대응 및 안정화</label>
                   </div>
                 </div>
@@ -120,23 +121,23 @@
                 <div class="col-sm-6">
                   <label for="priority4" class="form-label">상담에서 4순위로 생각하는 것을 한 가지 고르세요</label>
                   <div class="form-check">
-                    <input id="priority4-1" name="paymentMethod4" type="radio" class="form-check-input" required />
+                    <input id="priority4-1" name="paymentMethod4" type="radio" class="form-check-input" value="공감과 위로" required />
                     <label class="form-check-label" for="priority4-1">공감과 위로</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority4-2" name="paymentMethod4" type="radio" class="form-check-input" required />
+                    <input id="priority4-2" name="paymentMethod4" type="radio" class="form-check-input" value="현실적인 조언" required />
                     <label class="form-check-label" for="priority4-2">현실적인 조언</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority4-3" name="paymentMethod4" type="radio" class="form-check-input" required />
+                    <input id="priority4-3" name="paymentMethod4" type="radio" class="form-check-input" value="능동적인 참여유도" required />
                     <label class="form-check-label" for="priority4-3">능동적인 참여유도</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority4-4" name="paymentMethod4" type="radio" class="form-check-input" required />
+                    <input id="priority4-4" name="paymentMethod4" type="radio" class="form-check-input" value="성장지향적 접근성" required />
                     <label class="form-check-label" for="priority4-4">성장지향적 접근성</label>
                   </div>
                   <div class="form-check">
-                    <input id="priority4-5" name="paymentMethod4" type="radio" class="form-check-input" required />
+                    <input id="priority4-5" name="paymentMethod4" type="radio" class="form-check-input" value="위기대응 및 안정화" required />
                     <label class="form-check-label" for="priority4-5">위기대응 및 안정화</label>
                   </div>
                 </div>
@@ -149,19 +150,19 @@
                   <h4 class="mb-3">상담 분야</h4>
                   <label for="subject" class="form-label">상담을 하려는 분야를 고르세요</label>
                   <div class="form-check">
-                    <input id="subject1" name="paymentMethod" type="radio" class="form-check-input" required />
+                    <input id="subject1" name="paymentMethod" type="radio" class="form-check-input" value="발달 상담"  required />
                     <label class="form-check-label" for="subject1">발달 상담</label>
                   </div>
                   <div class="form-check">
-                    <input id="subject2" name="paymentMethod" type="radio" class="form-check-input" required />
+                    <input id="subject2" name="paymentMethod" type="radio" class="form-check-input" value="학교 상담" required />
                     <label class="form-check-label" for="subject2">학교 상담</label>
                   </div>
                     <div class="form-check">
-                      <input id="subject3" name="paymentMethod" type="radio" class="form-check-input" required />
+                      <input id="subject3" name="paymentMethod" type="radio" class="form-check-input" value="문제 행동 상담" required />
                       <label class="form-check-label" for="subject3">문제 행동 상담</label>
                     </div>
                     <div class="form-check">
-                      <input id="subject4" name="paymentMethod" type="radio" class="form-check-input" required />
+                      <input id="subject4" name="paymentMethod" type="radio" class="form-check-input" value="정서 상담" required />
                       <label class="form-check-label" for="subject4">정서 상담</label>
                     </div>
                 </div>
@@ -169,20 +170,19 @@
                 <div class="col-sm-6">
                   <h4 class="mb-3">과거 병력</h4>
                   <label for="medicineName" class="form-label">과거 아동이 진단이나 치료를 받은 병력이 있을 경우 해당 명칭을 기재해주세요</label>
-                  <input type="text" class="form-control" id="medicineName" placeholder="" value="" />
+                  <input type="text" class="form-control" id="medicineName" name="medicineName" placeholder="" value="" />
                   <small class="text-muted">필수 입력 사항이 아닙니다</small>
-                </div>
               </div>
-
+              </div>
+              
               <hr class="my-4" />
-
-                <div class="col-md-12"> 
+              
+              <div class="col-md-12"> 
                   <h4 class="mb-3">etc.</h4>
-                  <label for="medicineName" class="form-label">상담사에게 전달할 사항이 있다면 적어주세요</label>
-                  <input type="text" class="form-control" id="medicineName" placeholder="" value="" />
-                </div>
-
-              <hr class="my-4" />
+                  <label for="additionalNotes" class="form-label">상담사에게 전달할 사항이 있다면 적어주세요</label>
+                  <input type="text" class="form-control" id="additionalNotes" name="additionalNotes" placeholder="" value="" />
+              </div>
+              
 
               <br>
               <button class="w-100 btn btn-primary btn-lg" type="submit">제출</button>
@@ -197,5 +197,31 @@
     <!-- JS -->
     <script src="{{ url_for('static', filename='javascript/user/survey_pre.js') }}"></script>
 </body>
+<!-- HTML 코드 상단에 있는 script 태그 안에 아래의 자바스크립트 코드를 추가하세요. -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // 폼 제출 시 실행되는 함수
+    document.querySelector('form.needs-validation').addEventListener('submit', function (event) {
+      // 우선순위 선택 값 가져오기
+      const priority1 = document.querySelector('input[name="paymentMethod1"]:checked').value;
+      const priority2 = document.querySelector('input[name="paymentMethod2"]:checked').value;
+      const priority3 = document.querySelector('input[name="paymentMethod3"]:checked').value;
+      const priority4 = document.querySelector('input[name="paymentMethod4"]:checked').value;
+
+      // 중복 여부 확인
+      if (checkForDuplicates([priority1, priority2, priority3, priority4])) {
+        // 중복이 있을 경우 폼 제출을 중지하고 에러 메시지를 표시
+        event.preventDefault();
+        alert('중복된 우선순위가 있습니다. 각 항목은 중복되지 않도록 선택해주세요.');
+      }
+    });
+
+    // 중복 확인 함수
+    function checkForDuplicates(values) {
+      return new Set(values).size !== values.length;
+    }
+  });
+</script>
 
 </html>
