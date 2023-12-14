@@ -47,3 +47,15 @@ child_info_conn = pymysql.connect(host='orion.mokpo.ac.kr',
                        db='CHILD_INFO', 
                        charset='utf8')
 child_info_cur = child_info_conn.cursor()
+
+#=====
+review_list_conn = None
+review_list_cur = None
+
+review_list_conn = pymysql.connect(host='orion.mokpo.ac.kr',
+                       port=8397,
+                       user='root',
+                       passwd='ScE1234**',
+                       db='REVIEW', 
+                       charset='utf8')
+review_list_cur = review_list_conn.cursor()

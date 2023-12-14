@@ -14,6 +14,7 @@ childdb = DBconnector('CHILD')
 calledb = DBconnector('CALL_E')
 counselordb = DBconnector('COUNSELOR')
 child_infodb = DBconnector('CHILD_INFO') #아동mbti, 아동사전설문지 내용, 아동매칭상담사및상담날짜 포함
+review_listdb =  DBconnector('REVIEW')
 
 # 아동 상담 분야 가져오기
 def get_all_child_survey_consulting():
@@ -47,17 +48,32 @@ def print_matching_counselors():
             for co_id, co_consulting in matching_counselors:
                 print(f"  - Counselor ID: {co_id}, Counselor Consulting: {co_consulting}")
         else:
-            print(f"No matching counselors found for Child ID: {child_id}")
+            print(f"일치하는 상담사가 없습니다: {child_id}")
 
 # 결과 출력
 print_matching_counselors()
 
+
+# 리뷰 점수 매칭
+def calculate_avg_consulting_scope():
+    
+    query = """
+            SELECT co_id, AVG(consulting_scope) AS avg_consulting_scope
+            FROM REVIEW.review_list
+            GROUP BY co_id;
+        """
+    result = review_listdb.execute(query)
+    print(result)
+    return result
+    
 # HTML 렌더링을 위한 기본 경로
 @app.route('/')
 def index():
     get_all_child_survey_consulting()
     get_all_counselor_survey_consulting()
     print_matching_counselors()
+    calculate_avg_consulting_scope()
+    
     return render_template('counselor/join.html')
     
 
