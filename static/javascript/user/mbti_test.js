@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
       {question: '계획에 없던 일이 생기면..', choices: ['짜증이 나고 힘이 들어요.', '별로 신경 안 써요.']},
   ];
 
+  // 문항별 답변 성향
   const mbtiScore = [
     {1: 'I', 2: 'E'},
     {1: 'E', 2: 'I'},
@@ -54,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
     {1: 'J', 2: 'P'}
   ]
 
+  // MBTI 유형별 점수 초기화
   let typeCounts = {
     'E': 0,
     'I': 0,
@@ -73,10 +75,15 @@ document.addEventListener('DOMContentLoaded', function() {
     choice2Button.textContent = currentQuestion.choices[1];
   }
 
+  // 선택한 값 기준 점수 업데이트
   function updateCounts(selectedValue) {
+    // 사용자가 선택한 값이 첫 번째 선택지와 일치하는지 확인
     if (selectedValue === questions[progress].choices[0]) {
+      // 일치하면 MBTI 유형 스코어링
       typeCounts[mbtiScore[progress][1]]++;
+    // 사용자가 선택한 값이 두 번째 선택지일 때
     } else {
+      // 두 번째 유형 스코어링 
       typeCounts[mbtiScore[progress][2]]++;
     }
   }
@@ -109,10 +116,9 @@ document.addEventListener('DOMContentLoaded', function() {
       updateQuestion();
     } else {
       const mbtiResult = calculateMBTIResult();
-      alert("계산된 MBTI 결과: " + mbtiResult);
-      // window.location.href = 'mbti_result?result=' + mbtiResult;
+      // alert("계산된 MBTI 결과: " + mbtiResult);
+      window.location.href = `mbti_result?result=${mbtiResult}`;  
     } 
-
       // 진행바
       const percentage = (progress / questions.length) * 100;
       progressBar.value = percentage;

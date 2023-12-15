@@ -6,7 +6,6 @@ import pymysql
 import dbcl
 import datetime
 
-
 app = Flask(__name__, static_url_path='/static')
 
 # DB 연결 객체 생성
@@ -410,17 +409,29 @@ def mbti_match_html():
 
 @app.route('/mbti_result') 
 def mbti_result_html():
-    if request.method == 'POST':
-        child_id = request.form.get('child_id')
-        mbti_result = request.form.get('mbti_result')
-
-        
-
     return render_template('user/mbti_result.html')
+
+@app.route('/save_mbti_result', methods=['POST'])
+def save_mbti_result():
+    child_id = request.form.get('ch_id')
+    mbti_result = request.form.get('mbti_result')
+
+    try:
+        insert_query = f"""
+            INSERT INTO CHILD_INFO.child_info_list (child_id, mbti_result) 
+            VALUES ('{child_id}', '{mbti_result}');
+        """
+        child_infodb.insert(insert_query)
+        print(f"Query: {insert_query}")
+
+    except Exception as e:
+        error_message = '오류가 발생했습니다.'
+        print(f"Error Type: {type(e)}")
+        print(f"Error Details: {e.args}")
+
 
 @app.route('/mbti_test') 
 def mbti_test_html():
-
     return render_template('user/mbti_test.html')
 
 if __name__ == '__main__':
