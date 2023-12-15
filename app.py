@@ -65,6 +65,44 @@ def calculate_avg_consulting_scope():
     result = review_listdb.execute(query)
     print(result)
     return result
+
+# 우선순위 매칭
+def calculate_total_rating():
+    try:
+        # SQL 쿼리
+        query = """
+            SELECT
+                c.child_id,
+                c.child_name,
+                r.co_id,
+                SUM(CASE
+                    WHEN r.consulting_priority = c.survey_priority_1 THEN 5
+                    WHEN r.consulting_priority = c.survey_priority_2 THEN 4
+                    WHEN r.consulting_priority = c.survey_priority_3 THEN 3
+                    WHEN r.consulting_priority = c.survey_priority_4 THEN 2
+                    ELSE 0
+                END) AS total_rating
+            FROM
+                CHILD_INFO.child_info_list c
+            JOIN
+                REVIEW.review_list r ON c.survey_priority_1 = r.consulting_priority
+                OR c.survey_priority_2 = r.consulting_priority
+                OR c.survey_priority_3 = r.consulting_priority
+                OR c.survey_priority_4 = r.consulting_priority
+            GROUP BY
+                c.child_id, c.child_name, r.co_id;
+        """
+
+        # 쿼리 실행
+        result = child_infodb.execute(query)
+        print(result)
+
+        # 결과 반환
+        return result
+
+    except Exception as e:
+        print(f"Error calculating total rating: {e}")
+        return None
     
 # HTML 렌더링을 위한 기본 경로
 @app.route('/')
@@ -73,6 +111,7 @@ def index():
     get_all_counselor_survey_consulting()
     print_matching_counselors()
     calculate_avg_consulting_scope()
+    calculate_total_rating()
     
     return render_template('counselor/join.html')
     
