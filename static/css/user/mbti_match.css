@@ -1,0 +1,147 @@
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
+* {
+  font-family: 'Nanum Gothic';
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --grey: #f1f0f6;
+  --dark-grey: #8d8d8d;
+  --primary-color: #4ea685;
+  --secondary-color: #57b894;
+  --font-size-lg: clamp(2rem, 4vw, 3.5rem);
+  --font-size-md: clamp(1.2rem, 3vw, 1.5rem);
+  --font-size-sm: clamp(0.8rem, 2vw, 1.2rem);
+  
+}
+
+.team .member {
+  position: relative;
+  box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.team .member .teampic {
+  overflow: hidden;
+  width: 140px;
+  border-radius: 50%;
+}
+
+.team .member .member-info {
+  padding-left: 30px;
+}
+
+.team .member h4 {
+  font-weight: 700;
+  margin-bottom: 5px;
+  font-size: var(--font-size-md);
+  color: var(--primary-color);
+}
+
+.team .member p {
+  margin: 10px 0 0 0;
+  font-size: 14px;
+}
+
+section {
+  padding: 60px 0;
+  overflow: hidden;
+}
+
+.section-title {
+  text-align: center;
+  padding-bottom: 30px;
+}
+
+.section-title h2 {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  position: relative;
+  color: var(--primary-color);
+}
+
+.underline {
+  width: 150px;
+  height: 1px;
+  background-color: black;
+  margin: auto;
+  margin-top: -30px;
+}
+
+.section-title p {
+  font-size: var(--font-size-sm);
+  margin-top: 20px;
+}
+
+/* 드롭다운 */
+.container select {
+  width: 150px;
+  /* left: 50%;
+  left: auto;
+  right: 0;
+  transform: translate(150%);  */
+}
+
+/* 리뷰 */
+.review-flex {
+  display: flex;
+}
+
+.review-flex p {
+  color: #8d8d8d;
+}
+
+/* 별점 */
+.rate {
+  display: inline-block;
+  border: 0;
+  margin-right: 15px;
+}
+
+.rate > input {
+  display: none;
+}
+
+.rate > label {
+  float: right;
+  color: #ddd;
+}
+
+.rate > label:before {
+  display: inline-block;
+  font-size: 1.4rem;
+  padding: .3rem .2rem;
+  margin: 0;
+  cursor: pointer;
+  font-family: FontAwesome;
+  content: "\f005 ";
+}
+
+.rate .half:before {
+  font-size: 1.4rem;
+  content: "\f089 ";
+  position: absolute;
+  padding-right: 0;
+}
+
+.rate input:checked ~ label,
+.rate label:hover,
+.rate label:hover ~ label {
+  color: var(--primary-color) !important;
+}
+
+.rate input:checked + .rate label:hover,
+.rate input input:checked ~ label:hover,
+.rate input:checked ~ .rate label:hover ~ label,
+.rate label:hover ~ input:checked ~ label {
+  color: var(--primary-color) !important;
+}
