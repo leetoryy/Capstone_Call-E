@@ -86,12 +86,14 @@ document.addEventListener('DOMContentLoaded', function() {
       // 두 번째 유형 스코어링 
       typeCounts[mbtiScore[progress][2]]++;
     }
+    // ex) 4번 문항('나는 놀 때...')에서 1번 선택지('혼자 노는 걸 좋아해요.')를 선택하면 I에 점수 부여
   }
 
   // MBTI 결과 계산
   function calculateMBTIResult() {
     let mbtiType = '';
     
+    // I의 부여된 점수가 E보다 크면 mbtiType에 I 추가
     if (typeCounts['I'] > typeCounts['E']) mbtiType += 'I';
     else mbtiType += 'E';
 
