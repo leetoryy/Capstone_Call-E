@@ -413,13 +413,13 @@ def mbti_result_html():
 
 @app.route('/save_mbti_result', methods=['POST'])
 def save_mbti_result():
-    child_id = request.form.get('ch_id')
-    mbti_result = request.form.get('mbti_result')
+    child_id = request.form.get('child_id')
+    child_mbti = request.form.get('child_mbti')
 
     try:
         insert_query = f"""
-            INSERT INTO CHILD_INFO.child_info_list (child_id, mbti_result) 
-            VALUES ('{child_id}', '{mbti_result}');
+            INSERT INTO CHILD_INFO.child_info_list (child_id, child_mbti) 
+            VALUES ('{child_id}', '{child_mbti}');
         """
         child_infodb.insert(insert_query)
         print(f"Query: {insert_query}")
