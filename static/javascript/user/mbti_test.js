@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'P': 0
   };
 
-  let progress = 1;
+  let progress = 0;
 
   // 질문 및 선택지
   function updateQuestion() {
