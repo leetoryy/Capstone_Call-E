@@ -105,7 +105,7 @@ def calculate_total_rating():
         return None
     
 # HTML 렌더링을 위한 기본 경로
-@app.route('/')
+@app.route('/',methods=['GET','POST'])
 def index():
     get_all_child_survey_consulting()
     get_all_counselor_survey_consulting()
@@ -129,7 +129,7 @@ def authenticate_counselor(counselor_ID, counselor_pw):
 
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
         user_type = request.form.get('user_type')
@@ -169,6 +169,8 @@ def login():
             except Exception as e:
                 print(f"Error: {e}")
                 return "로그인 중 오류가 발생했습니다."
+            
+    
 
                   
 
@@ -378,16 +380,20 @@ def survey_pre_html():
         print("Additional Notes:", additional_notes)
         
         try:
-            
-            insert_query = f"""
-                    INSERT INTO CHILD_INFO.child_info_list (child_id, survey_priority_1, survey_priority_2, survey_priority_3, survey_priority_4,
-                                    survey_consulting, survey_diagnosis, survey_etc)
-                    VALUES ('{child_id}',  '{priority1}', '{priority2}', '{priority3}',
-                            '{priority4}', '{subject}', '{medicine_name}', '{additional_notes}');
-                """
+            # child_id를 사용하여 child_name 조회
+            child_name = childdb.fetch_one(f"SELECT child_name FROM CHILD.child_list WHERE child_id = '{child_id}'")
 
+            # CHILD_INFO.child_info_list에 데이터 삽입
+            insert_query = f"""
+                INSERT INTO CHILD_INFO.child_info_list (child_id, child_name, survey_priority_1, survey_priority_2,
+                    survey_priority_3, survey_priority_4, survey_consulting, survey_diagnosis, survey_etc)
+                VALUES ('{child_id}', '{child_name}', '{priority1}', '{priority2}', '{priority3}', '{priority4}',
+                        '{subject}', '{medicine_name}', '{additional_notes}');
+            """            
             child_infodb.insert(insert_query)
             print(f"Query: {insert_query}")
+            
+            return render_template('user/mbti_home.html')
                 
         except Exception as e:
             error_message = '오류가 발생했습니다.'

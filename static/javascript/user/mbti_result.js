@@ -187,3 +187,47 @@ function init() {
 }
 
 init()
+
+// mbti_result.js
+
+document.addEventListener('DOMContentLoaded', function() {
+  const topTitle = document.querySelector('.js-top');
+  const resultTitle = document.querySelector('.js-resultTitle');
+  const resultExplain = document.querySelector('.js-resultExplain');
+  const restartButton = document.querySelector('.js-restart');
+
+  // 로컬 스토리지에서 MBTI 결과 불러오기
+  const userMBTI = localStorage.getItem('currentMBTI');
+
+  // 사용자의 MBTI 결과를 화면에 표시
+  topTitle.innerText = `나의 MBTI는?`;
+  resultTitle.innerText = `"${userMBTI}"`;
+  
+  // MBTI 유형에 기반한 설명 추가 (이 부분을 구현해야 합니다)
+  resultExplain.innerText = getExplanationForMBTI(userMBTI);
+
+  // "테스트 다시하기" 버튼 기능
+  restartButton.addEventListener('click', function() {
+    // 테스트 페이지로 리디렉션
+    location.href = '/mbti_test';
+  });
+
+  // 결과 페이지에 필요한 다른 기능을 추가하세요
+});
+
+// MBTI에 기반한 설명을 가져오는 함수 (이 부분을 구현해야 합니다)
+function getExplanationForMBTI(mbti) {
+  // MBTI 결과에 따른 설명을 제공하기 위한 로직을 구현합니다
+  // 예를 들어, 각 MBTI 유형에 대한 설명을 연결하는 스위치 문이나 오브젝트 매핑을 사용할 수 있습니다.
+  // 주어진 MBTI 유형에 대한 설명을 반환하세요.
+  // 예시:
+  switch (mbti) {
+    case 'ENFP':
+      return '당신은 열정적이고 창의적인 성격을 가지고 있습니다.';
+    // 다른 MBTI 유형에 대한 케이스 추가
+    // ...
+    default:
+      return '해당하는 MBTI 설명이 없습니다.';
+  }
+}
+
