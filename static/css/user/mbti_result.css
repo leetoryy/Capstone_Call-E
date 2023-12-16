@@ -91,7 +91,7 @@ body {
 .css-restart {
   width: 60%;
   padding: 16px 48px;
-  font-size: large;
+  font-size: 30px;
   background-color: white;
   color: black;
   border: 2px solid #3d3d3d;
@@ -109,7 +109,7 @@ body {
 .css-match {
   width: 60%;
   padding: 16px 48px;
-  font-size: large;
+  font-size: 30px;
   background-color: white;
   color: black;
   border: 2px solid #3d3d3d;
