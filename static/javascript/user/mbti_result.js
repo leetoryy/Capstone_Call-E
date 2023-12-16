@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 결과
   if (result) {
-    resultTitle.textContent = `당신의 MBTI는 ${result} 입니다.`;
+    resultTitle.textContent = `당신의 MBTI는 "${result}" 입니다.`;
     // 유형별 설명
     switch (result) {
       case 'ISTJ':

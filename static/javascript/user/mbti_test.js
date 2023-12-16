@@ -5,8 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const backButton = document.querySelector('.js-backButton');
   const questionTitle = document.querySelector('.js-question');
 
-  let progress = 0;
-
   // 질문지
   const questions = [
       {question: '나는 새로운 친구를 사귈 때...', choices: ['친구가 먼저 다가오면 이야기를 하는 경우가 많아요.', '내가 먼저 다가가서 이야기를 하는 경우가 더 많아요.']},
@@ -66,6 +64,8 @@ document.addEventListener('DOMContentLoaded', function() {
     'J': 0,
     'P': 0
   };
+
+  let progress = 1;
 
   // 질문 및 선택지
   function updateQuestion() {

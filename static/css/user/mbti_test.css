@@ -48,7 +48,6 @@
     position: relative;
     width: 70%;
     height: 16px;
-    pointer-events: none;
     -webkit-appearance: none;
     appearance: none;
   }
