@@ -1,16 +1,14 @@
-const startButton = document.querySelector(".js-start"),
-    shareButton = document.querySelector(".js-share");
+const startButton = document.querySelector(".js-start");
 
 function handleStartClick(event){
     event.preventDefault();
 
-    const link = '/user/mbti_test.html';
+    const link = '/mbti_test';
     location.href = link;
 }
 
 function init(){
     startButton.addEventListener("click", handleStartClick);
-    shareButton.addEventListener("click", handleShareClick);
 }
 
 init();

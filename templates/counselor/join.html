@@ -1,131 +1,576 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Call-E</title>
-  <link rel="stylesheet" type="text/css" href="/static/css/counselor/join.css">
-</head>
-<body>
-<div id="container" class="container">
-    <!-- FORM SECTION -->
-    <div class="row">
-      <!-- 회원가입 -->
-      <div class="col align-items-center flex-col sign-up">
-        <div class="form-wrapper align-items-center">
-          <div class="form sign-up">
-            <div class="input-group">
-                <div id="user-type-options" class="user-type-options">
-                    <button value="child" onclick="updateUserType(this)">아동</button>
-                    <button value="counselor" onclick="updateUserType(this)">상담사</button>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Call-E</title>
+    <!-- favicon -->
+	  <link rel="icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
+	  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
+    <!-- Fontawesome CDN Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    <!-- jQuery CDN Link -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/counselor/join.css') }}" />
+  </head>
+  <body>
+    <div id="container" class="container">
+      
+      <!-- FORM SECTION -->
+      <div class="row">
+        <!-- 회원가입 -->
+        <div class="col align-items-center flex-col sign-up">
+          <div class="form-wrapper align-items-center">
+            <div class="form sign-up">
+              <div class="input-group">
+                <div id="user-type-options-join" class="user-type-options">
+                  <button value="child" onclick="updateUserType(this)">아동</button>
+                  <button value="counselor" onclick="updateUserType(this)">상담사</button>
                 </div>
-                <input type="hidden" id="user-type" name="user-type" value="child">
-            </div>
-            <!-- 아동 -->
-            <div class="input-group" id="child-info-group">
-              <i class='bx bxs-child'></i>
-              <input type="text" placeholder="이름">
-              <input type="text" placeholder="아이디">
-              <input type="password" placeholder="비밀번호">
-              <input type="password" id="confirm-password" placeholder="비밀번호 확인">
-              <span id="password-error" class="error-message"></span>
-              <input type="text" placeholder="전화번호">
-              <input type="email" placeholder="이메일">
-              <div id="birth-flex">
-              <input type="text" id="birth-year" placeholder="출생연도">
-              <input type="text" id="birth-month" placeholder="월">
-              <input type="text" id="birth-day" placeholder="일">
-            </div>
-              <input type="text" placeholder="주소">
-            </div>
-            <!-- 상담사 -->
-            <div class="input-group" id="counselor-info-group" style="display: none;">
-              <i class='bx bxs-counselor'></i>
-              <input type="text" placeholder="이름">
-              <input type="text" placeholder="사번">
-              <input type="password" placeholder="비밀번호">
-              <input type="password" id="confirm-password" placeholder="비밀번호 확인">
-              <input type="text" placeholder="전화번호">
-              <input type="email" placeholder="이메일">
-              <div id="birth-flex">
-                <input type="text" id="birth-year" placeholder="출생연도">
-                <input type="text" id="birth-month" placeholder="월">
-                <input type="text" id="birth-day" placeholder="일">
+                <input type="hidden" id="user-type" name="user-type" value="child" />
               </div>
-              <input type="text" placeholder="상담 분야">
+              <script>
+                  function validateChildForm() {
+                      // 아동 회원가입 폼 검증 로직
+                      var childName = document.getElementById('child_name').value;
+                      var childId = document.getElementById('child_id').value;
+                      var childPassword = document.getElementById('child-password').value;
+                      var childConfirmPassword = document.getElementById('child-confirm-password').value;
+                      var childPhoneNum = document.getElementById('child_phone_num').value;
+                      var childEmail = document.getElementById('child_email').value;
+                      var childBirthYear = document.getElementById('child-birth-year').value;
+                      var childBirthMonth = document.getElementById('child-birth-month').value;
+                      var childBirthDay = document.getElementById('child-birth-day').value;
+                      var childAddress = document.getElementById('child-address').value;
+                  
+                      // 필수 필드 검사
+                      if (childName === '' || childId === '' || childPassword === '' ||
+                          childConfirmPassword === '' || childPhoneNum === '' || childEmail === '' ||
+                          childBirthYear === '' || childBirthMonth === '' || childBirthDay === '' ||
+                          childAddress === '') {
+                          alert('모든 항목을 입력하세요.');
+                          return false;
+                      }
+                  
+                      // 추가적인 검증 로직을 여기에 추가할 수 있습니다.
+                  
+                      return true;
+                  }
+                  
+                  function validateCounselorForm() {
+                      // 상담사 회원가입 폼 검증 로직
+                      var counselorName = document.getElementById('counselor_name').value;
+                      var counselorId = document.getElementById('counselor_id').value;
+                      var selectedMBTI = document.getElementById('mbti-dropdown').value;
+                      var counselorPassword = document.getElementById('counselor_pw').value;
+                      var counselorConfirmPassword = document.getElementById('counselor-confirm-password').value;
+                      var counselorPhone = document.getElementById('counselor_phone').value;
+                      var counselorEmail = document.getElementById('counselor_email').value;
+                      var counselorBirthYear = document.getElementById('counselor-birth-year').value;
+                      var counselorBirthMonth = document.getElementById('counselor-birth-month').value;
+                      var counselorBirthDay = document.getElementById('counselor-birth-day').value;
+                  
+                      // 필수 필드 검사
+                      if (counselorName === '' || counselorId === '' || selectedMBTI === '' ||
+                          counselorPassword === '' || counselorConfirmPassword === '' ||
+                          counselorPhone === '' || counselorEmail === '' ||
+                          counselorBirthYear === '' || counselorBirthMonth === '' || counselorBirthDay === '') {
+                          alert('모든 항목을 입력하세요.');
+                          return false;
+                      }
+                  
+                      // 추가적인 검증 로직을 여기에 추가할 수 있습니다.
+                  
+                      return true;
+                  }
+                  
+                  function validateForms() {
+                      // 선택된 회원가입 폼에 따라 유효성 검사 함수 호출
+                      if (document.getElementById('child-info-group').style.display !== 'none') {
+                          return validateChildForm();
+                      } else if (document.getElementById('counselor-info-group').style.display !== 'none') {
+                          return validateCounselorForm();
+                      }
+                  
+                      // 그 외의 경우 기본적으로 true 반환
+                      return true;
+                  }
+                  
+              </script>
+
+              <form action="/join" method="post" onsubmit="return validateForms();">
+              <!-- 아동 -->
+              <div class="input-group" id="child-info-group">
+                <i class="bx bxs-child"></i>
+                <div class="input-flex">
+                  <input type="text" id="child_name" name="ch_name" placeholder="아동 이름" required/>
+                  <input type="text" id="parent_name" name="pa_name" placeholder="보호자 이름" required/>
+                </div>
+                <input type="text" id="child_id" name="ch_id" placeholder="아이디" oninput="checkID()" required/>
+                
+                <!-- 중복 확인 결과를 나타낼 메시지 추가 -->
+                <div id="duplicate-id-message" style="color: red; font-size: 12px;"></div>
+                
+                <input type="password" id="child-password" name="ch_pw" placeholder="비밀번호" />
+                <input type="password" id="child-confirm-password" name="ch_pw2" placeholder="비밀번호확인" oninput="childcheckPasswordMatch()" required/>
+                <div id="password-match-message" style="color: red; font-size: 12px;"></div>
+                <input type="text" id="child_phone_num" name="ch_ph" placeholder="보호자 전화번호" required/>
+                <input type="email" id="child_email" name="ch_email" placeholder="보호자 이메일" required/>
+                <div class="input-flex" id="child-birth-flex">
+                  <input type="text" class="birth-year" id="child-birth-year" name="ch_by" placeholder="출생연도" required/>
+                  <input type="text" class="birth-month" id="child-birth-month" name="ch_bm" placeholder="월" required />
+                  <input type="text" class="birth-day" id="child-birth-day" name="ch_bd" placeholder="일" required />
+                </div>
+                <input type="text" id="child-address" name="ch_address" placeholder="주소" required/>
+              </div>
+            
+              <!-- 상담사 -->
+              <div class="input-group" id="counselor-info-group" style="display: none">
+                <i class="bx bxs-counselor"></i>
+                <div id="MBTI-flex">
+                  <input type="text" id = "counselor_name" name = "co_name" placeholder="이름" required/>
+                  <select id="mbti-dropdown">
+                    <option value="" disabled selected>MBTI</option>
+                    <option value="ISTJ">ISTJ</option>
+                    <option value="ISFJ">ISFJ</option>
+                    <option value="INFJ">INFJ</option>
+                    <option value="INIJ">INTJ</option>
+                    <option value="ISTP">ISTP</option>
+                    <option value="ISFP">ISFP</option>
+                    <option value="INFP">INFP</option>
+                    <option value="INTP">INTP</option>
+                    <option value="ESTP">ESTP</option>
+                    <option value="ESFP">ESFP</option>
+                    <option value="ENFP">ENFP</option>
+                    <option value="ENTP">ENTP</option>
+                    <option value="ESTH">ESTJ</option>
+                    <option value="ESFJ">ESFJ</option>
+                    <option value="ENFJ">ENFJ</option>
+                    <option value="ENTJ">ENTJ</option>
+                  </select>
+                </div>
+                <div id="counselor_id-flex">
+                <input type="text" id = "counselor_id" name = "co_id" placeholder="사번"  required/>
+                <button id = "Registration_id_check" type='button' onclick="RegistrationID()">사원확인</button>
+                </div>
+                <div id="Registration-id-message" style="color: red; font-size: 12px;"></div>
+                <input type="password" id = "counselor_pw" name = "co_pw" placeholder="비밀번호" required/>
+                <input type="password" id="counselor-confirm-password" name = "co_pw2" placeholder="비밀번호 확인" oninput="counselorcheckPasswordMatch()" required/>
+                <div id="co_password-match-message" style="color: red; font-size: 12px;"></div>
+                <input type="text" id = "counselor_phone" name = "co_phone" placeholder="전화번호" required/>
+                <input type="email" id = "counselor_email" name = "co_email" placeholder="이메일" required />
+                <div class="input-flex" id="counselor-birth-flex">
+                  <input type="text" class="birth-year" id="counselor-birth-year" placeholder="출생연도" required/>
+                  <input type="text" class="birth-month" id="counselor-birth-month" placeholder="월" required/>
+                  <input type="text" class="birth-day" id="counselor-birth-day" placeholder="일" required/>
+                  
+                </div>
+                <div class="input-group-checkbox">
+                  <div class="checkbox-group">
+                    <input type="checkbox" id="area1" />
+                    <label for="area1" class="cb1"></label>
+                    <div>발달 상담</div>
+                  </div>
+                  <div class="checkbox-group">
+                    <input type="checkbox" id="area2" />
+                    <label for="area2" class="cb1"></label>
+                    <div>학교 상담</div>
+                  </div>
+                  <div class="checkbox-group">
+                    <input type="checkbox" id="area3" />
+                    <label for="area3" class="cb1"></label>
+                    <div>문제행동 상담</div>
+                  </div>
+                  <div class="checkbox-group">
+                    <input type="checkbox" id="area4" />
+                    <label for="area4" class="cb1"></label>
+                    <div>정서 상담</div>
+                  </div>
+                </div>
+              </div>
+            
+              <button id = "signupClick" type="button" onclick="submitForm()"  >회원가입</button>
+            </form>
+            
+              <p>
+                <span> 이미 회원이신가요? </span>
+                <b onclick="toggle()" class="pointer"> 로그인하기 </b>
+              </p>
             </div>
-            <button>
-              회원가입
-            </button>
-            <p>
-              <span>
-                이미 회원이신가요?
-              </span>
-              <b onclick="toggle()" class="pointer">
-                로그인하기
-              </b>
-            </p>
           </div>
         </div>
+        <!-- END 회원가입 -->
+        <!-- 로그인 -->
+        <div class="col align-items-center flex-col sign-in">
+          <div class="form-wrapper align-items-center">
+            <div class="form sign-in">
+              <div id="user-type-options-login" class="user-type-options">
+                <button value="child" onclick="updateUserType(this)">아동</button>
+                <button value="counselor" onclick="updateUserType(this)">상담사</button>
+              </div>
+              <div class="input-group" id="child-login-group">
+                <div class="input-group">
+                  <i class="bx bxs-counselor"></i>
+                  <input type="text" id="child_ID2" name="ch_id2" placeholder="아이디" />
+                </div>
+                <div class="input-group">
+                  <i class="bx bxs-lock-alt"></i>
+                  <input type="password" id="child_pw2" name="ch_pw_2" placeholder="비밀번호" />
+                </div>
+              </div>
+              <div class="input-group" id="counselor-login-group" style="display: none">
+                <div class="input-group">
+                  <i class="bx bxs-counselor"></i>
+                  <input type="text" id="counselor_id2" name="co_id2" placeholder="사번" />
+                </div>
+                <div class="input-group">
+                  <i class="bx bxs-lock-alt"></i>
+                  <input type="password" id="counselor_pw2" name="co_pw_2" placeholder="비밀번호" />
+                </div>
+              </div>
+              <button type="button" onclick="submitloginForm()">로그인</button>
+              <p>
+                <span> 계정이 없으신가요? </span>
+                <b onclick="toggle()" class="pointer"> 가입하기 </b>
+              </p>
+            </div>
+          </div>
+          <div class="form-wrapper"></div>
+        </div>
+        
+        <!-- END 로그인 -->
       </div>
-      <!-- END 회원가입 -->
-      <!-- 로그인 -->
-      <div class="col align-items-center flex-col sign-in">
-        <div class="form-wrapper align-items-center">
-          <div class="form sign-in">
-            <div class="input-group">
-              <i class='bx bxs-counselor'></i>
-              <input type="text" placeholder="아이디">
-            </div>
-            <div class="input-group">
-              <i class='bx bxs-lock-alt'></i>
-              <input type="password" placeholder="비밀번호">
-            </div>
-            <button>
-              로그인
-            </button>
-            <p>
-              <span>
-                계정이 없으신가요?
-              </span>
-              <b onclick="toggle()" class="pointer">
-                가입하기
-              </b>
-            </p>
+      <!-- END FORM SECTION -->
+      <!-- CONTENT SECTION -->
+      <div class="row content-row">
+        <!-- 로그인 CONTENT -->
+        <div class="col align-items-center flex-col">
+          <div class="text sign-in">
+            <h2>반가워요 :)</h2>
+          </div>
+          <div class="img sign-in"></div>
+        </div>
+        <!-- END 로그인 CONTENT -->
+        <!-- 회원가입 CONTENT -->
+        <div class="col align-items-center flex-col">
+          <div class="img sign-up"></div>
+          <div class="text sign-up">
+            <h2>회원가입</h2>
           </div>
         </div>
-        <div class="form-wrapper">
-        </div>
+        <!-- END 회원가입 CONTENT -->
       </div>
-      <!-- END 로그인 -->
+      <!-- END CONTENT SECTION -->
     </div>
-    <!-- END FORM SECTION -->
-    <!-- CONTENT SECTION -->
-    <div class="row content-row">
-      <!-- 로그인 CONTENT -->
-      <div class="col align-items-center flex-col">
-        <div class="text sign-in">
-          <h2>
-            반가워요 :)
-          </h2>
-        </div>
-        <div class="img sign-in">
-        </div>
-      </div>
-      <!-- END 로그인 CONTENT -->
-      <!-- 회원가입 CONTENT -->
-      <div class="col align-items-center flex-col">
-        <div class="img sign-up">
-        </div>
-        <div class="text sign-up">
-          <h2>
-            회원가입
-          </h2>
-        </div>
-      </div>
-      <!-- END 회원가입 CONTENT -->
-    </div>
-    <!-- END CONTENT SECTION -->
-  </div>
-</body>
-<script src="/static/javascript/counselor/join.js"></script>
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='javascript/counselor/join.js') }}"></script>
+  </body>
+  
+<script>
+  
+  //아동 비밀번호 확인
+  function childcheckPasswordMatch() {
+      var password = document.getElementById("child-password").value;
+      var confirmPassword = document.getElementById("child-confirm-password").value;
+      var matchMessage = document.getElementById("password-match-message");
+      matchMessage.innerHTML = ""
+
+      if (password !== confirmPassword) {
+          matchMessage.innerHTML = "비밀번호가 일치하지 않습니다. 비밀번호를 다시 확인해 주세요.";
+      } else {
+          matchMessage.innerHTML = "";
+      }
+  }
+
+  //상담사 비밀번호 확인
+  function counselorcheckPasswordMatch() {
+    var co_password = document.getElementById("counselor_pw").value;
+    var co_confirmPassword = document.getElementById("counselor-confirm-password").value;
+    var co_matchMessage = document.getElementById("co_password-match-message");
+    co_matchMessage.innerHTML = ""
+
+      if (co_password !== co_confirmPassword) {
+          co_matchMessage.innerHTML = "비밀번호가 일치하지 않습니다. 비밀번호를 다시 확인해 주세요.";
+      } else {
+          co_matchMessage.innerHTML = "";
+      }
+    
+  }
+</script>
+
+<script>
+
+// 아동 아이디 중복 검사
+function checkID() {
+  // 아이디 입력란에서 아이디 가져오기
+  var childId = document.getElementById("child_id").value;
+
+  // 중복 확인 결과를 표시할 메시지 엘리먼트
+  var duplicateIdMessage = document.getElementById("duplicate-id-message");
+
+  // 새로운 요청을 보내기 전에 메시지 초기화
+  duplicateIdMessage.innerHTML = "";
+
+  console.log("Sending request to server with child_id:", childId);
+
+  // 아이디 중복 검사를 서버 쪽에서 수행 (AJAX를 사용하여 비동기적으로 처리)
+  $.ajax({
+      type: "POST",
+      url: "/check_id_duplicate",
+      data: { "child_id": childId },
+      success: function(response) {
+          console.log("Server response:", response);
+
+          // 서버 응답이 JSON 형태인지 확인
+          if (response && typeof response === 'object') {
+              // duplicate 필드를 직접 확인
+              if (response.duplicate !== undefined) {
+                  if (response.duplicate) {
+                      duplicateIdMessage.innerHTML = "이미 사용 중인 아이디입니다.";
+                      // 아이디 중복 시 회원가입 버튼 비활성화 (선택사항)
+                      document.getElementById("signupClick").disabled = true;
+                  } else {
+                      duplicateIdMessage.innerHTML = "사용 가능한 아이디입니다.";
+                      
+                  }
+              } else if (response.result === null) {
+                  // 쿼리 결과가 None이면 아이디가 중복되지 않은 것으로 처리
+                  duplicateIdMessage.innerHTML = "사용 가능한 아이디입니다.";
+                  
+              } else {
+                  // 응답이 예상치 못한 형태인 경우
+                  console.error("Unexpected server response format.");
+              }
+          } else {
+              // 응답이 JSON 형태가 아니라면 예외 처리 또는 적절한 로깅 수행
+              console.error("Unexpected server response format.");
+          }
+      },
+      error: function(error) {
+          console.error("Error checking ID duplicate:", error);
+          duplicateIdMessage.innerHTML = "중복 확인 중 오류가 발생했습니다.";
+      }
+  });
+}
+
+// 상담사 사번 이름 일치 확인
+function RegistrationID() {
+var counselorName = document.getElementById("counselor_name").value;
+var counselorID = document.getElementById("counselor_id").value;
+var RegistrationIdMessage = document.getElementById("Registration-id-message");
+var signupButton = document.getElementById("signupClick");
+
+// 새로운 요청 전 메시지 초기화
+RegistrationIdMessage.innerHTML = "";
+
+console.log("counselor_name 및 counselor_id로 서버에 요청 보내기:", counselorName, counselorID);
+
+$.ajax({
+    type: "POST",
+    url: "/check_name_and_id_association",
+    data: {
+        "counselor_name": counselorName,
+        "counselor_id": counselorID
+    },
+    success: function(response) {
+        console.log("서버 응답:", response);
+
+        if (response && typeof response === 'object') {
+            // 두 조건이 모두 참이면 "이름과 사번이 일치합니다"로 판단
+            if (response.name_associated_with_id && response.id_associated_with_name) {
+                RegistrationIdMessage.innerHTML = "이름과 사번이 일치합니다.";
+                
+            } else {
+                RegistrationIdMessage.innerHTML = "이름과 사번이 일치하지 않습니다.";
+                signupButton.disabled = true; // 회원가입 버튼 비활성화
+
+                // 입력값 초기화 
+                document.getElementById("counselor_name").value = "";
+                document.getElementById("counselor_id").value = "";
+            }
+        } else {
+            console.error("예상치 못한 서버 응답 형식입니다.");
+        }
+    },
+    error: function(error) {
+        console.error("이름과 사번 연관성 확인 중 오류:", error);
+        RegistrationIdMessage.innerHTML = "이름과 사번 확인 중 오류가 발생했습니다.";
+        signupButton.disabled = true; // 오류 발생 시 회원가입 버튼 비활성화
+    }
+});
+}
+
+function intext() {
+  // MBTI 드롭다운에서 선택된 값 가져오기
+  var selectedMBTI = document.getElementById("mbti-dropdown").value;
+  console.log("Selected MBTI:", selectedMBTI);
+
+  // 체크박스에서 선택된 값들 가져오기
+  var checkedAreas = [];
+  var checkboxElements = document.querySelectorAll('.input-group-checkbox input[type="checkbox"]:checked');
+  checkboxElements.forEach(function(checkbox) {
+      checkedAreas.push(checkbox.nextElementSibling.nextElementSibling.innerText);
+  });
+
+  console.log("Checked Areas:", checkedAreas);
+  
+  // 가져온 값들을 서버로 전송할 FormData에 추가
+  formData.append('mbti', selectedMBTI);
+  formData.append('areas', checkedAreas.join(','));  // 여러 값이면 쉼표로 구분하여 전송
+
+  // AJAX를 사용하여 서버로 전송
+  $.ajax({
+    type: 'POST',
+    url: '/join',
+    data: formData,
+    contentType: false,
+    processData: false,
+    success: function(response) {
+        console.log('Server response:', response);
+        
+    },
+    error: function(error) {
+        console.error('Error submitting form:', error);
+        
+    }
+});
+}
+
+
+function submitForm() {
+  // 선택된 사용자 유형에 따라 폼을 유효성 검사
+  if (validateForms()) {
+    // 유효성 검사가 성공하면 폼을 제출합니다.
+
+    // 선택된 회원가입 폼에 따라 FormData 생성
+    var formData = new FormData();
+
+    if (document.getElementById('child-info-group').style.display !== 'none') {
+      // 아동 회원가입 폼 필드 추가
+      formData.append('user_type', 'child');
+      formData.append('ch_name', document.getElementById('child_name').value);
+      formData.append('ch_id', document.getElementById('child_id').value);
+      formData.append('ch_pw', document.getElementById('child-password').value);
+      formData.append('ch_pw2', document.getElementById('child-confirm-password').value);
+      formData.append('ch_ph', document.getElementById('child_phone_num').value);
+      formData.append('ch_email', document.getElementById('child_email').value);
+      formData.append('ch_by', document.getElementById('child-birth-year').value);
+      formData.append('ch_bm', document.getElementById('child-birth-month').value);
+      formData.append('ch_bd', document.getElementById('child-birth-day').value);
+      formData.append('ch_address', document.getElementById('child-address').value);
+      formData.append('pa_name',document.getElementById('parent_name').value);
+
+    } else if (document.getElementById('counselor-info-group').style.display !== 'none') {
+      // 상담사 회원가입 폼 필드 추가
+      formData.append('user_type', 'counselor');
+      formData.append('co_name', document.getElementById('counselor_name').value);
+      formData.append('co_id', document.getElementById('counselor_id').value);
+      formData.append('co_pw', document.getElementById('counselor_pw').value);
+      formData.append('co_pw2', document.getElementById('counselor-confirm-password').value);
+      formData.append('co_phone', document.getElementById('counselor_phone').value);
+      formData.append('co_email', document.getElementById('counselor_email').value);
+      formData.append('co_birth_year', document.getElementById('counselor-birth-year').value);
+      formData.append('co_birth_month', document.getElementById('counselor-birth-month').value);
+      formData.append('co_birth_day', document.getElementById('counselor-birth-day').value);
+      // MBTI 드롭다운에서 선택된 값 가져오기
+      var selectedMBTI = document.getElementById("mbti-dropdown").value;
+      console.log("Selected MBTI:", selectedMBTI);
+
+      // 체크박스에서 선택된 값들 가져오기
+      var checkedAreas = [];
+      var checkboxElements = document.querySelectorAll('.input-group-checkbox input[type="checkbox"]:checked');
+      checkboxElements.forEach(function (checkbox) {
+        checkedAreas.push(checkbox.nextElementSibling.nextElementSibling.innerText);
+      });
+
+      console.log("Checked Areas:", checkedAreas);
+
+      // 가져온 값들을 서버로 전송할 FormData에 추가
+      formData.append('mbti', selectedMBTI);
+      formData.append('areas', checkedAreas.join(','));  // 여러 값이면 쉼표로 구분하여 전송
+    }
+
+    // AJAX를 사용하여 서버로 전송
+    $.ajax({
+      type: 'POST',
+      url: '/join',
+      data: formData,
+      contentType: false,
+      processData: false,
+      success: function (response) {
+        console.log('서버 응답:', response);
+        if (response && response.user_type === 'child') {
+          console.log('아동 회원가입 성공');
+          var childID = response.child_id;
+          var parentName = response.parent_name;
+          // parentName 값을 guardianName 입력란에 설정
+          $('#guardianName').val(parentName);
+
+      // 페이지 이동
+          window.location.href = '/survey_pre?child_id=' + childID + '&parent_name=' + parentName;
+        } else if (response && response.user_type === 'counselor') {
+          console.log('상담사 회원가입 성공');
+          window.location.href = '/';
+        } else {
+          console.log('조건에 맞는 경우 없음');
+        }
+
+      },
+      error: function (error) {
+        console.error('폼 제출 중 오류:', error);
+
+        
+      }
+    });
+  }
+}
+
+
+function submitloginForm() {
+  // 선택된 로그인 폼에 따라 FormData 생성
+  var formData = new FormData();
+
+  if (document.getElementById('child-login-group').style.display !== 'none') {
+    // 아동 로그인 폼 필드 추가
+    formData.append('user_type', 'child');
+    formData.append('ch_id2', document.getElementById('child_ID2').value);
+    formData.append('ch_pw_2', document.getElementById('child_pw2').value);
+  } else if (document.getElementById('counselor-login-group').style.display !== 'none') {
+    // 상담사 로그인 폼 필드 추가
+    formData.append('user_type', 'counselor');
+    formData.append('co_id2', document.getElementById('counselor_id2').value);
+    formData.append('co_pw_2', document.getElementById('counselor_pw2').value);
+  }
+
+  // AJAX를 사용하여 서버로 전송
+  $.ajax({
+    type: 'POST',
+    url: '/login',
+    data: formData,
+    contentType: false,
+    processData: false,
+    success: function (response) {
+        console.log('서버 응답:', response);
+
+        if (response && response.user_type === 'child') {
+            console.log('아동 로그인 성공');
+            window.location.href = '/survey_pre';
+        } else if (response && response.user_type === 'counselor') {
+            console.log('상담사 로그인 성공');
+            var counselorName = response.counselor_name;
+            console.log('상담사 이름:', counselorName);
+
+            // 페이지 이동
+            window.location.href = '/counselor_home?counselor_name=' + encodeURIComponent(counselorName);
+        } else {
+            console.log('조건에 맞는 경우 없음');
+        }
+    },
+    error: function (error) {
+        console.error('폼 제출 중 오류:', error);
+    }
+});
+
+}
+
+</script>
 </html>
