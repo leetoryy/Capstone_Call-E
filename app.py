@@ -6,7 +6,6 @@ import pymysql
 import dbcl
 import datetime
 
-
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = 'call-e'
 
@@ -30,15 +29,11 @@ def get_all_child_survey_consulting():
 def get_all_counselor_survey_consulting():
     query = "SELECT co_id, co_consulting, co_name FROM COUNSELOR.counselor_list"
     result = counselordb.execute(query)
-    
     return result
-
-
 
 # HTML 렌더링을 위한 기본 경로
 @app.route('/',methods=['GET','POST'])
 def index():
-    
     return render_template('counselor/join.html')
     
 
@@ -119,8 +114,6 @@ def join_html():
             childAddress = request.form.get('ch_address')
             parentName = request.form.get('pa_name')
             
-            
-            
             # 받은 값 출력 또는 로깅
             print("아동 폼 값:")
             print(f"childName: {childName}")
@@ -149,8 +142,6 @@ def join_html():
                 print(f"Query: {insert_query}")
                 print(childId)
                 return jsonify({'user_type': 'child', 'child_id': childId, 'parent_name': parentName})
-                
-                
                 
             except Exception as e:
                 error_message = '회원 가입 중 오류가 발생했습니다.'
@@ -199,15 +190,12 @@ def join_html():
                 counselordb.insert(insert_query)
                 print(f"Query: {insert_query}")
                 return jsonify({'user_type': 'counselor'})
-                
-                
-                
+
             except Exception as e:
                 error_message = f'회원 가입 중 오류가 발생했습니다: {e}'
                 print(f"Error Type: {type(e)}")
                 print(f"Error Details: {e}")
                 
-            
     return render_template('counselor/join.html')
  
 
@@ -259,7 +247,6 @@ def check_name_and_id_association():
                 "name_associated_with_id": result_name_check[0][0] > 0,
                 "id_associated_with_name": result_id_check[0][0] > 0
             })
-
         raise Exception("쿼리 실행 중 오류 발생.")
 
     except Exception as e:
@@ -355,7 +342,6 @@ def calculate_scores_for_all():
         for co_id, co_consulting in counselor_survey_consulting:
             score = 40 if all(survey_consulting in co_consulting.split(', ') for survey_consulting in
                               child_consulting.split(', ')) else 0
-
             scores[child_id][co_id] = score
 
     return scores
@@ -591,7 +577,6 @@ def print_matching_counselors():
 
         return result_html
 
-
     elif option_value == '2':
         try:
             # SQL 쿼리
@@ -660,7 +645,6 @@ def print_matching_counselors():
             print(f"Error calculating total rating: {e}")
             return None
 
-
     elif option_value == '3' :
         try:
         # SQL 쿼리
@@ -701,7 +685,6 @@ def print_matching_counselors():
                         </div>
                     </div>
                 </div>
-                
                 """
 
             return result_html
@@ -750,7 +733,6 @@ def print_matching_counselors():
                         </div>
                     </div>
                 </div>
-                
                 """
 
             return result_html
@@ -764,12 +746,27 @@ def print_matching_counselors():
 def mbti_result_html():
     return render_template('user/mbti_result.html')
 
+@app.route('/save_mbti_result', methods=['POST'])
+def save_mbti_result():
+    child_id = request.form.get('child_id')
+    child_mbti = request.form.get('child_mbti')
+
+    try:
+        insert_query = f"""
+            INSERT INTO CHILD_INFO.child_info_list (child_id, child_mbti) 
+            VALUES ('{child_id}', '{child_mbti}');
+        """
+        child_infodb.insert(insert_query)
+        print(f"Query: {insert_query}")
+
+    except Exception as e:
+        error_message = '오류가 발생했습니다.'
+        print(f"Error Type: {type(e)}")
+        print(f"Error Details: {e.args}")
+
 @app.route('/mbti_test') 
 def mbti_test_html():
     return render_template('user/mbti_test.html')
-
-
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000, debug=True)
