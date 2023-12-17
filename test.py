@@ -12,21 +12,21 @@ child_infodb = DBconnector('CHILD_INFO')
 review_listdb = DBconnector('REVIEW')
 
 # 아동 상담 분야 가져오기
-def child_consulting():
+def get_all_child_survey_consulting():
     query = "SELECT child_id, survey_consulting FROM CHILD_INFO.child_info_list"
     result = child_infodb.execute(query)
     return result
 
 # 상담사 상담 분야 가져오기
-def counselor_consulting():
+def get_all_counselor_survey_consulting():
     query = "SELECT co_id, co_consulting FROM COUNSELOR.counselor_list"
     result = counselordb.execute(query)
     return result
 
 # child_id 별로 모든 상담사와의 일치 여부를 확인하여 점수 부여
 def calculate_scores_for_all():
-    child_survey_consulting = child_consulting()
-    counselor_survey_consulting = counselor_consulting()
+    child_survey_consulting = get_all_child_survey_consulting()
+    counselor_survey_consulting = get_all_counselor_survey_consulting()
 
     scores = {}
 

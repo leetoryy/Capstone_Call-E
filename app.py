@@ -334,36 +334,195 @@ def user_home_html():
 def mbti_home_html():
     return render_template('user/mbti_home.html')
 
+# 상담사 상담 분야 가져오기
+def get_counselor_consulting():
+    query = "SELECT co_id, co_consulting FROM COUNSELOR.counselor_list"
+    result = counselordb.execute(query)
+    return result
+
+# child_id 별로 모든 상담사와의 일치 여부를 확인하여 점수 부여
+def calculate_scores_for_all():
+    child_survey_consulting = get_all_child_survey_consulting()
+    counselor_survey_consulting = get_counselor_consulting()
+
+    scores = {}
+
+    for child_row in child_survey_consulting:
+        child_id, child_consulting = child_row
+
+        scores[child_id] = {}
+
+        for co_id, co_consulting in counselor_survey_consulting:
+            score = 40 if all(survey_consulting in co_consulting.split(', ') for survey_consulting in
+                              child_consulting.split(', ')) else 0
+
+            scores[child_id][co_id] = score
+
+    return scores
+
+# Get all co_id values from the counselor_list
+def get_all_counselor_ids():
+    query = "SELECT co_id FROM COUNSELOR.counselor_list"
+    result = counselordb.execute(query)
+    return [row[0] for row in result]  # Use index [0] to access the co_id value
+
+# Calculate average review scores and assign 10 points for scores >= 4.5, 0 points otherwise
+def calculate_avg_consulting_scope():
+    counselor_ids = get_all_counselor_ids()
+
+    query = """
+        SELECT co_id, AVG(consulting_scope) AS avg_consulting_scope
+        FROM REVIEW.review_list
+        GROUP BY co_id;
+    """
+    result = review_listdb.execute(query)
+
+    scores = {co_id: 0 for co_id in counselor_ids}  # Initialize scores with 0 for all counselor_ids
+
+    for row in result:
+        co_id, avg_consulting_scope = row
+        scores[co_id] = 10 if avg_consulting_scope >= 4.0 else 0
+
+    return scores
+
+# 우선순위 매칭
+def calculate_total_rating():
+    try:
+        # SQL 쿼리
+        query = """
+            SELECT
+                c.child_id,
+                cl.co_id,  -- Using counselor_list (cl) to include all counselors
+                CASE
+                    WHEN COALESCE(SUM(CASE
+                        WHEN r.consulting_priority = c.survey_priority_1 THEN 5
+                        WHEN r.consulting_priority = c.survey_priority_2 THEN 4
+                        WHEN r.consulting_priority = c.survey_priority_3 THEN 3
+                        WHEN r.consulting_priority = c.survey_priority_4 THEN 2
+                        ELSE 0
+                    END), 0) > 10 THEN 30
+                    ELSE 0
+                END AS total_rating
+            FROM
+                CHILD_INFO.child_info_list c
+            CROSS JOIN (
+                SELECT DISTINCT co_id FROM COUNSELOR.counselor_list  -- Using CROSS JOIN to include all counselors
+            ) cl
+            LEFT JOIN REVIEW.review_list r ON cl.co_id = r.co_id
+                                            AND (c.survey_priority_1 = r.consulting_priority
+                                                 OR c.survey_priority_2 = r.consulting_priority
+                                                 OR c.survey_priority_3 = r.consulting_priority
+                                                 OR c.survey_priority_4 = r.consulting_priority)
+            GROUP BY
+                c.child_id, cl.co_id;
+        """
+
+        # 쿼리 실행
+        result = child_infodb.execute(query)
+
+        # 결과 출력
+        ratings = {}
+
+        for row in result:
+            child_id, co_id, total_rating = row
+
+            if child_id not in ratings:
+                ratings[child_id] = {}
+
+            ratings[child_id][co_id] = int(total_rating)
+
+        # 결과 반환
+        return ratings
+
+    except Exception as e:
+        logging.error(f"Error calculating total rating: {e}")
+        return None
+
+
+def combine_scores():
+    scores_for_all = calculate_scores_for_all()
+    scores_avg_consulting_scope = calculate_avg_consulting_scope()
+    total_ratings = calculate_total_rating()
+
+    combined_scores = {}
+
+    for child_id, child_scores in scores_for_all.items():
+        combined_scores[child_id] = {}
+
+        for co_id, score_all in child_scores.items():
+            # Sum up the scores from all three functions
+            score_avg_consulting_scope = scores_avg_consulting_scope.get(co_id, 0)
+            total_rating = total_ratings.get(child_id, {}).get(co_id, 0)
+
+            combined_score = score_all + score_avg_consulting_scope + total_rating
+
+            combined_scores[child_id][co_id] = combined_score
+
+    return combined_scores
+
+
+def get_best_counselors():
+    all_combined_scores = combine_scores()
+    results = []
+
+    for child_id, scores in all_combined_scores.items():
+        sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        child_results = {"child_id": child_id, "top_counselors": []}
+
+        for co_id, total_score in sorted_scores:
+            # Skip counselors with a total score of 0
+            if total_score <= 0:
+                continue
+
+            # Retrieve counselor information
+            query = f"SELECT co_id, co_name, co_consulting FROM COUNSELOR.counselor_list WHERE co_id = {co_id};"
+            result = child_infodb.execute(query)
+
+            # Check if the result is not empty
+            if result:
+                co_info = result[0]  # Assuming result is a list of tuples, take the first tuple
+                co_name, co_consulting = co_info[1], co_info[2]
+                counselor_info = {
+                    "co_id": co_id,
+                    "co_name": co_name,
+                    "co_consulting": co_consulting,
+                    "total_score": total_score,
+                }
+                child_results["top_counselors"].append(counselor_info)
+
+        results.append(child_results)
+
+    return results
+
 @app.route('/mbti_match', methods=['GET','POST'])
 def print_matching_counselors():
     # Get the child_id from the session
     logged_in_child_id = session.get('child_id')
     option_value = request.form.get('option')
+
     if option_value == '0':
-        child_survey_consulting = get_all_child_survey_consulting()
-        counselor_survey_consulting = get_all_counselor_survey_consulting()
+        best_counselors_result = get_best_counselors()
 
         result_html = ""
 
-        for child_row in child_survey_consulting:
-            child_id, child_consulting = child_row
+        for i, child_result in enumerate(best_counselors_result):
+            child_id = child_result["child_id"]
+            top_counselors = child_result["top_counselors"]
 
             # Check if the current child_id matches the logged-in child_id
-            print(f"Debug: child_id={child_id}, logged_in_child_id={logged_in_child_id}")
             if logged_in_child_id and child_id != logged_in_child_id:
-                print("Debug: Skipping...")
                 continue
 
-            matching_counselors = [
-                (co_id, co_consulting, co_name) for co_id, co_consulting, co_name in counselor_survey_consulting
-                if all(survey_consulting in co_consulting.split(', ') for survey_consulting in child_consulting.split(', '))
-            ]
+            if top_counselors:
+                for j, counselor_info in enumerate(top_counselors):
+                    co_id = counselor_info["co_id"]
+                    co_name = counselor_info["co_name"]
+                    co_consulting = counselor_info["co_consulting"]
+                    total_score = counselor_info["total_score"]
 
-            # Flag to check if "Best 추천!" badge is displayed
-            best_recommended_displayed = False
+                    # Check if this is the first counselor
+                    is_first_counselor = i == 0 and j == 0
 
-            if matching_counselors:
-                for co_id, co_consulting, co_name in matching_counselors:
                     result_html += f"""
                     <div class="row d-flex justify-content-center">
                         <div class="col-lg-6 mt-4">
@@ -374,16 +533,14 @@ def print_matching_counselors():
                                 <div class="member-info">
                                     <h4>{co_name}</h4>
                                     <hr class="my-1">
-                                    {f'<div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">Best 추천!</div>' if not best_recommended_displayed else ''}
+                                    {f'<div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">Best 추천!</div>' if is_first_counselor else ''}
                                     <p>{co_consulting}</p>
+                                    <p>Total Score: {total_score}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     """
-
-                    # Update the flag after displaying "Best 추천!" badge
-                    best_recommended_displayed = True
             else:
                 result_html += f"일치하는 상담사가 없습니다: {child_id}<br>"
 
@@ -394,7 +551,7 @@ def print_matching_counselors():
         counselor_survey_consulting = get_all_counselor_survey_consulting()
 
         result_html = ""
-        
+
         for child_row in child_survey_consulting:
             child_id, child_consulting = child_row
 
@@ -434,7 +591,7 @@ def print_matching_counselors():
 
         return result_html
 
-    
+
     elif option_value == '2':
         try:
             # SQL 쿼리
@@ -443,6 +600,7 @@ def print_matching_counselors():
                     c.child_id,
                     c.child_name,
                     r.co_id,
+                    r.co_name,
                     SUM(CASE
                         WHEN r.consulting_priority = c.survey_priority_1 THEN 5
                         WHEN r.consulting_priority = c.survey_priority_2 THEN 4
@@ -458,7 +616,7 @@ def print_matching_counselors():
                     OR c.survey_priority_3 = r.consulting_priority
                     OR c.survey_priority_4 = r.consulting_priority
                 GROUP BY
-                    c.child_id, c.child_name, r.co_id
+                    c.child_id, c.child_name, r.co_id, r.co_name
                 ORDER BY
                     total_rating DESC;
             """
@@ -470,7 +628,7 @@ def print_matching_counselors():
             # 결과를 HTML로 가공
             result_html = ""
             for row in result:
-                child_id, child_name, co_id, total_rating = row
+                child_id, child_name, co_id, co_name, total_rating = row
 
                 # Check if the current child_id matches the logged-in child_id
                 if logged_in_child_id and child_id != logged_in_child_id:
@@ -484,12 +642,12 @@ def print_matching_counselors():
                                     <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
                                 </div>
                                 <div class="member-info">
-                                    <h4>{co_id}</h4>
+                                    <h4>{co_name}</h4>
                                     <hr class="my-1">
                                     <div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">
                                         Best 추천!
                                     </div>
-                                    <p>{total_rating}</p>
+                                    <p>Total Score: {total_rating}</p>
                                 </div>
                             </div>
                         </div>
@@ -502,7 +660,7 @@ def print_matching_counselors():
             print(f"Error calculating total rating: {e}")
             return None
 
-            
+
     elif option_value == '3' :
         try:
         # SQL 쿼리
@@ -551,7 +709,7 @@ def print_matching_counselors():
         except Exception as e:
             print(f"Error calculating average consulting scope: {e}")
             return None
-            
+
     elif option_value == '4':
         try:
         # SQL 쿼리
@@ -614,4 +772,4 @@ def mbti_test_html():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3001, debug=True)
+    app.run(host='0.0.0.0', port=3000, debug=True)
