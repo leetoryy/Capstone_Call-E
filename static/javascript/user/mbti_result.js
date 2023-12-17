@@ -79,6 +79,21 @@ document.addEventListener('DOMContentLoaded', function() {
         mbtiImage.src = '/static/images/ENTJ.png';
         break;
     }
+    function saveResultToServer(result) {
+      // 여기에 Ajax 요청 코드 작성
+      $.ajax({
+          type: 'POST',
+          url: '/save_mbti_result', 
+          data: { result: result },
+          success: function(response) {
+              console.log('결과값이 성공적으로 전송되었습니다.');
+          },
+          error: function(xhr, status, error) {
+              console.error('전송 오류:', error);
+          }
+      });
+    }
+    saveResultToServer(result)
   }
 
   // 테스트 다시하기 버튼 이벤트 리스너
