@@ -48,6 +48,60 @@ def authenticate_counselor(counselor_ID, counselor_pw):
     result = counselordb.execute(query)
     return result and result[0][0] == 1, result[0][1] if result else None
 
+# MBTI 궁합
+def Compatibility(user, counselor):
+    # 궁합 점수
+    MBTI_SCORE=[
+        [3, 3, 3, 4, 3, 4, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0],
+        [3, 3, 4, 3, 4, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0],
+        [3, 4, 3, 3, 3, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0],
+        [4, 3, 3, 3, 3, 3, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0],
+        [3, 4, 3, 3, 3, 3, 3, 4, 2, 2, 2, 2, 1, 1, 1, 1],
+        [4, 3, 3, 3, 3, 3, 4, 3, 2, 2, 2, 2, 2, 2, 2, 2],
+        [3, 3, 3, 3, 3, 4, 3, 3, 2, 2, 2, 2, 1, 1, 1, 4],
+        [3, 3, 4, 3, 4, 3, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1],
+        [0, 0, 0, 4, 2, 2, 2, 2, 1, 1, 1, 1, 2, 4, 2, 4],
+        [0, 0, 0, 0, 2, 2, 2, 2, 1, 1, 1, 1, 4, 2, 4, 2],
+        [0, 0, 0, 0, 2, 2, 2, 2, 1, 1, 1, 1, 2, 4, 2, 4],
+        [0, 0, 0, 0, 2, 2, 2, 2, 1, 1, 1, 1, 4, 2, 4, 2],
+        [0, 0, 0, 0, 1, 2, 1, 1, 2, 4, 2, 4, 3, 3, 3, 3],
+        [0, 0, 0, 0, 1, 2, 1, 1, 4, 2, 4, 2, 3, 3, 3, 3],
+        [0, 0, 0, 0, 1, 2, 1, 1, 2, 4, 2, 4, 3, 3, 3, 3],
+        [0, 0, 0, 0, 1, 2, 4, 1, 4, 2, 4, 2, 3, 3, 3, 3]
+]
+    # MBTI 유형
+    MBTI = {
+        'INFP': 0,
+        'ENFP': 1,
+        'INFJ': 2,
+        'ENFJ': 3,
+        'INTJ': 4,
+        'ENTJ': 5,
+        'INTP': 6,
+        'ENTP': 7,
+        'ISFP': 8,
+        'ESFP': 9,
+        'ISTP': 10,
+        'ESTP': 11,
+        'ISFJ': 12,
+        'ESFJ': 13,
+        'ISTJ': 14,
+        'ESTJ': 15
+    }
+
+    # 사용자 MBTI, 상담사 MBTI 궁합
+    idx1 = MBTI[user]
+    idx2 = MBTI[counselor]
+    score = MBTI_SCORE[idx1][idx2]
+
+    # 궁합 점수에 따라 결과 부여
+    if score == 4:
+        return "Best 추천!"
+    elif score >= 2:
+        return "추천"
+    else:
+        return ""
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -645,52 +699,48 @@ def print_matching_counselors():
             print(f"Error calculating total rating: {e}")
             return None
 
+    # MBTI 궁합순 상담사 추천
     elif option_value == '3' :
         try:
         # SQL 쿼리
             query = """
-            SELECT co_id, AVG(consulting_scope) AS avg_consulting_scope
-            FROM REVIEW.review_list
-            GROUP BY co_id
-            ORDER BY avg_consulting_scope DESC;
+            SELECT child_id, child_mbti, co_id, co_mbti
+            FROM CHILD_INFO.child_info_list
         """
 
         # 쿼리 실행
-            result = review_listdb.execute(query)
+            result = child_infodb.execute(query)
 
         # 결과를 HTML로 가공
             result_html = ""
             for row in result:
-                co_id, avg_consulting_scope = row
-                star_rating = round(avg_consulting_scope)
+                child_id, child_mbti, co_id, co_mbti = row
+                comp_result = Compatibility(child_mbti, co_mbti)
 
                 result_html += f"""
-                <div class="row d-flex justify-content-center">
-                    <div class="col-lg-6 mt-4">
-                        <div class="member d-flex align-items-start">
-                            <div class="teampic">
-                                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
-                            </div>
-                            <div class="member-info">
-                                <h4>{co_id}</h4>
-                                <hr class="my-1">
-                                <div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">
-                                    Best 추천!
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-lg-6 mt-4">
+                            <div class="member d-flex align-items-start">
+                                <div class="teampic">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
                                 </div>
-                                <p>{star_rating}</p>
-                                <div class="review-flex">
-                                    {'⭐' *  star_rating}
+                                <div class="member-info">
+                                    <h4> {co_name}</h4>
+                                    <hr class="my-1">
+                                    <div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">
+                                        Best 추천!
+                                    </div>
+                                    <p>{comp_result}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                """
-
+                    """
+                
             return result_html
 
         except Exception as e:
-            print(f"Error calculating average consulting scope: {e}")
+            print(f"Error calculating average compatibility: {e}")
             return None
 
     elif option_value == '4':
@@ -766,6 +816,7 @@ def save_mbti_result():
 
 @app.route('/mbti_test') 
 def mbti_test_html():
+    child_id = request.args.get('child_id')
     return render_template('user/mbti_test.html')
 
 if __name__ == '__main__':
