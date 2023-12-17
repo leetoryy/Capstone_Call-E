@@ -53,7 +53,7 @@ body {
   background-color: rgba(255, 255, 255, 0.9);
   margin-top: 4vh;
   width: 60vw;
-  height: 200vh;
+  height: 100vh;
   border-radius: 10px;
 }
 
@@ -64,7 +64,6 @@ body {
 
 .css-resultTitle {
   position: relative;
-  margin-top: -3vh;
   color: black;
   font-size: 70px;
   opacity: 0.5;
@@ -82,17 +81,17 @@ body {
 
 .css-resultExplain {
   position: relative;
-  margin-top: 10vh;
   width: 70%;
   color: black;
-  font-size: 25px;
+  font-size: 50px;
   font-family: 'GangwonEduSaeeum_OTFMediumA';
+  text-align: center;
 }
 
 .css-restart {
   width: 60%;
   padding: 16px 48px;
-  font-size: large;
+  font-size: 30px;
   background-color: white;
   color: black;
   border: 2px solid #3d3d3d;
@@ -110,7 +109,7 @@ body {
 .css-match {
   width: 60%;
   padding: 16px 48px;
-  font-size: large;
+  font-size: 30px;
   background-color: white;
   color: black;
   border: 2px solid #3d3d3d;
