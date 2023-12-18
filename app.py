@@ -729,10 +729,7 @@ def print_matching_counselors():
                                         </div>
                                         <div class="member-info">
                                             <h4>{co_name}</h4>
-                                            <hr class="my-1">
-                                            <div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">
-                                                Best 추천!
-                                            </div>
+                                            <hr class="my-1">                                 
                                             <p>{'❤️' * comp_result}</p>
                                         </div>
                                     </div>
