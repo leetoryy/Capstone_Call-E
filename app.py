@@ -90,17 +90,13 @@ def Compatibility(user, counselor):
     }
 
     # 사용자 MBTI, 상담사 MBTI 궁합
-    idx1 = MBTI[user]
-    idx2 = MBTI[counselor]
-    score = MBTI_SCORE[idx1][idx2]
-
-    # 궁합 점수에 따라 결과 부여
-    if score == 4:
-        return "Best 추천!"
-    elif score >= 2:
-        return "추천"
+    idx1 = MBTI.get(user)
+    idx2 = MBTI.get(counselor)
+    if idx1 is not None and idx2 is not None:
+        score = MBTI_SCORE[idx1][idx2]
     else:
-        return ""
+        score = None
+    return score
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -686,7 +682,7 @@ def print_matching_counselors():
                                     <div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">
                                         Best 추천!
                                     </div>
-                                    <p>Total Score: {total_rating}</p>
+                                    <p>Score: {total_rating}</p>
                                 </div>
                             </div>
                         </div>
@@ -700,47 +696,54 @@ def print_matching_counselors():
             return None
 
     # MBTI 궁합순 상담사 추천
-    elif option_value == '3' :
+    elif option_value == '3':
         try:
-        # SQL 쿼리
-            query = """
-            SELECT child_id, child_mbti, co_id, co_mbti
-            FROM CHILD_INFO.child_info_list
-        """
-
-        # 쿼리 실행
-            result = child_infodb.execute(query)
-
-        # 결과를 HTML로 가공
+            query_child = """
+            SELECT child_id, child_mbti FROM CHILD_INFO.child_info_list
+            """
+            query_counselor = """
+            SELECT co_id, co_mbti, co_name FROM COUNSELOR.counselor_list
+            """
+            result_child = child_infodb.execute(query_child)
+            result_counselor = counselordb.execute(query_counselor)
+            
             result_html = ""
-            for row in result:
-                child_id, child_mbti, co_id, co_mbti = row
-                comp_result = Compatibility(child_mbti, co_mbti)
+            # Compatibility 함수를 이용하여 Child_mbti와 co_mbti 값의 궁합 점수 확인
+            comp_results = []
+            for child_id, child_mbti in result_child:
+                for co_id, co_mbti, co_name in result_counselor:
+                    comp_result = Compatibility(child_mbti, co_mbti)
+                    
+                    if comp_result is not None:
+                        comp_results.append((child_id, co_id, co_name, comp_result))
+            
+            sorted_counselor = sorted(comp_results, key=lambda x:x[3], reverse=True)
 
-                result_html += f"""
-                    <div class="row d-flex justify-content-center">
-                        <div class="col-lg-6 mt-4">
-                            <div class="member d-flex align-items-start">
-                                <div class="teampic">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
-                                </div>
-                                <div class="member-info">
-                                    <h4> {co_name}</h4>
-                                    <hr class="my-1">
-                                    <div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">
-                                        Best 추천!
+            for child_id, co_id, co_name, comp_result in sorted_counselor:
+                        result_html += f"""
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-lg-6 mt-4">
+                                    <div class="member d-flex align-items-start">
+                                        <div class="teampic">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
+                                        </div>
+                                        <div class="member-info">
+                                            <h4>{co_name}</h4>
+                                            <hr class="my-1">
+                                            <div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">
+                                                Best 추천!
+                                            </div>
+                                            <p>{'❤️' * comp_result}</p>
+                                        </div>
                                     </div>
-                                    <p>{comp_result}</p>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    """
-                
+                        """
+
             return result_html
 
         except Exception as e:
-            print(f"Error calculating average compatibility: {e}")
+            print(f"평균 호환성 계산 중 오류 발생: {e}")
             return None
 
     elif option_value == '4':
@@ -798,21 +801,26 @@ def mbti_result_html():
 
 @app.route('/save_mbti_result', methods=['POST'])
 def save_mbti_result():
-    child_id = request.form.get('child_id')
-    child_mbti = request.form.get('child_mbti')
+    child_id = session.get('child_id')
+    if child_id:
+        try:
+            data = request.get_json()  # JSON 데이터 가져오기
+            child_mbti = data.get('result') 
+            insert_query = f"""
+                UPDATE CHILD_INFO.child_info_list 
+                SET child_mbti = '{child_mbti}' 
+                WHERE child_id = '{child_id}';
+            """
+            child_infodb.insert(insert_query)
+            return "저장 완료"
 
-    try:
-        insert_query = f"""
-            INSERT INTO CHILD_INFO.child_info_list (child_id, child_mbti) 
-            VALUES ('{child_id}', '{child_mbti}');
-        """
-        child_infodb.insert(insert_query)
-        print(f"Query: {insert_query}")
-
-    except Exception as e:
-        error_message = '오류가 발생했습니다.'
-        print(f"Error Type: {type(e)}")
-        print(f"Error Details: {e.args}")
+        except Exception as e:
+            error_message = '오류가 발생했습니다.'
+            print(f"Error Type: {type(e)}")
+            print(f"Error Details: {e.args}")
+            return "오류가 발생하여 MBTI 저장에 실패했습니다."
+    else:
+        return "로그인을 해주세요."
 
 @app.route('/mbti_test') 
 def mbti_test_html():

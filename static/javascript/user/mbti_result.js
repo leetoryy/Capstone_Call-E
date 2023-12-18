@@ -79,21 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
         mbtiImage.src = '/static/images/ENTJ.png';
         break;
     }
-    function saveResultToServer(result) {
-      // 여기에 Ajax 요청 코드 작성
-      $.ajax({
-          type: 'POST',
-          url: '/save_mbti_result', 
-          data: { result: result },
-          success: function(response) {
-              console.log('결과값이 성공적으로 전송되었습니다.');
-          },
-          error: function(xhr, status, error) {
-              console.error('전송 오류:', error);
-          }
-      });
-    }
-    saveResultToServer(result)
   }
 
   // 테스트 다시하기 버튼 이벤트 리스너
@@ -103,6 +88,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 맞춤 상담사 찾기 버튼 이벤트 리스너
   matchButton.addEventListener('click', function() {
-    window.location.href = 'mbti_match';
+    // 결과값 추출
+    const urlParams = new URLSearchParams(window.location.search);
+    const result = urlParams.get('result');
+
+    // 서버로 결과값 전송
+    fetch('/save_mbti_result', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ result: result }),
+    })
+    .then(response => {
+      // 서버 응답에 따른 작업 수행
+      if (response.ok) {
+        // 성공적으로 업데이트된 경우
+        window.location.href = 'mbti_match'
+      } else {
+        // 실패한 경우에 대한 처리
+        console.error('Failed to update child MBTI');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
   });
+
 });
