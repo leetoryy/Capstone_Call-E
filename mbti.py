@@ -6,6 +6,7 @@ import pymysql
 import dbcl
 import datetime
 
+
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = 'call-e'
 
@@ -29,11 +30,15 @@ def get_all_child_survey_consulting():
 def get_all_counselor_survey_consulting():
     query = "SELECT co_id, co_consulting, co_name FROM COUNSELOR.counselor_list"
     result = counselordb.execute(query)
+    
     return result
+
+
 
 # HTML 렌더링을 위한 기본 경로
 @app.route('/',methods=['GET','POST'])
 def index():
+    
     return render_template('counselor/join.html')
     
 
@@ -114,6 +119,8 @@ def join_html():
             childAddress = request.form.get('ch_address')
             parentName = request.form.get('pa_name')
             
+            
+            
             # 받은 값 출력 또는 로깅
             print("아동 폼 값:")
             print(f"childName: {childName}")
@@ -142,6 +149,8 @@ def join_html():
                 print(f"Query: {insert_query}")
                 print(childId)
                 return jsonify({'user_type': 'child', 'child_id': childId, 'parent_name': parentName})
+                
+                
                 
             except Exception as e:
                 error_message = '회원 가입 중 오류가 발생했습니다.'
@@ -190,12 +199,15 @@ def join_html():
                 counselordb.insert(insert_query)
                 print(f"Query: {insert_query}")
                 return jsonify({'user_type': 'counselor'})
-
+                
+                
+                
             except Exception as e:
                 error_message = f'회원 가입 중 오류가 발생했습니다: {e}'
                 print(f"Error Type: {type(e)}")
                 print(f"Error Details: {e}")
                 
+            
     return render_template('counselor/join.html')
  
 
@@ -247,6 +259,7 @@ def check_name_and_id_association():
                 "name_associated_with_id": result_name_check[0][0] > 0,
                 "id_associated_with_name": result_id_check[0][0] > 0
             })
+
         raise Exception("쿼리 실행 중 오류 발생.")
 
     except Exception as e:
@@ -342,17 +355,17 @@ def calculate_scores_for_all():
         for co_id, co_consulting in counselor_survey_consulting:
             score = 40 if all(survey_consulting in co_consulting.split(', ') for survey_consulting in
                               child_consulting.split(', ')) else 0
+
             scores[child_id][co_id] = score
 
     return scores
 
-# Get all co_id values from the counselor_list
 def get_all_counselor_ids():
     query = "SELECT co_id FROM COUNSELOR.counselor_list"
     result = counselordb.execute(query)
-    return [row[0] for row in result]  # Use index [0] to access the co_id value
+    return [row[0] for row in result] 
 
-# Calculate average review scores and assign 10 points for scores >= 4.5, 0 points otherwise
+# 리뷰 평균이 4.0 이상 - 10점
 def calculate_avg_consulting_scope():
     counselor_ids = get_all_counselor_ids()
 
@@ -363,7 +376,7 @@ def calculate_avg_consulting_scope():
     """
     result = review_listdb.execute(query)
 
-    scores = {co_id: 0 for co_id in counselor_ids}  # Initialize scores with 0 for all counselor_ids
+    scores = {co_id: 0 for co_id in counselor_ids}
 
     for row in result:
         co_id, avg_consulting_scope = row
@@ -425,10 +438,58 @@ def calculate_total_rating():
         return None
 
 
+#mbti 매칭
+Best_mbti = {
+    'INFP': ['ENFJ', 'ENTJ'],
+    'ENFP': ['ENFJ', 'ENTJ'],
+    'INFJ': ['ENFP', 'ENTP'],
+    'ENFJ': ['ENFP', 'ENTJ', 'ENTP'],
+    'INTJ': ['ISTP', 'ESTP'],
+    'ENTJ': ['ISTP', 'ESTP'],
+    'INTP': ['ISTP', 'ESTP'],
+    'ENTP': ['ESTP'],
+    'ISFP': ['ISTP', 'ESTP'],
+    'ESFP': ['ISTP', 'ESTP'],
+    'ISTP': ['ISTP', 'ESTP'],
+    'ESTP': ['ISTP', 'ESTP'],
+    'ISFJ': ['ISTP', 'ESTP'],
+    'ESFJ': ['ISTP', 'ESTP'],
+    'ISTJ': ['ISTP', 'ESTP'],
+    'ESTJ': ['ISTP', 'ESTP']
+}    
+
+def get_child_mbti():
+    query = "SELECT child_id, child_mbti FROM CHILD_INFO.child_info_list"
+    result = child_infodb.fetch_all(query)
+    return result
+
+def get_counselor_mbti():
+    query = "SELECT co_id, co_name, co_mbti FROM COUNSELOR.counselor_list"
+    result = counselordb.fetch_all(query)
+    return result
+
+def mbti_match():
+    result_mbti = {}
+
+    child_mbti_results = get_child_mbti()
+    counselor_mbti_results = get_counselor_mbti()
+
+    for child_id, child_mbti in child_mbti_results:
+        result_mbti[child_id] = {} 
+
+        for co_id, co_name, co_mbti in counselor_mbti_results:
+            if child_mbti in Best_mbti and co_mbti in Best_mbti[child_mbti]:
+                result_mbti[child_id][co_id] = 20
+            else:
+                result_mbti[child_id][co_id] = 0
+
+    return result_mbti
+
 def combine_scores():
     scores_for_all = calculate_scores_for_all()
     scores_avg_consulting_scope = calculate_avg_consulting_scope()
     total_ratings = calculate_total_rating()
+    mbti_match_results = mbti_match()
 
     combined_scores = {}
 
@@ -436,15 +497,16 @@ def combine_scores():
         combined_scores[child_id] = {}
 
         for co_id, score_all in child_scores.items():
-            # Sum up the scores from all three functions
             score_avg_consulting_scope = scores_avg_consulting_scope.get(co_id, 0)
             total_rating = total_ratings.get(child_id, {}).get(co_id, 0)
+            mbti_score = mbti_match_results.get(child_id, {}).get(co_id, 0)
 
-            combined_score = score_all + score_avg_consulting_scope + total_rating
+            combined_score = score_all + score_avg_consulting_scope + total_rating + mbti_score
 
             combined_scores[child_id][co_id] = combined_score
 
     return combined_scores
+
 
 
 def get_best_counselors():
@@ -456,17 +518,14 @@ def get_best_counselors():
         child_results = {"child_id": child_id, "top_counselors": []}
 
         for co_id, total_score in sorted_scores:
-            # Skip counselors with a total score of 0
             if total_score <= 0:
                 continue
 
-            # Retrieve counselor information
             query = f"SELECT co_id, co_name, co_consulting FROM COUNSELOR.counselor_list WHERE co_id = {co_id};"
             result = child_infodb.execute(query)
-
-            # Check if the result is not empty
+         
             if result:
-                co_info = result[0]  # Assuming result is a list of tuples, take the first tuple
+                co_info = result[0] 
                 co_name, co_consulting = co_info[1], co_info[2]
                 counselor_info = {
                     "co_id": co_id,
@@ -479,10 +538,10 @@ def get_best_counselors():
         results.append(child_results)
 
     return results
+print(get_best_counselors())
 
 @app.route('/mbti_match', methods=['GET','POST'])
 def print_matching_counselors():
-    # Get the child_id from the session
     logged_in_child_id = session.get('child_id')
     option_value = request.form.get('option')
 
@@ -495,7 +554,6 @@ def print_matching_counselors():
             child_id = child_result["child_id"]
             top_counselors = child_result["top_counselors"]
 
-            # Check if the current child_id matches the logged-in child_id
             if logged_in_child_id and child_id != logged_in_child_id:
                 continue
 
@@ -506,7 +564,7 @@ def print_matching_counselors():
                     co_consulting = counselor_info["co_consulting"]
                     total_score = counselor_info["total_score"]
 
-                    
+                    is_first_counselor = i == 0 and j == 0
 
                     result_html += f"""
                     <div class="row d-flex justify-content-center">
@@ -518,7 +576,7 @@ def print_matching_counselors():
                                 <div class="member-info">
                                     <h4>{co_name}</h4>
                                     <hr class="my-1">
-                                    
+                                    {f'<div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">Best 추천!</div>' if is_first_counselor else ''}
                                     <p>{co_consulting}</p>
                                     <p>Total Score: {total_score}</p>
                                 </div>
@@ -540,7 +598,6 @@ def print_matching_counselors():
         for child_row in child_survey_consulting:
             child_id, child_consulting = child_row
 
-            # Check if the current child_id matches the logged-in child_id
             if logged_in_child_id and child_id != logged_in_child_id:
                 continue
 
@@ -559,9 +616,11 @@ def print_matching_counselors():
                                     <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
                                 </div>
                                 <div class="member-info">
-                                    <h4> {co_name}</h4>
+                                    <h4> {co_id},{co_name}</h4>
                                     <hr class="my-1">
-                                    
+                                    <div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">
+                                        Best 추천!
+                                    </div>
                                     
                                     <p>{co_consulting}</p>
                                 </div>
@@ -573,6 +632,7 @@ def print_matching_counselors():
                 result_html += f"일치하는 상담사가 없습니다: {child_id}<br>"
 
         return result_html
+
 
     elif option_value == '2':
         try:
@@ -626,7 +686,9 @@ def print_matching_counselors():
                                 <div class="member-info">
                                     <h4>{co_name}</h4>
                                     <hr class="my-1">
-                                    
+                                    <div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">
+                                        Best 추천!
+                                    </div>
                                     <p>Total Score: {total_rating}</p>
                                 </div>
                             </div>
@@ -639,6 +701,7 @@ def print_matching_counselors():
         except Exception as e:
             print(f"Error calculating total rating: {e}")
             return None
+
 
     elif option_value == '3' :
         try:
@@ -669,7 +732,9 @@ def print_matching_counselors():
                             <div class="member-info">
                                 <h4>{co_id}</h4>
                                 <hr class="my-1">
-                                
+                                <div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">
+                                    Best 추천!
+                                </div>
                                 <p>{star_rating}</p>
                                 <div class="review-flex">
                                     {'⭐' *  star_rating}
@@ -678,6 +743,7 @@ def print_matching_counselors():
                         </div>
                     </div>
                 </div>
+                
                 """
 
             return result_html
@@ -690,9 +756,9 @@ def print_matching_counselors():
         try:
         # SQL 쿼리
             query = """
-            SELECT co_name, co_id, AVG(consulting_scope) AS avg_consulting_scope
+            SELECT co_id, AVG(consulting_scope) AS avg_consulting_scope
             FROM REVIEW.review_list
-            GROUP BY co_id, co_name
+            GROUP BY co_id
             ORDER BY avg_consulting_scope DESC;
         """
 
@@ -702,7 +768,7 @@ def print_matching_counselors():
         # 결과를 HTML로 가공
             result_html = ""
             for row in result:
-                co_name, co_id, avg_consulting_scope = row
+                co_id, avg_consulting_scope = row
                 star_rating = round(avg_consulting_scope)
 
                 result_html += f"""
@@ -713,9 +779,11 @@ def print_matching_counselors():
                                 <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
                             </div>
                             <div class="member-info">
-                                <h4>{co_name}</h4>
+                                <h4>{co_id}</h4>
                                 <hr class="my-1">
-                                
+                                <div class="badge text-dark position-absolute" style="top: 1rem; right: 1rem; font-size: 1rem">
+                                    Best 추천!
+                                </div>
                                 <p>{star_rating}</p>
                                 <div class="review-flex">
                                     {'⭐' *  star_rating}
@@ -724,6 +792,7 @@ def print_matching_counselors():
                         </div>
                     </div>
                 </div>
+                
                 """
 
             return result_html
@@ -737,27 +806,12 @@ def print_matching_counselors():
 def mbti_result_html():
     return render_template('user/mbti_result.html')
 
-@app.route('/save_mbti_result', methods=['POST'])
-def save_mbti_result():
-    child_id = request.form.get('child_id')
-    child_mbti = request.form.get('child_mbti')
-
-    try:
-        insert_query = f"""
-            INSERT INTO CHILD_INFO.child_info_list (child_id, child_mbti) 
-            VALUES ('{child_id}', '{child_mbti}');
-        """
-        child_infodb.insert(insert_query)
-        print(f"Query: {insert_query}")
-
-    except Exception as e:
-        error_message = '오류가 발생했습니다.'
-        print(f"Error Type: {type(e)}")
-        print(f"Error Details: {e.args}")
-
 @app.route('/mbti_test') 
 def mbti_test_html():
     return render_template('user/mbti_test.html')
+
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3001, debug=True)
