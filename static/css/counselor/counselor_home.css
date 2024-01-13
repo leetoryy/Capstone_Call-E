@@ -406,6 +406,37 @@ main .data {
   margin-top: 20px;
   flex-wrap: wrap;
 }
+
+
+
+.nemo {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  left: 50%;
+  top: 50%;
+  margin: -50px 0 0 -50px;
+  background-color: #FF0000;
+}
+
+
+/* (상담진행) 카드 크기 조절 */
+main .data .content-data3 {
+  flex-grow: 90;
+  flex-basis: 400px;
+  padding: 20px;
+  background: var(--light);
+  border-radius: 10px;
+  box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.1);
+}
+main .data .content-data2 {
+  flex-grow: 3;
+  flex-basis: 400px;
+  padding: 20px;
+  background: var(--light);
+  border-radius: 10px;
+  box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.1);
+}
 main .data .content-data {
   flex-grow: 1;
   flex-basis: 400px;
@@ -414,11 +445,21 @@ main .data .content-data {
   border-radius: 10px;
   box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.1);
 }
+main .content-data2 .head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
 main .content-data .head {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+}
+main .content-data2 .head h3 {
+  font-size: 20px;
+  font-weight: 600;
 }
 main .content-data .head h3 {
   font-size: 20px;

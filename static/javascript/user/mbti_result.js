@@ -16,67 +16,67 @@ document.addEventListener('DOMContentLoaded', function() {
     switch (result) {
       case 'ISTJ':
         resultExplain.textContent = '바른 생활 어린이';
-        mbtiImage.src = '/static/images/ISTJ.png';
+        mbtiImage.src = '/static/images/istj.png';
         break;
       case 'ISFJ':
         resultExplain.textContent = '예의 바른 어린이';
-        mbtiImage.src = '/static/images/ISFJ.png';
+        mbtiImage.src = '/static/images/isfj.png';
         break;
       case 'INFJ':
         resultExplain.textContent = '우정 가득 어린이';
-        mbtiImage.src = '/static/images/INFJ.png';
+        mbtiImage.src = '/static/images/infj.png';
         break;
       case 'INTJ':
         resultExplain.textContent = '성숙한 어린이';
-        mbtiImage.src = '/static/images/INTJ.png';
+        mbtiImage.src = '/static/images/intj.png';
         break;
       case 'ISTP':
         resultExplain.textContent = '사교적인 어린이';
-        mbtiImage.src = '/static/images/ISTP.png';
+        mbtiImage.src = '/static/images/istp.png';
         break;
       case 'ISFP':
         resultExplain.textContent = '여유로운 어린이';
-        mbtiImage.src = '/static/images/ISFP.png';
+        mbtiImage.src = '/static/images/isfp.png';
         break;
       case 'INFP':
         resultExplain.textContent = '인정 많은 어린이';
-        mbtiImage.src = '/static/images/INFP.png';
+        mbtiImage.src = '/static/images/infp.png';
         break;
       case 'INTP':
         resultExplain.textContent = '척척박사 어린이';
-        mbtiImage.src = '/static/images/INTP.png';
+        mbtiImage.src = '/static/images/intp.png';
         break;
       case 'ESTP':
         resultExplain.textContent = '참견쟁이 어린이';
-        mbtiImage.src = '/static/images/ESTP.png';
+        mbtiImage.src = '/static/images/estp.png';
         break;
       case 'ESFP':
         resultExplain.textContent = '적극적인 어린이';
-        mbtiImage.src = '/static/images/ESFP.png';
+        mbtiImage.src = '/static/images/esfp.png';
         break;
       case 'ENFP':
         resultExplain.textContent = '변덕쟁이 어린이';
-        mbtiImage.src = '/static/images/ENFP.png';
+        mbtiImage.src = '/static/images/enfp.png';
         break;
       case 'ENTP':
         resultExplain.textContent = '개인주의 어린이';
-        mbtiImage.src = '/static/images/ENTP.png';
+        mbtiImage.src = '/static/images/entp.png';
         break;
       case 'ESTJ':
         resultExplain.textContent = '모범적인 어린이';
-        mbtiImage.src = '/static/images/ESTJ.png';
+        mbtiImage.src = '/static/images/estj.png';
         break;
       case 'ESFJ':
         resultExplain.textContent = '발표대장 어린이';
-        mbtiImage.src = '/static/images/ESFJ.png';
+        mbtiImage.src = '/static/images/esfj.png';
         break;
       case 'ENFJ':
         resultExplain.textContent = '사차원적 어린이';
-        mbtiImage.src = '/static/images/ENFJ.png';
+        mbtiImage.src = '/static/images/enfj.png';
         break;
       case 'ENTJ':
         resultExplain.textContent = '원칙주의 어린이';
-        mbtiImage.src = '/static/images/ENTJ.png';
+        mbtiImage.src = '/static/images/entj.png';
         break;
     }
   }
@@ -101,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function() {
       body: JSON.stringify({ result: result }),
     })
     .then(response => {
-      // 서버 응답에 따른 작업 수행
       if (response.ok) {
         // 성공적으로 업데이트된 경우
         window.location.href = 'mbti_match'
