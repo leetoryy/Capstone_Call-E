@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
+* {
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --grey: #f1f0f6;
+  --dark-grey: #8d8d8d;
+  --light: #fff;
+  --dark: #000;
+  --green: #81d43a;
+  --light-green: #e3ffcb;
+  --primary-color: #4ea685;
+  --secondary-color: #57b894;
+  --light-blue: #d0e4ff;
+  --red: #fc3b56;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--grey);
+  overflow-x: hidden;
+}
+
+/* MAIN */
+main {
+  width: 100%;
+  padding: 24px 20px 20px 20px;
+}
+
+main .data {
+  display: flex;
+  grid-gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* 카드 크기 조절 */
+main .data .content-data3 {
+  flex-grow: 20;
+  /* height: 94vh; */
+  flex-basis: 400px;
+  padding: 20px;
+  background: var(--light);
+  border-radius: 10px;
+  box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+main .data .content-data {
+  flex-grow: 1;
+  flex-basis: 400px;
+  padding: 20px;
+  background: var(--light);
+  border-radius: 10px;
+  box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* tab css */
+.tabcontent {
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+input[type='radio'] {
+  display: none;
+}
+input[type='radio'] + label {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #9a7dab;
+  color: var(--light);
+  border-radius: 10px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+input[type='radio']:checked + label {
+  background: var(--light);
+  color: #9a7dab;
+  border: 1px solid #9a7dab;
+}
+.content-box {
+  display: none;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  padding: 20px;
+  width: 100%;
+  height: 350px;
+  font-size: 25px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  text-align: center;
+  background: #efe6f4;
+  color: #666;
+}
+
+input[id='tabmenu01']:checked ~ .content01 {
+  display: block;
+}
+input[id='tabmenu02']:checked ~ .content02 {
+  display: block;
+}
+input[id='tabmenu03']:checked ~ .content03 {
+  display: block;
+}
+
+/* 상담 시작하기 버튼 */
+main .content-data .btn-save {
+  background-color: #9a7dab;
+  color: var(--light);
+  padding: 14px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  display: block;
+  margin: 0 auto;
+  font-size: 20px;
+  outline: none;
+}
+
+/* MAIN */
