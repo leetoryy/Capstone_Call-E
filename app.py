@@ -1,12 +1,24 @@
+import base64
 import logging
 from multiprocessing import connection
+import traceback
 from flask import Flask, jsonify, render_template, request, redirect, session, url_for
 from dbcl import DBconnector
 import pymysql
 import dbcl
 import datetime
+from flask_socketio import SocketIO
+from flask_socketio import emit
+
+
+
+
+
 
 app = Flask(__name__, static_url_path='/static')
+socketio = SocketIO(app)
+
+
 app.secret_key = 'call-e'
 
 # DB 연결 객체 생성
@@ -22,7 +34,6 @@ def get_all_child_survey_consulting():
     result = child_infodb.execute(query)
     
     return result
-
 
 
 # 상담사 상담 분야 가져오기
@@ -100,6 +111,7 @@ def Compatibility(user, counselor):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    
     if request.method == 'POST':
         user_type = request.form.get('user_type')
         
@@ -249,6 +261,15 @@ def join_html():
     return render_template('counselor/join.html')
  
 
+@app.route('/sign_in')
+def sign_in_html():
+    return render_template('counselor/sign_in.html')
+
+@app.route('/sign_up')
+def sign_up_html():
+    return render_template('counselor/sign_up.html')
+
+
 # ID 중복 확인을 위한 엔드포인트
 @app.route('/check_id_duplicate', methods=['POST'])
 def check_id_duplicate():
@@ -313,9 +334,19 @@ def counselor_home_html():
 def child_list_html():
     return render_template('counselor/child_list.html')
 
-@app.route('/counseling') 
-def counseling_html():
-    return render_template('counselor/counseling.html')
+@app.route('/counsel_counseling') 
+def counsel_counseling_html():
+    try:
+        # 데이터베이스에서 child_id 가져오기
+        query = "SELECT child_id FROM CHILD.child_list;"
+        child_ids = childdb.execute(query)
+        print(child_ids)
+        return render_template('counselor/counsel_counseling.html',child_ids=child_ids)
+
+    except Exception as e:
+        # 예외 처리
+        return "An error occurred: " + str(e)
+    return render_template('counselor/counsel_counseling.html')
 
 @app.route('/survey_pre',  methods=[ 'GET','POST'])
 def survey_pre_html():
@@ -865,5 +896,38 @@ def save_mbti_result():
 def mbti_test_html():
     return render_template('user/mbti_test.html')
 
+@app.route('/user_counseling') 
+def user_counseling_html():
+    
+    return render_template('user/user_counseling.html')
+
+@app.route('/chat') 
+def chat_html():
+    
+    return render_template('user/chat.html')
+
+
+
+@socketio.on('start_counseling')
+def handle_start_counseling():
+    # 상담이 시작되었다는 메시지를 모든 연결된 클라이언트에게 전송합니다.
+    socketio.emit('counseling_started', {'message': '상담이 시작되었습니다.'})
+
+@socketio.on('offer')
+def handle_offer(data):
+    offer = data['offer']
+    # 클라이언트에게 offer 전달
+    emit('offer', {'offer': offer}, broadcast=True)
+    
+@socketio.on('answer')
+def handle_answer(data):
+    answer = data['answer']
+    # 클라이언트에게 answer 전달
+    emit('answer', {'answer': answer}, broadcast=True)
+
+
+
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000, debug=True)
+    app.run(host='0.0.0.0', port=3000, debug=False)

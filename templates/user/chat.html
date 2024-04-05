@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+<body>
+    <video autoplay id="remoteVideo"></video>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // 중앙 서버에서 'counselor_stream' 이벤트를 수신하면 실행될 코드
+        socket.on('counselor_stream', function(stream) {
+            const videoElement = document.getElementById('remoteVideo');
+            videoElement.srcObject = stream;
+        });
+    </script>
+</body>
+</html>

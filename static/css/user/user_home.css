@@ -1,0 +1,69 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
+* {
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --grey: #f1f0f6;
+  --dark-grey: #8d8d8d;
+  --light: #fff;
+  --dark: #000;
+  --green: #81d43a;
+  --light-green: #e3ffcb;
+  --primary-color: #4ea685;
+  --secondary-color: #57b894;
+  --light-blue: #d0e4ff;
+  --red: #fc3b56;
+}
+  
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.btn-flex {
+    display: flex;
+    gap: 2rem;
+}
+
+.pushable {
+    background: hsl(158, 36%, 32%);
+    border-radius: 12px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline-offset: 4px;
+}
+
+.front {
+    display: block; 
+    width: 15rem;
+    border-radius: 12px;
+    font-size: 1.8rem;
+    background: hsl(158, 36%, 48%);
+    color: white;
+    transform: translateY(-6px);
+    line-height: 20rem;
+    text-align: center;
+}
+
+.pushable:active .front {
+    transform: translateY(-2px);
+}
+
+#character-img {
+    height: 320px;
+    width: auto;
+    margin-right: 10px;
+    border-radius: 10px; /* 이미지의 테두리를 둥글게 만듭니다. */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 이미지 주위에 sublte한 그림자 효과 추가 */
+}

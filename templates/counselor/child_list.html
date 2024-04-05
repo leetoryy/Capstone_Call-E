@@ -40,7 +40,7 @@
 					<li><a href="#">주간 일정 확인</a></li>
 				</ul>
 			</li>
-      <li><a href="/counseling"><i class='bx bxs-video-plus icon'></i> 상담 진행 </a></li>
+      <li><a href="/counsel_counseling"><i class='bx bxs-video-plus icon'></i> 상담 진행 </a></li>
 		</ul>
 	</section>
 	<!-- SIDEBAR -->
@@ -58,7 +58,7 @@
 				<i class='bx bxs-bell icon' ></i>
 			</a>
 			<span class="divider"></span>
-      <span>Name</span>
+      <span id="counselorNameSpan">{{ counselor_name }}</span>
 			<div class="profile">
 				<img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="">
 				<ul class="profile-link">
@@ -77,9 +77,9 @@
             <li class="divider">/</li>
             <li><a href="#" class="active">모든 아동 조회</a></li>
           </ul>
-  
-          <div class="info-data">
-            <div class="card">
+
+          <div class="data">
+            <div class="content-data3">
               <div class="head">
                 <h2>모든 아동 리스트</h2>
                 <box-icon name="down-arrow-alt"></box-icon>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Call-E</title>
+    <!-- favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
+    <!-- boxicon -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user/user_counseling.css') }}" />
+    <style>
+        #videoElement {
+            width: 600px;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <!-- 모달 창 -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>상담 알림 메시지가 여기에 표시됩니다.</p>
+            <button id="modal-confirm-button">확인</button>
+        </div>
+    </div>
+  
+    <div class="data">
+        <div class="content-data3">
+            <!-- 웹캠 추가 -->
+            <video autoplay="true" id="userVideoElement"></video>
+        </div>
+
+        <div class="content-data">
+            <div class="tabcontent">
+                <input type="radio" name="tab" checked id="tabmenu01" />
+                <label for="tabmenu01"><i class="bx bxs-face"></i> 얼굴</label>
+                <input type="radio" name="tab" id="tabmenu02" />
+                <label for="tabmenu02"><i class="bx bxs-user-voice"></i> 목소리</label>
+                <input type="radio" name="tab" id="tabmenu03" />
+                <label for="tabmenu03"><i class="bx bxs-cube"></i> 랜덤</label>
+
+                <div class="content-box content01">content01</div>
+                <div class="content-box content02">content02</div>
+                <div class="content-box content03">
+                    얼굴과 목소리가<br />
+                    랜덤으로<br />
+                    선택되었어요!
+                </div>
+
+                <!-- 확인 버튼 추가 -->
+                <button id="confirm-button" class="btn-save">상담 시작하기</button>
+
+                
+            </div>
+        </div>
+    </div>
+        
+</main>
+
+<!-- JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+
+
+
+<script>
+    const socket = io();
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+        const videoElement = document.getElementById('userVideoElement');
+        videoElement.srcObject = stream;
+        
+       
+
+    })
+    .catch(error => {
+        console.error('Error accessing user media:', error);
+    });
+</script>
+    
+
+
+
+<script>
+// 알림 팝업 표시
+function showAlert(message) {
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+    var confirmButton = document.getElementById("modal-confirm-button");
+  
+    modal.style.display = "block";
+    modal.getElementsByTagName("p")[0].innerText = message;
+  
+    // 확인 버튼 클릭 시 모달을 닫고 chat.html로 이동
+    confirmButton.onclick = function() {
+        modal.style.display = "none";
+        window.open("/chat", "_blank");
+    }
+  
+    // 모달을 닫는 이벤트 리스너
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+}
+  
+document.addEventListener("DOMContentLoaded", function() {
+    var socket = io();
+    // 서버로부터 'counseling_started' 이벤트를 수신하면 알림을 표시합니다.
+    socket.on('counseling_started', function(data) {
+        // 알림을 표시합니다.
+        showAlert(data.message);
+    });
+});
+
+</script>
+
+
+</body>
+</html>
