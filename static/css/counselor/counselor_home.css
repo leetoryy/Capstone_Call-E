@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap");
 @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
 
 * {
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -345,61 +345,7 @@ main .breadcrumbs li.divider {
   color: var(--dark-grey);
   pointer-events: none;
 }
-main .info-data {
-  margin-top: 36px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  grid-gap: 20px;
-}
-main .info-data .card {
-  padding: 20px;
-  border-radius: 10px;
-  background: var(--light);
-  box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.05);
-}
-main .card .head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-main .card .head h2 {
-  font-size: 24px;
-  font-weight: 600;
-}
-main .card .head p {
-  font-size: 14px;
-}
-main .card .head .icon {
-  font-size: 20px;
-  color: var(--green);
-}
-main .card .head .icon.down {
-  color: var(--red);
-}
-main .card .progress {
-  display: block;
-  margin-top: 24px;
-  height: 10px;
-  width: 100%;
-  border-radius: 10px;
-  background: var(--grey);
-  overflow-y: hidden;
-  position: relative;
-  margin-bottom: 4px;
-}
-main .card .progress::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: var(--primary-color);
-  width: var(--value);
-}
-main .card .label {
-  font-size: 14px;
-  font-weight: 700;
-}
+
 main .data {
   display: flex;
   grid-gap: 20px;
@@ -427,7 +373,7 @@ main .data .content-data3 {
   box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.1);
 }
 main .data .content-data2 {
-  flex-grow: 3;
+  flex-grow: 5;
   flex-basis: 400px;
   padding: 20px;
   background: var(--light);
@@ -446,20 +392,20 @@ main .content-data2 .head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 main .content-data .head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 main .content-data2 .head h3 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
 }
 main .content-data .head h3 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
 }
 main .content-data .head .menu {
@@ -501,6 +447,57 @@ main .content-data .head .menu-link a:hover {
   background: var(--grey);
 }
 
+/* 오늘 일정 달력 */
+
+.date-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.date-full {
+  margin-left: 18px;
+  color: var(--dark-grey);
+}
+
+.week-days {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.week-days button {
+  background: none;
+  border: none;
+  font-weight: bold;
+  padding: 8px 16px; /* 버튼 내부 여백 */
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.week-days button.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 50px; /* 버튼 모서리 둥글게 */
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.schedule-item .time {
+  font-weight: bold;
+  margin-right: 16px;
+}
+
+.schedule-item .activity {
+  border-radius: 5px;
+  padding: 4px 8px;
+}
+
 main form {
   margin-top: 6px;
 }
@@ -540,7 +537,7 @@ main .btn-send:hover {
   background: white;
   border-radius: 3px;
   border-collapse: collapse;
-  height: 320px;
+  width: 100%;
   margin-top: 10px;
   margin-bottom: 10px;
   padding: 5px;
@@ -551,7 +548,7 @@ th {
   color: #ffffff;
   background: var(--primary-color);
   border-right: 1px solid #ffffffc5;
-  font-family: 'Nanum Gothic';
+  font-family: "Nanum Gothic";
   font-size: 14px;
   font-weight: 100;
   padding: 13px;
@@ -654,8 +651,6 @@ main .content-data #heart-rate {
   border: 1px solid #ccc;
   padding: 12px;
   border-radius: 5px;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
 }
 
 /* 임시저장 버튼 */
@@ -687,7 +682,7 @@ main .content-data .btn-save {
   transition: background-color 0.3s ease;
   width: 100%;
   display: block;
-  margin: 0 auto;
+  margin-top: 1.5rem;
   font-size: 16px;
   outline: none;
 }
