@@ -9,6 +9,8 @@
     <link rel="apple-touch-icon" href="/static/images/icon2.png" />
     <!-- boxicon -->
     <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet" />
+    <!-- Iconscout Link For Icons -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
     <!-- CSS -->
     <link rel="stylesheet" href="/static/css/counselor/counselor_home.css" />
   </head>
@@ -36,14 +38,10 @@
           </ul>
         </li>
         <li>
-          <a href="#"><i class="bx bxs-notepad icon"></i> 일정 확인 <i class="bx bx-chevron-right icon-right"></i></a>
-          <ul class="side-dropdown">
-            <li><a href="#">월별 일정 확인</a></li>
-            <li><a href="#">주간 일정 확인</a></li>
-          </ul>
+          <a href="/counsel_schedule"><i class="bx bxs-notepad icon"></i> 일정 확인 </a>
         </li>
         <li>
-          <a href="#" class="active"><i class="bx bxs-video-plus icon"></i> 상담 진행 </a>
+          <a href="/counsel_counseling" class="active"><i class="bx bxs-video-plus icon"></i> 상담 진행 </a>
         </li>
       </ul>
     </section>
@@ -87,31 +85,67 @@
           <li class="divider">/</li>
           <li><a href="#" class="active">상담하기</a></li>
         </ul>
-
         <div class="data">
           <div class="content-data3">
-            <!-- !! 아래 2줄 삭제 !! 카드 크기 보려고 넣은 임시 코드 -->
-            <video id="localVideo" autoplay width="480px"></video>
-            <video id="remoteVideo" width="480px" autoplay></video>
+            <!-- 화상 통화 부분 -->
+            <!-- 웹캠 추가 -->
+            <video autoplay="true" id="counselVideoElement"></video>
           </div>
-
           <div class="content-data">
-            <div class="head">
-              <h3 id="head-underline">상담일지 작성</h3>
+            <div class="wrapper">
+              <div class="select-btn">
+                <span>상담 아동 ID 선택</span>
+                <i class="uil uil-angle-down"></i>
+              </div>
+              <div class="content">
+                <div class="search">
+                  <i class="uil uil-search"></i>
+                  <input spellcheck="false" type="text" placeholder="Search" />
+                </div>
+                <ul class="options">
+                  {% for child_tuple in child_ids %} {% set child_id = child_tuple[0] %}
+                  <li value="{{ child_id }}">{{ child_id }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <button id="btn-start-counseling">상담 시작</button>
             </div>
-            <div>아동 이름 :</div>
-            <textarea placeholder="상담 내용을 입력해주세요."></textarea>
-            <button id="btn-tempsave">임시저장</button>
-
-            <div id="heart-rate">심박수 :</div>
-
-            <button class="btn-save">저장하고 상담 종료 하기</button>
           </div>
         </div>
+        <!-- 화상 통화 창 -->
       </main>
     </section>
+
     <!-- JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="/static/javascript/counselor/counselor_home.js"></script>
-    <script src="/static/javascript/counselor/child_list.js"></script>
+    <script src="/static/javascript/counselor/counsel_counseling.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var socket = io();
+        var startCounselingBtn = document.getElementById("btn-start-counseling");
+        startCounselingBtn.addEventListener("click", function () {
+          // 상담 시작 버튼을 클릭하면 서버로 'start_counseling' 이벤트를 전송합니다.
+          socket.emit("start_counseling");
+          window.open("/chat", "_blank");
+        });
+      });
+    </script>
+    <style></style>
+
+    <script>
+      const socket = io();
+
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          const videoElement = document.getElementById("counselVideoElement");
+          videoElement.srcObject = stream;
+        })
+        .catch((error) => {
+          console.error("Error accessing counselor media:", error);
+        });
+    </script>
   </body>
 </html>

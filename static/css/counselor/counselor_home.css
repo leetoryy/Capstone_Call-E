@@ -446,26 +446,134 @@ main .content-data .head .menu-link a {
 main .content-data .head .menu-link a:hover {
   background: var(--grey);
 }
+/* 비디오 */
+main .data .content-data3 video {
+  width: 100%;
+}
+
+/* 상담 아동 ID 선택 select */
+.select-btn,
+.content-data li {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.select-btn {
+  height: 65px;
+  padding: 0 20px;
+  font-size: 20px;
+  background: #fff;
+  border-radius: 7px;
+  justify-content: space-between;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+.select-btn i {
+  font-size: 31px;
+  transition: transform 0.3s linear;
+}
+.wrapper.active .select-btn i {
+  transform: rotate(-180deg);
+}
+.content {
+  display: none;
+  padding: 20px;
+  margin-top: 15px;
+  background: #fff;
+  border-radius: 7px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+.wrapper.active .content {
+  display: block;
+}
+.content .search {
+  position: relative;
+}
+.search i {
+  top: 50%;
+  left: 15px;
+  color: #999;
+  font-size: 20px;
+  pointer-events: none;
+  transform: translateY(-50%);
+  position: absolute;
+}
+.search input {
+  height: 50px;
+  width: 100%;
+  outline: none;
+  font-size: 17px;
+  border-radius: 5px;
+  padding: 0 20px 0 43px;
+  border: 1px solid #b3b3b3;
+}
+.search input:focus {
+  padding-left: 42px;
+  border: 2px solid #4285f4;
+}
+.search input::placeholder {
+  color: #bfbfbf;
+}
+.content .options {
+  margin-top: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 7px;
+}
+.options::-webkit-scrollbar {
+  width: 7px;
+}
+.options::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 25px;
+}
+.options::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 25px;
+}
+.options::-webkit-scrollbar-thumb:hover {
+  background: #b3b3b3;
+}
+.options li {
+  height: 50px;
+  padding: 0 13px;
+  font-size: 19px;
+}
+.options li:hover,
+li.selected {
+  border-radius: 5px;
+  background: #f2f2f2;
+}
+#btn-start-counseling {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  font-size: 16px;
+}
+#btn-start-counseling:hover {
+  background-color: #499d7e;
+}
 
 /* 오늘 일정 달력 */
-
 .date-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-
 .date-full {
   margin-left: 18px;
   color: var(--dark-grey);
 }
-
 .week-days {
   display: flex;
   justify-content: space-between;
   margin-bottom: 16px;
 }
-
 .week-days button {
   background: none;
   border: none;
@@ -474,25 +582,21 @@ main .content-data .head .menu-link a:hover {
   cursor: pointer;
   font-size: 18px;
 }
-
 .week-days button.active {
   background-color: var(--primary-color);
   color: white;
   border-radius: 50px; /* 버튼 모서리 둥글게 */
 }
-
 .schedule-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
 }
-
 .schedule-item .time {
   font-weight: bold;
   margin-right: 16px;
 }
-
 .schedule-item .activity {
   border-radius: 5px;
   padding: 4px 8px;
@@ -625,71 +729,6 @@ td.text-center {
 td.text-right {
   text-align: right;
 }
-
-/* 텍스트에리어 */
-main textarea {
-  width: 100%;
-  height: 10em;
-  border: 1px solid #ccc;
-  resize: none;
-  margin-top: 10px;
-  padding: 10px;
-  outline: none;
-  font-size: 15px;
-}
-
-main .content-data #head-underline {
-  border-bottom: 2px solid var(--primary-color);
-  padding-bottom: 5px;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-/* 심박수 */
-main .content-data #heart-rate {
-  width: 100%;
-  border: 1px solid #ccc;
-  padding: 12px;
-  border-radius: 5px;
-}
-
-/* 임시저장 버튼 */
-main .content-data #btn-tempsave {
-  background-color: var(--primary-color);
-  color: var(--light);
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  border: none;
-  transition: background-color 0.3s ease;
-  font-size: 14px;
-  margin-left: auto;
-  display: flex;
-  outline: none;
-}
-main .content-data #btn-tempsave:hover {
-  background-color: var(--secondary-color);
-}
-
-/* 저장하고 상담 종료하기 버튼 */
-main .content-data .btn-save {
-  background-color: var(--primary-color);
-  color: var(--light);
-  padding: 14px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  border: none;
-  transition: background-color 0.3s ease;
-  width: 100%;
-  display: block;
-  margin-top: 1.5rem;
-  font-size: 16px;
-  outline: none;
-}
-main .content-data .btn-save:hover {
-  background-color: var(--secondary-color);
-}
-
 /* MAIN */
 /* CONTENT */
 
