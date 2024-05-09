@@ -9,15 +9,10 @@ import dbcl
 import datetime
 from flask_socketio import SocketIO
 from flask_socketio import emit
-
-
-
-
-
+from flask_socketio import SocketIO, join_room, leave_room, send
 
 app = Flask(__name__, static_url_path='/static')
 socketio = SocketIO(app)
-
 
 app.secret_key = 'call-e'
 
@@ -35,7 +30,6 @@ def get_all_child_survey_consulting():
     
     return result
 
-
 # 상담사 상담 분야 가져오기
 def get_all_counselor_survey_consulting():
     query = "SELECT co_id, co_consulting, co_name FROM COUNSELOR.counselor_list"
@@ -47,7 +41,6 @@ def get_all_counselor_survey_consulting():
 def index():
     return render_template('counselor/join.html')
     
-
 #아이디 패스워드 검사
 def authenticate_child(child_ID, child_pw):
     query = f"SELECT COUNT(*) FROM CHILD.child_list WHERE child_id = '{child_ID}' AND child_password = '{child_pw}'"
@@ -259,15 +252,6 @@ def join_html():
                 print(f"Error Details: {e}")
                 
     return render_template('counselor/join.html')
- 
-
-@app.route('/sign_in')
-def sign_in_html():
-    return render_template('counselor/sign_in.html')
-
-@app.route('/sign_up')
-def sign_up_html():
-    return render_template('counselor/sign_up.html')
 
 
 # ID 중복 확인을 위한 엔드포인트
@@ -333,6 +317,10 @@ def counselor_home_html():
 @app.route('/child_list') 
 def child_list_html():
     return render_template('counselor/child_list.html')
+
+@app.route('/counsel_schedule') 
+def counsel_schedule_html():
+    return render_template('counselor/counsel_schedule.html')
 
 @app.route('/counsel_counseling') 
 def counsel_counseling_html():
@@ -906,6 +894,8 @@ def chat_html():
     
     return render_template('user/chat.html')
 
+# 로깅 설정
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 @socketio.on('start_counseling')
@@ -913,21 +903,78 @@ def handle_start_counseling():
     # 상담이 시작되었다는 메시지를 모든 연결된 클라이언트에게 전송합니다.
     socketio.emit('counseling_started', {'message': '상담이 시작되었습니다.'})
 
+users = {}
+rooms = {}
+
+@socketio.on('connect')
+def handle_connect():
+    print("Client connected: " + request.sid)
+    users[request.sid] = None
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    room = users.pop(request.sid, None)
+    if room is not None:
+        print(f"Client disconnected: {request.sid} from : {room}")
+        leave_room(room)
+        emit("userDisconnected", request.sid, room=room)
+        print_log("onDisconnect", request.sid, room)
+
+@socketio.on('joinRoom')
+def handle_join_room(room):
+    if room not in rooms:
+        join_room(room)
+        emit("created", room)
+        users[request.sid] = room
+        rooms[room] = request.sid
+    participants = list(socketio.server.manager.get_participants('/', room))
+    if len(participants) == 1:
+        join_room(room)
+        emit("joined", room)
+        users[request.sid] = room
+        emit("setCaller", rooms[room])
+    else:
+        emit("full", room)
+    print_log("onReady", request.sid, room)
+
+
+@socketio.on('ready')
+def handle_ready(room):
+    emit("ready", room, room=room)
+    print_log("onReady", request.sid, room)
+
+@socketio.on('candidate')
+def handle_candidate(payload):
+    room = payload["room"]
+    emit("candidate", payload, room=room)
+    print_log("onCandidate", request.sid, room)
+
 @socketio.on('offer')
-def handle_offer(data):
-    offer = data['offer']
-    # 클라이언트에게 offer 전달
-    emit('offer', {'offer': offer}, broadcast=True)
-    
+def handle_offer(payload):
+    room = payload["room"]
+    sdp = payload["sdp"]
+    emit("offer", sdp, room=room)
+    print_log("onOffer", request.sid, room)
+
 @socketio.on('answer')
-def handle_answer(data):
-    answer = data['answer']
-    # 클라이언트에게 answer 전달
-    emit('answer', {'answer': answer}, broadcast=True)
+def handle_answer(payload):
+    room = payload["room"]
+    sdp = payload["sdp"]
+    emit("answer", sdp, room=room)
+    print_log("onAnswer", request.sid, room)
 
+@socketio.on('leaveRoom')
+def handle_leave_room(room):
+    leave_room(room)
+    print_log("onLeaveRoom", request.sid, room)
 
+def print_log(header, client_id, room):
+    if room is None:
+        return
+    participants_list = list(socketio.server.manager.get_participants('/', room))
+    size = len(participants_list)
 
-
+    logging.info("#ConncetedClients - {} => room: {}, count: {}".format(header, room, size))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000, debug=False)
+    socketio.run(app, host='0.0.0.0', port=3000, debug=False)

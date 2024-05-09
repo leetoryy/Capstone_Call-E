@@ -10,6 +10,8 @@
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
     <!-- boxicon -->
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Iconscout Link For Icons -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/counselor/counselor_home.css') }}" />
 </head>
@@ -37,11 +39,7 @@
                 </ul>
             </li>
             <li>
-                <a href="#"><i class="bx bxs-notepad icon"></i> 일정 확인 <i class="bx bx-chevron-right icon-right"></i></a>
-                <ul class="side-dropdown">
-                    <li><a href="#">월별 일정 확인</a></li>
-                    <li><a href="#">주간 일정 확인</a></li>
-                </ul>
+                <a href="/counsel_schedule"><i class="bx bxs-notepad icon"></i> 일정 확인 </a>
             </li>
             <li>
                 <a href="/counsel_counseling" class="active"><i class="bx bxs-video-plus icon"></i> 상담 진행 </a>
@@ -88,13 +86,6 @@
                 <li class="divider">/</li>
                 <li><a href="#" class="active">상담하기</a></li>
             </ul>
-            <select id="child-name">
-                {% for child_tuple in child_ids %}
-                    {% set child_id = child_tuple[0] %}
-                    <option value="{{ child_id }}">{{ child_id }}</option>
-                {% endfor %}
-            </select>
-            <button id="btn-start-counseling">상담 시작</button>
             <div class="data">
                 <div class="content-data3">
                     <!-- 화상 통화 부분 -->
@@ -102,34 +93,35 @@
                     <video autoplay="true" id="counselVideoElement"></video>
                 </div>
                 <div class="content-data">
-                    <div class="head">
-                        <h3 id="head-underline">상담일지 작성</h3>
-                    </div>
-                    <div>아동 이름 :</div>
-                    <textarea placeholder="상담 내용을 입력해주세요."></textarea>
-                    <button id="btn-tempsave">임시저장</button>
-                    <div class="head">
-                        <h3 id="head-underline">심박수 측정</h3>
-                    </div>
-                    <div id="heart-rate">심박수 :</div>
-                    <button class="btn-save">저장하고 상담 종료 하기</button>
+                        <div class="wrapper">
+                            <div class="select-btn">
+                                <span>상담 아동 ID 선택</span>
+                                <i class="uil uil-angle-down"></i>
+                            </div>
+                            <div class="content">
+                                <div class="search">
+                                    <i class="uil uil-search"></i>
+                                    <input spellcheck="false" type="text" placeholder="Search" />
+                                </div>
+                                <ul class="options">
+                                    {% for child_tuple in child_ids %} {% set child_id = child_tuple[0] %}
+                                    <li value="{{ child_id }}">{{ child_id }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <button id="btn-start-counseling">상담 시작</button>
+                        </div>
                 </div>
             </div>
             <!-- 화상 통화 창 -->
-            <div class="video-call">
-                <h2>화상 통화</h2>
-                <video autoplay id="localVideo"></video>
-                <video id="remoteVideo" autoplay></video>
-                <button id="startCallButton">화상 통화 시작</button>
-
-            </div>
+            
         </main>
     </section>
       
     <!-- JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-
-    
+	<script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascript/counselor/counsel_counseling.js') }}"></script>
 
 
     <script>
@@ -139,15 +131,14 @@
             startCounselingBtn.addEventListener("click", function() {
                 // 상담 시작 버튼을 클릭하면 서버로 'start_counseling' 이벤트를 전송합니다.
                 socket.emit('start_counseling');
+                window.open("/chat", "_blank");
             });
         });
 
         
     </script>
 	<style>
-        #counselVideoElement {
-            filter: grayscale(100%);
-        }
+       
     </style>
     
     <script>
@@ -158,15 +149,11 @@
             const videoElement = document.getElementById('counselVideoElement');
             videoElement.srcObject = stream;
             
-            
-    
-            
         })
         .catch(error => {
             console.error('Error accessing counselor media:', error);
         });
     </script>
-
     
     
 </body>

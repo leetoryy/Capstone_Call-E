@@ -1,69 +1,136 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
-@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+@import url("https://fonts.googleapis.com/css2?family=Jua&display=swap");
 
 * {
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Jua", sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-:root {
-  --grey: #f1f0f6;
-  --dark-grey: #8d8d8d;
-  --light: #fff;
-  --dark: #000;
-  --green: #81d43a;
-  --light-green: #e3ffcb;
-  --primary-color: #4ea685;
-  --secondary-color: #57b894;
-  --light-blue: #d0e4ff;
-  --red: #fc3b56;
-}
-  
-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
+body,
+html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f4f7;
 }
 
-.btn-flex {
-    display: flex;
-    gap: 2rem;
+header {
+  width: 100%;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
-.pushable {
-    background: hsl(158, 36%, 32%);
-    border-radius: 12px;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    outline-offset: 4px;
+.header-flex {
+  display: flex;
+  grid-gap: 20px;
+  flex-wrap: wrap;
 }
 
-.front {
-    display: block; 
-    width: 15rem;
-    border-radius: 12px;
-    font-size: 1.8rem;
-    background: hsl(158, 36%, 48%);
-    color: white;
-    transform: translateY(-6px);
-    line-height: 20rem;
-    text-align: center;
+.header-flex h3 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
 }
 
-.pushable:active .front {
-    transform: translateY(-2px);
+#logo {
+  height: 80px;
 }
 
-#character-img {
-    height: 320px;
-    width: auto;
-    margin-right: 10px;
-    border-radius: 10px; /* 이미지의 테두리를 둥글게 만듭니다. */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 이미지 주위에 sublte한 그림자 효과 추가 */
+.profile {
+  position: relative;
+}
+.profile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+.profile .profile-link {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: var(--light);
+  padding: 10px 0;
+  box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  width: 160px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+.profile .profile-link.show {
+  opacity: 1;
+  pointer-events: visible;
+  top: 100%;
+}
+.profile .profile-link a {
+  padding: 10px 16px;
+  display: flex;
+  grid-gap: 10px;
+  font-size: 14px;
+  color: var(--dark);
+  align-items: center;
+  transition: all 0.3s ease;
+  font-size: 18px;
+}
+.profile .profile-link a:hover {
+  background: var(--grey);
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: 5px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 30vw;
+  max-width: 300px;
+  justify-content: center;
+}
+
+.card-icon {
+  font-size: 3em;
+  margin-bottom: 10px;
+}
+
+.text {
+  margin-bottom: 20px;
+  font-size: 1.2em;
+}
+
+.learn-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+@media screen and (orientation: landscape) {
+  .container {
+    flex-direction: row;
+  }
 }
