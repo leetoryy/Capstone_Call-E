@@ -629,7 +629,7 @@ def print_matching_counselors():
                     result_html += f"""
                     <div class="row d-flex justify-content-center">
                         <div class="col-lg-6 mt-4">
-                            <div class="member d-flex align-items-start">
+                            <div class="member d-flex align-items-start" data-counselor-id="{co_id}">
                                 <div class="teampic">
                                     <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
                                 </div>
@@ -672,7 +672,7 @@ def print_matching_counselors():
                     result_html += f"""
                     <div class="row d-flex justify-content-center">
                         <div class="col-lg-6 mt-4">
-                            <div class="member d-flex align-items-start">
+                            <div class="member d-flex align-items-start" data-counselor-id="{co_id}">
                                 <div class="teampic">
                                     <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
                                 </div>
@@ -737,7 +737,7 @@ def print_matching_counselors():
                 result_html += f"""
                     <div class="row d-flex justify-content-center">
                         <div class="col-lg-6 mt-4">
-                            <div class="member d-flex align-items-start">
+                            <div class="member d-flex align-items-start" data-counselor-id="{co_id}">
                                 <div class="teampic">
                                     <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
                                 </div>
@@ -786,7 +786,7 @@ def print_matching_counselors():
                         result_html += f"""
                             <div class="row d-flex justify-content-center">
                                 <div class="col-lg-6 mt-4">
-                                    <div class="member d-flex align-items-start">
+                                    <div class="member d-flex align-items-start" data-counselor-id="{co_id}">
                                         <div class="teampic">
                                             <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
                                         </div>
@@ -828,7 +828,7 @@ def print_matching_counselors():
                 result_html += f"""
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-6 mt-4">
-                        <div class="member d-flex align-items-start">
+                        <div class="member d-flex align-items-start" data-counselor-id="{co_id}">
                             <div class="teampic">
                                 <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
                             </div>
@@ -852,6 +852,14 @@ def print_matching_counselors():
             print(f"Error calculating average consulting scope: {e}")
             return None
     return render_template('user/mbti_match.html')
+
+@app.route('/get_counselor_schedule')
+def get_counselor_schedule():
+    counselor_id = request.args.get('counselorId')
+    if not counselor_id:
+        return "상담사 ID가 제공되지 않았습니다.", 400
+    # ID를 기반으로 데이터 처리
+    return render_template('user/get_counselor_schedule.html', counselor_id=counselor_id)
 
 @app.route('/mbti_result') 
 def mbti_result_html():
