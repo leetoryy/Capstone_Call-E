@@ -10,6 +10,7 @@ import datetime
 from flask_socketio import SocketIO
 from flask_socketio import emit
 from flask_socketio import SocketIO, join_room, leave_room, send
+import re
 
 app = Flask(__name__, static_url_path='/static')
 socketio = SocketIO(app)
@@ -22,6 +23,8 @@ calledb = DBconnector('CALL_E')
 counselordb = DBconnector('COUNSELOR')
 child_infodb = DBconnector('CHILD_INFO') #아동mbti, 아동사전설문지 내용, 아동매칭상담사및상담날짜 포함
 review_listdb =  DBconnector('REVIEW')
+#code_listdb = DBconnector('CONSULTING_CODE)
+#schdule_listdb = DBconnector('COUNSELOR_SCHEDULE')
 
 # 아동 상담 분야 가져오기
 def get_all_child_survey_consulting():
@@ -148,7 +151,17 @@ def login():
                 return "로그인 중 오류가 발생했습니다."
 
 
-@app.route('/join', methods=[ 'GET','POST'])
+# 전화번호 포맷팅 함수
+def format_phone_number(phone_number):
+    digits = re.sub(r'\D', '', phone_number)
+    if len(digits) == 11:
+        formatted_number = f"{digits[:3]}-{digits[3:7]}-{digits[7:]}"
+    else:
+        formatted_number = phone_number
+    
+    return formatted_number
+
+@app.route('/join', methods=['GET', 'POST'])
 def join_html():
     error_message = None
 
@@ -156,12 +169,11 @@ def join_html():
         user_type = request.form.get('user_type')
 
         if user_type == 'child':
-        
             # 아동 회원가입 처리
             childName = request.form.get('ch_name')
             childId = request.form.get('ch_id')
             childPassword = request.form.get('ch_pw')
-            childPhoneNum = request.form.get('ch_ph')
+            childPhoneNum = format_phone_number(request.form.get('ch_ph'))
             childEmail = request.form.get('ch_email')
             childBirthYear = request.form.get('ch_by')
             childBirthMonth = request.form.get('ch_bm')
@@ -193,7 +205,7 @@ def join_html():
                             {birth_date_int}, '{childAddress}', '{parentName}');
                 """
 
-                childdb.insert(insert_query)
+                childdb.execute(insert_query)
                 print(f"Query: {insert_query}")
                 print(childId)
                 return jsonify({'user_type': 'child', 'child_id': childId, 'parent_name': parentName})
@@ -208,7 +220,7 @@ def join_html():
             counselorName = request.form.get('co_name')
             counselorID = request.form.get('co_id')
             counselorPassword = request.form.get('co_pw')
-            counselorPhone = request.form.get('co_phone')
+            counselorPhone = format_phone_number(request.form.get('co_phone'))
             counselorEmail = request.form.get('co_email')
             counselorBirthYear = request.form.get('co_birth_year')
             counselorBirthMonth = request.form.get('co_birth_month')
@@ -216,7 +228,7 @@ def join_html():
             mbti = request.form.get('mbti')
             areas_raw = request.form.get('areas')
             areas = areas_raw.split(',') if areas_raw else []
-            
+
             # 받은 값 출력 또는 로깅
             print("상담사 폼 값:")
             print(f"counselorName: {counselorName}")
@@ -229,7 +241,7 @@ def join_html():
             print(f"counselorBirthDay: {counselorBirthDay}")
             print(f"mbti: {mbti}")
             print(f"areas: {areas}")
-            
+
             try:
                 birth_date_string = f"{counselorBirthYear}{counselorBirthMonth.zfill(2)}{counselorBirthDay.zfill(2)}"
                 birth_date_int = int(birth_date_string)
@@ -242,7 +254,7 @@ def join_html():
                     {birth_date_int}, '{', '.join(areas)}', '{mbti}');
                 """
 
-                counselordb.insert(insert_query)
+                counselordb.execute(insert_query)
                 print(f"Query: {insert_query}")
                 return jsonify({'user_type': 'counselor'})
 
