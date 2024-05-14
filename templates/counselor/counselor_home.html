@@ -12,7 +12,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="/static/css/counselor/counselor_home.css" />
   </head>
-  <body>
+  <body onload="initialize()">
     <!-- SIDEBAR -->
     <section id="sidebar">
       <a href="/counselor_home" class="brand"><img src="/static/images/icon.png" width="50" alt="" />Call-E</a>
@@ -85,48 +85,31 @@
           <div class="content-data2">
           <div class="head">
             <h3>상담 현황</h3>
+            <div class="status-tab">
+              <button id="tab1" onclick="loadData('상담 대기')">상담 대기</button>
+              <button id="tab2" onclick="loadData('상담 중')">상담 중</button>
+              <button id="tab3" onclick="loadData('상담 완료')">상담 완료</button>
+            </div>
           </div>
           <div class="table-list">
             <table class="table-fill">
             <thead class="table-head">
               <tr>
-              <th class="text-center">제목</th>
-              <th class="text-center">아동명</th>
+              <th class="text-center">아동 이름</th>
+              <th class="text-center">MBTI</th>
               <th class="text-center">상담분야</th>
-              <th class="text-center">날짜</th>
+              <th class="text-center">상태</th>
+              <th class="text-center">연락처</th>
               </tr>
             </thead>
-            <tbody class="table-hover">
+            <tbody class="table-hover" id="table-body">
               <tr>
-              <td class="text-center">MBTI 검사 결과</td>
-              <td class="text-center">김아동</td>
-              <td class="text-center">학교 상담</td>
-              <td class="text-center">2024.04.14</td>
-              </tr>
-    
-              <tr>
-              <td class="text-center">최근 심리 상태</td>
-              <td class="text-center">양아동</td>
-              <td class="text-center">발달 상담</td>
-              <td class="text-center">2024.04.13</td>
-              </tr>
-    
-              <tr>
-              <td class="text-center">아동의 최근 관심사</td>
-              <td class="text-center">최아동</td>
-              <td class="text-center">발달 상담</td>
-              <td class="text-center">2024.04.12</td>
-              </tr>
-    
-              <tr>
-              <td class="text-center">현재 심리 상태</td>
-              <td class="text-center">강아동</td>
-              <td class="text-center">문제행동 상담</td>
-              <td class="text-center">2024.04.10</td>
+
               </tr>
             </tbody>
             </table>
           </div>
+
           </div>
           <div class="content-data">
           <div class="head">
@@ -140,13 +123,13 @@
           </div>
           <div class="schedule-container">
             <div class="week-days">
-            <button class="day">일</button>
-            <button class="day">월</button>
-            <button class="day">화</button>
-            <button class="day">수</button>
-            <button class="day">목</button>
-            <button class="day">금</button>
-            <button class="day">토</button>
+            <button class="day" data-day="일">일</button>
+            <button class="day" data-day="월">월</button>
+            <button class="day" data-day="화">화</button>
+            <button class="day" data-day="수">수</button>
+            <button class="day" data-day="목">목</button>
+            <button class="day" data-day="금">금</button>
+            <button class="day" data-day="토">토</button>
             </div>
             <div class="schedule">
               <span class="time">10:00 ~ 11:00</span>
@@ -169,7 +152,7 @@
             <thead class="table-head">
               <tr>
               <th class="text-center">제목</th>
-              <th class="text-center">아동명</th>
+              <th class="text-center">아동 이름</th>
               <th class="text-center">상담분야</th>
               <th class="text-center">날짜</th>
               </tr>
@@ -218,7 +201,7 @@
             <thead class="table-head">
               <tr>
               <th class="text-center">별점</th>
-              <th class="text-center">아동명</th>
+              <th class="text-center">아동 이름</th>
               <th class="text-center">내용</th>
               <th class="text-center">날짜</th>
               </tr>
@@ -263,5 +246,6 @@
     <!-- JS -->
     <script src="/static/javascript/counselor/counselor_home.js"></script>
     <script src="/static/javascript/counselor/date_day.js"></script>
+    <script src="/static/javascript/counselor/counselor_status.js"></script>
   </body>
 </html>
