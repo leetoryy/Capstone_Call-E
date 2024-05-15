@@ -11,7 +11,8 @@
     <header>
       <img src="/static/images/icon.png" alt="Call-E" id="logo" />
       <div class="header-flex">
-        <h3>{{user_name}} 님</h3>
+        <span class="divider"></span>
+        <span id="childNameSpan">{{ session['child_id'] }}</span>
         <div class="profile">
           <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="" />
           <ul class="profile-link">

@@ -24,7 +24,9 @@ counselordb = DBconnector('COUNSELOR')
 child_infodb = DBconnector('CHILD_INFO') #아동mbti, 아동사전설문지 내용, 아동매칭상담사및상담날짜 포함
 review_listdb =  DBconnector('REVIEW')
 #code_listdb = DBconnector('CONSULTING_CODE)
-#schdule_listdb = DBconnector('COUNSELOR_SCHEDULE')
+schdule_listdb = DBconnector('COUNSELOR_SCHEDULE')
+
+
 
 # 아동 상담 분야 가져오기
 def get_all_child_survey_consulting():
@@ -119,7 +121,7 @@ def login():
                 if authenticate_child(child_ID, child_pw):
                     print("성공")
                     # Store the child_id in the session
-                    session['child_id'] = child_ID
+                    session['child_name'] = child_ID
                     return jsonify({'user_type': 'child'})
 
                 else:
@@ -133,13 +135,13 @@ def login():
         elif user_type == 'counselor':
             counselor_ID = request.form.get('co_id2')
             counselor_pw = request.form.get('co_pw_2')
-            
+
             try:
                 auth_result, counselor_name = authenticate_counselor(counselor_ID, counselor_pw)
                 
                 if auth_result:
-                    print("성공")
-                    print(counselor_name)
+                    # 로그인 성공 시 세션에 상담사 이름 저장
+                    session['counselor_name'] = counselor_name
                     return jsonify({'user_type': 'counselor', 'counselor_name': counselor_name})
                     
                 else:
@@ -329,6 +331,14 @@ def counselor_home_html():
 @app.route('/child_list') 
 def child_list_html():
     return render_template('counselor/child_list.html')
+
+@app.route('/counsel_write') 
+def counsel_write_html():
+    return render_template('counselor/counsel_write.html')
+
+@app.route('/counsel_view') 
+def counsel_view_html():
+    return render_template('counselor/counsel_view.html')
 
 @app.route('/counsel_schedule') 
 def counsel_schedule_html():
@@ -868,6 +878,7 @@ def print_matching_counselors():
 @app.route('/get_counselor_schedule')
 def get_counselor_schedule():
     counselor_id = request.args.get('counselorId')
+    get_schedule = schdule_listdb.fetch_one(f"SELECT day_of_week, start_time, end_time FROM COUNSELOR_SCHEDULE WHERE co_id = '{counselor_id}'")
     if not counselor_id:
         return "상담사 ID가 제공되지 않았습니다.", 400
     # ID를 기반으로 데이터 처리

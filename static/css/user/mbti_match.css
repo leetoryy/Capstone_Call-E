@@ -2,7 +2,7 @@
 @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
 
 * {
-  font-family: 'Nanum Gothic';
+  font-family: "Nanum Gothic", sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -16,7 +16,6 @@
   --font-size-lg: clamp(2rem, 4vw, 3.5rem);
   --font-size-md: clamp(1.2rem, 3vw, 1.5rem);
   --font-size-sm: clamp(0.8rem, 2vw, 1.2rem);
-  
 }
 
 .team .member {
@@ -119,7 +118,7 @@ section {
 .rate > label:before {
   display: inline-block;
   font-size: 1.4rem;
-  padding: .3rem .2rem;
+  padding: 0.3rem 0.2rem;
   margin: 0;
   cursor: pointer;
   font-family: FontAwesome;

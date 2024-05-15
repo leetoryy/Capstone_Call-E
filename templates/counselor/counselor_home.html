@@ -12,7 +12,7 @@
 	<!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/counselor/counselor_home.css') }}" />
 </head>
-<body>
+<body onload="initialize()">
 	<!-- SIDEBAR -->
 	<section id="sidebar">
 		<a href="/counselor_home" class="brand"><img src="/static/images/icon.png" width="50" alt="" />Call-E</a>
@@ -29,8 +29,8 @@
 			<li>
 				<a href="#"><i class='bx bxs-inbox icon' ></i> 상담 일지 <i class='bx bx-chevron-right icon-right' ></i></a>
 				<ul class="side-dropdown">
-					<li><a href="#">상담 일지 조회</a></li>
-					<li><a href="#">상담 일지 작성</a></li>
+					<li><a href="/counsel_view">상담 일지 조회</a></li>
+					<li><a href="/counsel_write">상담 일지 작성</a></li>
 				</ul>
 			</li>
 			<li>
@@ -40,7 +40,6 @@
 		</ul>
 	</section>
 	<!-- SIDEBAR -->
-
 	<!-- NAVBAR -->
 	<section id="content">
 		<!-- NAVBAR -->
@@ -56,7 +55,8 @@
 				<i class='bx bxs-bell icon' ></i>
 			</a>
 			<span class="divider"></span>
-			<span id="counselorNameSpan">{{ counselor_name }}</span>
+			<span id="counselorNameSpan">{{ session['counselor_name'] }}</span>
+
 			<div class="profile">
 				<img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="">
 				<ul class="profile-link">
@@ -67,7 +67,6 @@
 			</div>
 		</nav>
 		<!-- NAVBAR -->
-
 		<!-- MAIN -->
 		<main>
 			<h1 class="title">Dashboard</h1>
@@ -79,185 +78,169 @@
 			
 			<div class="data">
 			  <div class="content-data2">
-				<div class="head">
-				  <h3>상담 현황</h3>
-				</div>
-				<div class="table-list">
-				  <table class="table-fill">
-					<thead class="table-head">
-					  <tr>
-						<th class="text-center">제목</th>
-						<th class="text-center">아동명</th>
-						<th class="text-center">상담분야</th>
-						<th class="text-center">날짜</th>
-					  </tr>
-					</thead>
-					<tbody class="table-hover">
-					  <tr>
-						<td class="text-center">MBTI 검사 결과</td>
-						<td class="text-center">김아동</td>
-						<td class="text-center">학교 상담</td>
-						<td class="text-center">2024.04.14</td>
-					  </tr>
-	
-					  <tr>
-						<td class="text-center">최근 심리 상태</td>
-						<td class="text-center">양아동</td>
-						<td class="text-center">발달 상담</td>
-						<td class="text-center">2024.04.13</td>
-					  </tr>
-	
-					  <tr>
-						<td class="text-center">아동의 최근 관심사</td>
-						<td class="text-center">최아동</td>
-						<td class="text-center">발달 상담</td>
-						<td class="text-center">2024.04.12</td>
-					  </tr>
-	
-					  <tr>
-						<td class="text-center">현재 심리 상태</td>
-						<td class="text-center">강아동</td>
-						<td class="text-center">문제행동 상담</td>
-						<td class="text-center">2024.04.10</td>
-					  </tr>
-					</tbody>
-				  </table>
+			  <div class="head">
+				<h3>상담 현황</h3>
+				<div class="status-tab">
+				  <button id="tab1" onclick="loadData('상담 대기')">상담 대기</button>
+				  <button id="tab2" onclick="loadData('상담 중')">상담 중</button>
+				  <button id="tab3" onclick="loadData('상담 완료')">상담 완료</button>
 				</div>
 			  </div>
+			  <div class="table-list">
+				<table class="table-fill">
+				<thead class="table-head">
+				  <tr>
+				  <th class="text-center">아동 이름</th>
+				  <th class="text-center">MBTI</th>
+				  <th class="text-center">상담분야</th>
+				  <th class="text-center">상태</th>
+				  <th class="text-center">연락처</th>
+				  </tr>
+				</thead>
+				<tbody class="table-hover" id="table-body">
+				  <tr>
+	
+				  </tr>
+				</tbody>
+				</table>
+			  </div>
+	
+			  </div>
 			  <div class="content-data">
-				<div class="head">
-				  <div class="date-head">
-					<h3 id="current-day">오늘 화요일</h3>
-					<h3 id="current-date" class="date-full">2024.04.16</h3>
-				  </div>
-				  <div class="menu">
-					<i class="bx bx-dots-horizontal-rounded icon"></i>
-				  </div>
+			  <div class="head">
+				<div class="date-head">
+				<h3 id="current-day">오늘 화요일</h3>
+				<h3 id="current-date" class="date-full">2024.04.16</h3>
 				</div>
-				<div class="schedule-container">
-				  <div class="week-days">
-					<button class="day">일</button>
-					<button class="day">월</button>
-					<button class="day">화</button>
-					<button class="day">수</button>
-					<button class="day">목</button>
-					<button class="day">금</button>
-					<button class="day">토</button>
-				  </div>
-				  <div class="schedule">
-					  <span class="time">10:00 ~ 11:00</span>
-					  <span class="activity">회의</span>
-					</div>
-				  </div>
+				<div class="menu">
+				<i class="bx bx-dots-horizontal-rounded icon"></i>
 				</div>
+			  </div>
+			  <div class="schedule-container">
+				<div class="week-days">
+				<button class="day" data-day="일">일</button>
+				<button class="day" data-day="월">월</button>
+				<button class="day" data-day="화">화</button>
+				<button class="day" data-day="수">수</button>
+				<button class="day" data-day="목">목</button>
+				<button class="day" data-day="금">금</button>
+				<button class="day" data-day="토">토</button>
+				</div>
+				<div class="schedule">
+				  <span class="time">10:00 ~ 11:00</span>
+				  <span class="activity">회의</span>
+				</div>
+				</div>
+			  </div>
 			  </div>
 			</div>
 			<div class="data">
 			  <div class="content-data">
-				<div class="head">
-				  <h3>최근 상담 일지</h3>
-				  <div class="menu">
-					<i class="bx bx-dots-horizontal-rounded icon"></i>
-				  </div>
+			  <div class="head">
+				<h3>최근 상담 일지</h3>
+				<div class="menu">
+				<i class="bx bx-dots-horizontal-rounded icon"></i>
 				</div>
-				<div class="table-list">
-				  <table class="table-fill">
-					<thead class="table-head">
-					  <tr>
-						<th class="text-center">제목</th>
-						<th class="text-center">아동명</th>
-						<th class="text-center">상담분야</th>
-						<th class="text-center">날짜</th>
-					  </tr>
-					</thead>
-					<tbody class="table-hover">
-					  <tr>
-						<td class="text-center">MBTI 검사 결과</td>
-						<td class="text-center">김아동</td>
-						<td class="text-center">학교 상담</td>
-						<td class="text-center">2024.04.14</td>
-					  </tr>
-	
-					  <tr>
-						<td class="text-center">최근 심리 상태</td>
-						<td class="text-center">양아동</td>
-						<td class="text-center">발달 상담</td>
-						<td class="text-center">2024.04.13</td>
-					  </tr>
-	
-					  <tr>
-						<td class="text-center">아동의 최근 관심사</td>
-						<td class="text-center">최아동</td>
-						<td class="text-center">발달 상담</td>
-						<td class="text-center">2024.04.12</td>
-					  </tr>
-	
-					  <tr>
-						<td class="text-center">현재 심리 상태</td>
-						<td class="text-center">강아동</td>
-						<td class="text-center">문제행동 상담</td>
-						<td class="text-center">2024.04.10</td>
-					  </tr>
-					</tbody>
-				  </table>
-				</div>
+			  </div>
+			  <div class="table-list">
+				<table class="table-fill">
+				<thead class="table-head">
+				  <tr>
+				  <th class="text-center">제목</th>
+				  <th class="text-center">아동 이름</th>
+				  <th class="text-center">상담분야</th>
+				  <th class="text-center">날짜</th>
+				  </tr>
+				</thead>
+				<tbody class="table-hover">
+				  <tr>
+				  <td class="text-center">MBTI 검사 결과</td>
+				  <td class="text-center">김아동</td>
+				  <td class="text-center">학교 상담</td>
+				  <td class="text-center">2024.04.14</td>
+				  </tr>
+		
+				  <tr>
+				  <td class="text-center">최근 심리 상태</td>
+				  <td class="text-center">양아동</td>
+				  <td class="text-center">발달 상담</td>
+				  <td class="text-center">2024.04.13</td>
+				  </tr>
+		
+				  <tr>
+				  <td class="text-center">아동의 최근 관심사</td>
+				  <td class="text-center">최아동</td>
+				  <td class="text-center">발달 상담</td>
+				  <td class="text-center">2024.04.12</td>
+				  </tr>
+		
+				  <tr>
+				  <td class="text-center">현재 심리 상태</td>
+				  <td class="text-center">강아동</td>
+				  <td class="text-center">문제행동 상담</td>
+				  <td class="text-center">2024.04.10</td>
+				  </tr>
+				</tbody>
+				</table>
+			  </div>
 			  </div>
 			  <div class="content-data">
-				<div class="head">
-				  <h3>최근 리뷰</h3>
-				  <div class="menu">
-					<i class="bx bx-dots-horizontal-rounded icon"></i>
-				  </div>
-				</div>
-				<div class="table-list">
-				  <table class="table-fill">
-					<thead class="table-head">
-					  <tr>
-						<th class="text-center">별점</th>
-						<th class="text-center">아동명</th>
-						<th class="text-center">내용</th>
-						<th class="text-center">날짜</th>
-					  </tr>
-					</thead>
-					<tbody class="table-hover">
-					  <tr>
-						<td class="text-center">★★★★☆</td>
-						<td class="text-center">김아동</td>
-						<td class="text-center">학교 상담</td>
-						<td class="text-center">2024.04.14</td>
-					  </tr>
-	
-					  <tr>
-						<td class="text-center">★★★☆☆</td>
-						<td class="text-center">양아동</td>
-						<td class="text-center">발달 상담</td>
-						<td class="text-center">2024.04.13</td>
-					  </tr>
-	
-					  <tr>
-						<td class="text-center">★★★★★</td>
-						<td class="text-center">최아동</td>
-						<td class="text-center">발달 상담</td>
-						<td class="text-center">2024.04.12</td>
-					  </tr>
-	
-					  <tr>
-						<td class="text-center">★★★★☆</td>
-						<td class="text-center">강아동</td>
-						<td class="text-center">문제행동 상담</td>
-						<td class="text-center">2024.04.10</td>
-					  </tr>
-					</tbody>
-				  </table>
+			  <div class="head">
+				<h3>최근 리뷰</h3>
+				<div class="menu">
+				<i class="bx bx-dots-horizontal-rounded icon"></i>
 				</div>
 			  </div>
+			  <div class="table-list">
+				<table class="table-fill">
+				<thead class="table-head">
+				  <tr>
+				  <th class="text-center">별점</th>
+				  <th class="text-center">아동 이름</th>
+				  <th class="text-center">내용</th>
+				  <th class="text-center">날짜</th>
+				  </tr>
+				</thead>
+				<tbody class="table-hover">
+				  <tr>
+				  <td class="text-center">★★★★☆</td>
+				  <td class="text-center">김아동</td>
+				  <td class="text-center">학교 상담</td>
+				  <td class="text-center">2024.04.14</td>
+				  </tr>
+		
+				  <tr>
+				  <td class="text-center">★★★☆☆</td>
+				  <td class="text-center">양아동</td>
+				  <td class="text-center">발달 상담</td>
+				  <td class="text-center">2024.04.13</td>
+				  </tr>
+		
+				  <tr>
+				  <td class="text-center">★★★★★</td>
+				  <td class="text-center">최아동</td>
+				  <td class="text-center">발달 상담</td>
+				  <td class="text-center">2024.04.12</td>
+				  </tr>
+		
+				  <tr>
+				  <td class="text-center">★★★★☆</td>
+				  <td class="text-center">강아동</td>
+				  <td class="text-center">문제행동 상담</td>
+				  <td class="text-center">2024.04.10</td>
+				  </tr>
+				</tbody>
+				</table>
+			  </div>
+			  </div>
 			</div>
-		  </main>
+			</main>
 		<!-- MAIN -->
 	</section>
 	<!-- NAVBAR -->
 	<!-- JS -->
 	<script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>
 	<script src="{{ url_for('static', filename='javascript/counselor/date_day.js') }}"></script>
+	<script src="{{ url_for('static', filename='javascript/counselor/counselor_status.js') }}"></script>
 </body>
 </html>

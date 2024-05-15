@@ -22,14 +22,14 @@
         </li>
         <li class="divider" data-text="main">Main</li>
         <li>
-          <a href="#" class="active"><i class="bx bxs-widget icon"></i> 아동 조회 <i class="bx bx-chevron-right icon-right"></i></a>
+          <a href="#"><i class="bx bxs-widget icon"></i> 아동 조회 <i class="bx bx-chevron-right icon-right"></i></a>
           <ul class="side-dropdown">
             <li><a href="/child_list">모든 아동 조회</a></li>
             <li><a href="/child_list">담당 아동 조회</a></li>
           </ul>
         </li>
         <li>
-          <a href="#"><i class="bx bxs-inbox icon"></i> 상담 일지 <i class="bx bx-chevron-right icon-right"></i></a>
+          <a href="#" class="active"><i class="bx bxs-inbox icon"></i> 상담 일지 <i class="bx bx-chevron-right icon-right"></i></a>
           <ul class="side-dropdown">
             <li><a href="/counsel_view">상담 일지 조회</a></li>
             <li><a href="/counsel_write">상담 일지 작성</a></li>
@@ -77,111 +77,77 @@
       <!-- NAVBAR -->
       <!-- MAIN -->
       <main>
-        <h1 class="title">아동 조회</h1>
+        <h1 class="title">상담 일지</h1>
         <ul class="breadcrumbs">
-          <li><a href="#">아동 조회</a></li>
+          <li><a href="#">상담 일지 조회</a></li>
           <li class="divider">/</li>
-          <li><a href="#" class="active">모든 아동 조회</a></li>
+          <li><a href="#" class="active">상담 일지</a></li>
         </ul>
 
         <div class="data">
           <div class="content-data3">
             <div class="head">
-              <h2>모든 아동 리스트</h2>
+              <h2>상담 일지 조회</h2>
               <box-icon name="down-arrow-alt"></box-icon>
             </div>
             <div class="table-list">
               <table class="table-fill">
                 <thead class="table-head">
                   <tr>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(0)">이름 <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(1)">아이디 <i class="bx bxs-chevron-down"></i></th>
+                    <th class="text-center" style="cursor: pointer" onclick="sortTable(0)">제목 <i class="bx bxs-chevron-down"></i></th>
+                    <th class="text-center" style="cursor: pointer" onclick="sortTable(1)">아동이름 <i class="bx bxs-chevron-down"></i></th>
                     <th class="text-center" style="cursor: pointer" onclick="sortTable(2)">상담분야 <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(3)">MBTI <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(4)">담당 상담사 <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(5)">보호자 <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center">보호자 연락처</th>
+                    <th class="text-center" style="cursor: pointer" onclick="sortTable(3)">날짜 <i class="bx bxs-chevron-down"></i></th>
                   </tr>
                 </thead>
                 <tbody class="table-hover">
                   <tr>
-                    <td class="text-center">박아동</td>
-                    <td class="text-center">ch06</td>
+                    <td class="text-center">MBTI 검사 결과</td>
+                    <td class="text-center">강아동</td>
                     <td class="text-center">발달 상담</td>
-                    <td class="text-center">INFP</td>
-                    <td class="text-center">이상담</td>
-                    <td class="text-center">최보호</td>
-                    <td class="text-center">010-6666-0000</td>
+                    <td class="text-center">2024.05.13</td>
                   </tr>
 
                   <tr>
-                    <td class="text-center">김아동</td>
-                    <td class="text-center">ch01</td>
-                    <td class="text-center">학교 상담</td>
-                    <td class="text-center">ENFP</td>
-                    <td class="text-center">박상담</td>
-                    <td class="text-center">양보호</td>
-                    <td class="text-center">010-0000-1111</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">최아동</td>
-                    <td class="text-center">ch03</td>
-                    <td class="text-center">학교 상담</td>
-                    <td class="text-center">INTP</td>
-                    <td class="text-center">김상담</td>
-                    <td class="text-center">임보호</td>
-                    <td class="text-center">010-8888-8888</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">양아동</td>
-                    <td class="text-center">ch09</td>
-                    <td class="text-center">발달 상담</td>
-                    <td class="text-center">ISFP</td>
-                    <td class="text-center"></td>
-                    <td class="text-center">박보호</td>
-                    <td class="text-center">010-7777-7777</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">이아동</td>
-                    <td class="text-center">ch10</td>
-                    <td class="text-center">발달 상담</td>
-                    <td class="text-center">ISTJ</td>
-                    <td class="text-center">최상담</td>
-                    <td class="text-center">최보호</td>
-                    <td class="text-center">010-6666-6666</td>
-                  </tr>
-
-                  <tr>
+                    <td class="text-center">최근 고민</td>
                     <td class="text-center">임아동</td>
-                    <td class="text-center">ch08</td>
-                    <td class="text-center">문제행동 상담</td>
-                    <td class="text-center">ENFJ</td>
-                    <td class="text-center"></td>
-                    <td class="text-center">이보호</td>
-                    <td class="text-center">010-4444-5555</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">황아동</td>
-                    <td class="text-center">ch05</td>
                     <td class="text-center">발달 상담</td>
-                    <td class="text-center">INFP</td>
-                    <td class="text-center">김상담</td>
-                    <td class="text-center">강보호</td>
-                    <td class="text-center">010-2222-3333</td>
+                    <td class="text-center">2024.05.13</td>
                   </tr>
 
                   <tr>
+                    <td class="text-center">현재 심리 상태</td>
+                    <td class="text-center">박아동</td>
+                    <td class="text-center">학교 상담</td>
+                    <td class="text-center">2024.05.12</td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-center">MBTI 검사 결과</td>
+                    <td class="text-center">이아동</td>
+                    <td class="text-center">학교 상담</td>
+                    <td class="text-center">2024.05.12</td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-center">현재 심리 상태</td>
+                    <td class="text-center">이아동</td>
+                    <td class="text-center">학교 상담</td>
+                    <td class="text-center">2024.05.12</td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-center">MBTI 검사 결과</td>
+                    <td class="text-center">최아동</td>
+                    <td class="text-center">발달 상담</td>
+                    <td class="text-center">2024.05.11</td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-center">MBTI 검사 결과</td>
                     <td class="text-center">김아동</td>
-                    <td class="text-center">ch18</td>
                     <td class="text-center">발달 상담</td>
-                    <td class="text-center">INFP</td>
-                    <td class="text-center">유상담</td>
-                    <td class="text-center">차보호</td>
-                    <td class="text-center">010-1111-2222</td>
+                    <td class="text-center">2024.05.11</td>
                   </tr>
                 </tbody>
               </table>
@@ -190,6 +156,7 @@
           <!-- card -->
         </div>
       </main>
+      <!-- MAIN -->
     </section>
     <!-- JS -->
     <script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>

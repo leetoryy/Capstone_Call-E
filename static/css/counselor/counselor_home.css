@@ -391,7 +391,7 @@ main .data .content-data {
 main .content-data2 .head {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  /* align-items: center; */
   margin-bottom: 12px;
 }
 main .content-data .head {
@@ -542,7 +542,7 @@ main .data .content-data3 video {
 li.selected {
   border-radius: 5px;
   background: #f2f2f2;
-} 
+}
 #btn-start-counseling {
   background-color: var(--primary-color);
   color: white;
@@ -558,7 +558,6 @@ li.selected {
 #btn-start-counseling:hover {
   background-color: #499d7e;
 }
-
 
 /* 오늘 일정 달력 */
 .date-head {
@@ -637,7 +636,6 @@ main .btn-send:hover {
   background: var(--secondary-color);
 }
 
-
 /*** Table Styles **/
 .table-fill {
   background: white;
@@ -703,7 +701,7 @@ tr:last-child td:last-child {
 td {
   background: #ffffff;
   padding: 13px;
-  text-align: left;
+  text-align: center;
   vertical-align: middle;
   font-weight: 400;
   font-size: 13px;
@@ -732,6 +730,21 @@ td.text-right {
   text-align: right;
 }
 
+/* 상담 현황 */
+.status-tab button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border: none;
+  border-radius: 10px;
+}
+.status-tab .active {
+  background-color: var(--primary-color);
+  color: white;
+}
 /* MAIN */
 /* CONTENT */
 
