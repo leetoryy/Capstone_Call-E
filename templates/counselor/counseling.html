@@ -1,100 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Call-E</title>
-	<!-- favicon -->
-	<link rel="icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
-	<link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
-	<!-- boxicon -->
-	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-	<!-- CSS -->
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/counselor/counselor_home.css') }}" />
-</head>
-<body>
-	<!-- SIDEBAR -->
-	<section id="sidebar">
-		<a href="/counselor_home" class="brand"><img src="/static/images/icon.png" width="50" alt="" />Call-E</a>
-		<ul class="side-menu">
-			<li><a href="/counselor_home"><i class='bx bxs-dashboard icon' ></i> Dashboard</a></li>
-			<li class="divider" data-text="main">Main</li>
-			<li>
-				<a href="#"><i class='bx bxs-widget icon' ></i> 아동 조회 <i class='bx bx-chevron-right icon-right' ></i></a>
-				<ul class="side-dropdown">
-					<li><a href="/child_list">모든 아동 조회</a></li>
-					<li><a href="/child_list">담당 아동 조회</a></li>
-				</ul>
-			</li>
-			<li>
-				<a href="#"><i class='bx bxs-inbox icon' ></i> 상담 일지 <i class='bx bx-chevron-right icon-right' ></i></a>
-				<ul class="side-dropdown">
-					<li><a href="#">상담 일지 조회</a></li>
-					<li><a href="#">상담 일지 작성</a></li>
-				</ul>
-			</li>
-			<li>
-				<a href="#"><i class='bx bxs-notepad icon' ></i> 일정 확인 </a>
-			</li>
-			<li><a href="/counsel_counseling" class="active"><i class='bx bxs-video-plus icon'></i> 상담 진행 </a></li>
-		</ul>
-	</section>
-	<!-- SIDEBAR -->
-	<section id="content">
-		<!-- NAVBAR -->
-		<nav>
-			<i class='bx bx-menu toggle-sidebar' ></i>
-			<form action="#">
-				<div class="form-group">
-					<input type="text" placeholder="Search...">
-					<i class='bx bx-search icon' ></i>
-				</div>
-			</form>
-			<a href="#" class="nav-link">
-				<i class='bx bxs-bell icon' ></i>
-			</a>
-			<span class="divider"></span>
-      <span>Name</span>
-			<div class="profile">
-				<img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="">
-				<ul class="profile-link">
-					<li><a href="#"><i class='bx bxs-user-circle icon' ></i> Profile</a></li>
-					<li><a href="#"><i class='bx bxs-cog' ></i> Settings</a></li>
-					<li><a href="#"><i class='bx bxs-log-out-circle' ></i> Logout</a></li>
-				</ul>
-			</div>
-		</nav>
-		<!-- NAVBAR -->
-      	<!-- MAIN -->
-        <main>
-          <h1 class="title">상담 진행</h1>
-          <ul class="breadcrumbs">
-            <li><a href="#">상담 진행</a></li>
-            <li class="divider">/</li>
-            <li><a href="#" class="active">상담하기</a></li>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Call-E</title>
+    <!-- favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
+    <!-- boxicon -->
+    <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet" />
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/counselor/counselor_home.css') }}" />
+  </head>
+  <body>
+    <!-- SIDEBAR -->
+    <section id="sidebar">
+      <a href="/counselor_home" class="brand"><img src="/static/images/icon.png" width="50" alt="" />Call-E</a>
+      <ul class="side-menu">
+        <li>
+          <a href="/counselor_home"><i class="bx bxs-dashboard icon"></i> Dashboard</a>
+        </li>
+        <li class="divider" data-text="main">Main</li>
+        <li>
+          <a href="#"><i class="bx bxs-widget icon"></i> 아동 조회 <i class="bx bx-chevron-right icon-right"></i></a>
+          <ul class="side-dropdown">
+            <li><a href="/child_list">모든 아동 조회</a></li>
+            <li><a href="/child_list">담당 아동 조회</a></li>
           </ul>
+        </li>
+        <li>
+          <a href="#"><i class="bx bxs-inbox icon"></i> 상담 일지 <i class="bx bx-chevron-right icon-right"></i></a>
+          <ul class="side-dropdown">
+            <li><a href="/counsel_view">상담 일지 조회</a></li>
+            <li><a href="/counsel_write">상담 일지 작성</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#"><i class="bx bxs-notepad icon"></i> 일정 확인 </a>
+        </li>
+        <li>
+          <a href="/counsel_counseling" class="active"><i class="bx bxs-video-plus icon"></i> 상담 진행 </a>
+        </li>
+      </ul>
+    </section>
+    <!-- SIDEBAR -->
+    <section id="content">
+      <!-- NAVBAR -->
+      <nav>
+        <i class="bx bx-menu toggle-sidebar"></i>
+        <form action="#">
+          <div class="form-group">
+            <input type="text" placeholder="Search..." />
+            <i class="bx bx-search icon"></i>
+          </div>
+        </form>
+        <a href="#" class="nav-link">
+          <i class="bx bxs-bell icon"></i>
+        </a>
+        <span class="divider"></span>
+        <span>Name</span>
+        <div class="profile">
+          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="" />
+          <ul class="profile-link">
+            <li>
+              <a href="#"><i class="bx bxs-user-circle icon"></i> Profile</a>
+            </li>
+            <li>
+              <a href="#"><i class="bx bxs-cog"></i> Settings</a>
+            </li>
+            <li>
+              <a href="#"><i class="bx bxs-log-out-circle"></i> Logout</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- NAVBAR -->
+      <!-- MAIN -->
+      <main>
+        <h1 class="title">상담 진행</h1>
+        <ul class="breadcrumbs">
+          <li><a href="#">상담 진행</a></li>
+          <li class="divider">/</li>
+          <li><a href="#" class="active">상담하기</a></li>
+        </ul>
 
-          <div class="data">
-            <div class="content-data3">
-              <!-- !! 아래 2줄 삭제 !! 카드 크기 보려고 넣은 임시 코드 -->
-              <video id="localVideo" autoplay width="480px"></video>
-              <video id="remoteVideo" width="480px" autoplay></video>
-            </div>
-
-            <div class="content-data">
-				<div class="head">
-					<h3>상담일지 작성</h3>
-				</div>
-				<div>이름 : </div>
-				<div> (상담 내용) </div>
-				<textarea id="consultation" name="consultation"></textarea>
-            </div>
+        <div class="data">
+          <div class="content-data3">
+            <!-- !! 아래 2줄 삭제 !! 카드 크기 보려고 넣은 임시 코드 -->
+            <video id="localVideo" autoplay width="480px"></video>
+            <video id="remoteVideo" width="480px" autoplay></video>
           </div>
 
-        </main>
-	</section>
-	<!-- JS -->
-	<script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>
-	<script src="{{ url_for('static', filename='javascript/counselor/child_list.js') }}"></script>
-</body>
+          <div class="content-data">
+            <div class="head">
+              <h3>상담일지 작성</h3>
+            </div>
+            <div>이름 :</div>
+            <div>(상담 내용)</div>
+            <textarea id="consultation" name="consultation"></textarea>
+          </div>
+        </div>
+      </main>
+    </section>
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascript/counselor/child_list.js') }}"></script>
+  </body>
 </html>

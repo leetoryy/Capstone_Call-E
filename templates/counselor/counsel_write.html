@@ -3,17 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Call-E</title>
     <!-- favicon -->
     <link rel="icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
     <!-- boxicon -->
     <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet" />
-    <!-- Iconscout Link For Icons -->
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/counselor/counselor_home.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/counselor/counsel_write.css') }}" />
   </head>
   <body>
     <!-- SIDEBAR -->
@@ -32,7 +30,7 @@
           </ul>
         </li>
         <li>
-          <a href="#"><i class="bx bxs-inbox icon"></i> 상담 일지 <i class="bx bx-chevron-right icon-right"></i></a>
+          <a href="#" class="active"><i class="bx bxs-inbox icon"></i> 상담 일지 <i class="bx bx-chevron-right icon-right"></i></a>
           <ul class="side-dropdown">
             <li><a href="/counsel_view">상담 일지 조회</a></li>
             <li><a href="/counsel_write">상담 일지 작성</a></li>
@@ -42,7 +40,7 @@
           <a href="/counsel_schedule"><i class="bx bxs-notepad icon"></i> 일정 확인 </a>
         </li>
         <li>
-          <a href="/counsel_counseling" class="active"><i class="bx bxs-video-plus icon"></i> 상담 진행 </a>
+          <a href="/counsel_counseling"><i class="bx bxs-video-plus icon"></i> 상담 진행 </a>
         </li>
       </ul>
     </section>
@@ -80,73 +78,44 @@
       <!-- NAVBAR -->
       <!-- MAIN -->
       <main>
-        <h1 class="title">상담 진행</h1>
+        <h1 class="title">상담 일지</h1>
         <ul class="breadcrumbs">
-          <li><a href="#">상담 진행</a></li>
+          <li><a href="#">상담 일지 작성</a></li>
           <li class="divider">/</li>
-          <li><a href="#" class="active">상담하기</a></li>
+          <li><a href="#" class="active">상담 일지</a></li>
         </ul>
+
         <div class="data">
-          <div class="content-data3">
-            <!-- 화상 통화 부분 -->
-            <!-- 웹캠 추가 -->
-            <video autoplay="true" id="counselVideoElement"></video>
-          </div>
           <div class="content-data">
-            <div class="wrapper">
-              <div class="select-btn">
-                <span>상담 아동 ID 선택</span>
-                <i class="uil uil-angle-down"></i>
+            <form id="counselingForm">
+              <div class="form-section">
+                <label for="childName">아동 이름</label>
+                <select id="childName" name="childName" class="input-select">
+                  <option value="child1">아동 1</option>
+                  <option value="child2">아동 2</option>
+                  <option value="child3">아동 3</option>
+                </select>
               </div>
-              <div class="content">
-                <div class="search">
-                  <i class="uil uil-search"></i>
-                  <input spellcheck="false" type="text" placeholder="Search" />
-                </div>
-                <ul class="options">
-                  {% for child_tuple in child_ids %} {% set child_id = child_tuple[0] %}
-                  <li value="{{ child_id }}">{{ child_id }}</li>
-                  {% endfor %}
-                </ul>
+              <div class="form-section">
+                <label for="counselingDate">상담 날짜</label>
+                <select id="childName" name="childName" class="input-select">
+                  <option value="2024.05.13">2024.05.13</option>
+                  <option value="2024.05.14">2024.05.14</option>
+                  <option value="2024.05.15">2024.05.15</option>
+                </select>
               </div>
-              <button id="btn-start-counseling">상담 시작</button>
-            </div>
+              <div class="form-section">
+                <label for="counselingNotes">상담 내용</label>
+                <textarea id="counselingNotes" name="counselingNotes" rows="4" cols="50" required></textarea>
+              </div>
+              <button type="submit">저장</button>
+            </form>
           </div>
         </div>
-        <!-- 화상 통화 창 -->
       </main>
+      <!-- MAIN -->
     </section>
-
     <!-- JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>
-    <script src="{{ url_for('static', filename='javascript/counselor/counsel_counseling.js') }}"></script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        var socket = io();
-        var startCounselingBtn = document.getElementById("btn-start-counseling");
-        startCounselingBtn.addEventListener("click", function () {
-          // 상담 시작 버튼을 클릭하면 서버로 'start_counseling' 이벤트를 전송합니다.
-          socket.emit("start_counseling");
-          window.open("/chat", "_blank");
-        });
-      });
-    </script>
-    <style></style>
-
-    <script>
-      const socket = io();
-
-      navigator.mediaDevices
-        .getUserMedia({ video: true })
-        .then((stream) => {
-          const videoElement = document.getElementById("counselVideoElement");
-          videoElement.srcObject = stream;
-        })
-        .catch((error) => {
-          console.error("Error accessing counselor media:", error);
-        });
-    </script>
   </body>
 </html>
