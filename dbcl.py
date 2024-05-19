@@ -1,4 +1,5 @@
 import pymysql
+
 class DBconnector:
     def __init__(self, schema):
         self.host = 'orion.mokpo.ac.kr'
@@ -6,7 +7,9 @@ class DBconnector:
         self.port = 8397
         self.password = 'ScE1234**'
         self.db = schema
-        
+        self.conn = None
+        self.cur = None
+    
     def __connect__(self):
         self.conn = pymysql.connect(host=self.host,
                                     port=self.port,
@@ -69,10 +72,11 @@ class DBconnector:
         self.__disconnect__()
         return result
     
-
     def commit(self):
         self.conn.commit()
-        
-      
+    
+    def get_cursor(self):
+        self.__connect__()
+        return self.cur
 
 print(pymysql.__version__)

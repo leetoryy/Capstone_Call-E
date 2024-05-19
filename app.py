@@ -6,7 +6,7 @@ from flask import Flask, jsonify, render_template, request, redirect, session, u
 from dbcl import DBconnector
 import pymysql
 import dbcl
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask_socketio import SocketIO
 from flask_socketio import emit
 from flask_socketio import SocketIO, join_room, leave_room, send
@@ -27,41 +27,41 @@ review_listdb =  DBconnector('REVIEW')
 schedule_listdb = DBconnector('COUNSELOR_SCHEDULE')
 
 AVAILABLE_TIMESLOTS = [
-    ("월요일", "09:00", "10:00"),
-    ("월요일", "10:00", "11:00"),
-    ("월요일", "11:00", "12:00"),
-    ("월요일", "13:00", "14:00"),
-    ("월요일", "14:00", "15:00"),
-    ("월요일", "15:00", "16:00"),
-    ("월요일", "16:00", "17:00"),
-    ("화요일", "09:00", "10:00"),
-    ("화요일", "10:00", "11:00"),
-    ("화요일", "11:00", "12:00"),
-    ("화요일", "13:00", "14:00"),
-    ("화요일", "14:00", "15:00"),
-    ("화요일", "15:00", "16:00"),
-    ("화요일", "16:00", "17:00"),
-    ("수요일", "09:00", "10:00"),
-    ("수요일", "10:00", "11:00"),
-    ("수요일", "11:00", "12:00"),
-    ("수요일", "13:00", "14:00"),
-    ("수요일", "14:00", "15:00"),
-    ("수요일", "15:00", "16:00"),
-    ("수요일", "16:00", "17:00"),
-    ("목요일", "09:00", "10:00"),
-    ("목요일", "10:00", "11:00"),
-    ("목요일", "11:00", "12:00"),
-    ("목요일", "13:00", "14:00"),
-    ("목요일", "14:00", "15:00"),
-    ("목요일", "15:00", "16:00"),
-    ("목요일", "16:00", "17:00"),
-    ("금요일", "09:00", "10:00"),
-    ("금요일", "10:00", "11:00"),
-    ("금요일", "11:00", "12:00"),
-    ("금요일", "13:00", "14:00"),
-    ("금요일", "14:00", "15:00"),
-    ("금요일", "15:00", "16:00"),
-    ("금요일", "16:00", "17:00")
+    ("월", "09:00", "10:00"),
+    ("월", "10:00", "11:00"),
+    ("월", "11:00", "12:00"),
+    ("월", "13:00", "14:00"),
+    ("월", "14:00", "15:00"),
+    ("월", "15:00", "16:00"),
+    ("월", "16:00", "17:00"),
+    ("화", "09:00", "10:00"),
+    ("화", "10:00", "11:00"),
+    ("화", "11:00", "12:00"),
+    ("화", "13:00", "14:00"),
+    ("화", "14:00", "15:00"),
+    ("화", "15:00", "16:00"),
+    ("화", "16:00", "17:00"),
+    ("수", "09:00", "10:00"),
+    ("수", "10:00", "11:00"),
+    ("수", "11:00", "12:00"),
+    ("수", "13:00", "14:00"),
+    ("수", "14:00", "15:00"),
+    ("수", "15:00", "16:00"),
+    ("수", "16:00", "17:00"),
+    ("목", "09:00", "10:00"),
+    ("목", "10:00", "11:00"),
+    ("목", "11:00", "12:00"),
+    ("목", "13:00", "14:00"),
+    ("목", "14:00", "15:00"),
+    ("목", "15:00", "16:00"),
+    ("목", "16:00", "17:00"),
+    ("금", "09:00", "10:00"),
+    ("금", "10:00", "11:00"),
+    ("금", "11:00", "12:00"),
+    ("금", "13:00", "14:00"),
+    ("금", "14:00", "15:00"),
+    ("금", "15:00", "16:00"),
+    ("금", "16:00", "17:00")
 ]
 
 # 아동 상담 분야 가져오기
@@ -145,7 +145,6 @@ def Compatibility(user, counselor):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    
     if request.method == 'POST':
         user_type = request.form.get('user_type')
         
@@ -941,6 +940,41 @@ def get_counselor_schedule():
         return "서버 오류가 발생했습니다.", 500
 
     return render_template('user/get_counselor_schedule.html', counselor_id=counselor_id, reserved_timeslots=reserved_timeslots, available_timeslots=available_timeslots)
+
+@app.route('/reserve_timeslot', methods=['POST'])
+def reserve_timeslot():
+    data = request.get_json()
+    app.logger.info(f"Received data: {data}")  # 수신된 데이터 로그 출력
+
+    # 세션에서 child_name 가져오기
+    child_id = session.get('child_name')
+    counselor_id = data.get('counselorId')
+    day = data.get('day')
+    start = data.get('start')
+    end = data.get('end')
+
+    # 모든 필드가 존재하는지 확인
+    if not all([counselor_id, child_id, day, start, end]):
+        app.logger.error("Missing required fields")
+        return jsonify({"error": "모든 필드를 입력해주세요."}), 400
+
+    try:
+        # start와 end 시간을 datetime으로 변환
+        start_time = datetime.strptime(start, '%H:%M').time()
+        end_time = datetime.strptime(end, '%H:%M').time()
+
+        query = """
+            INSERT INTO schedule_list (co_id, child_id, day_of_week, start_time, end_time)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        cursor = schedule_listdb.get_cursor()  # 커서 가져오기
+        cursor.execute(query, (counselor_id, child_id, day, start_time, end_time))
+        schedule_listdb.conn.commit()
+        cursor.close()  # 커서 닫기
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        app.logger.error(f"Error reserving timeslot: {e}")
+        return jsonify({"error": "서버 오류가 발생했습니다."}), 500
 
 @app.route('/mbti_result') 
 def mbti_result_html():

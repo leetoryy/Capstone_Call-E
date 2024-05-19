@@ -30,7 +30,7 @@
     {% if available_timeslots %}
     <div>
       {% for day, start, end in available_timeslots %}
-      <button class="available">
+      <button class="available" data-day="{{ day }}" data-start="{{ start }}" data-end="{{ end }}">
         {{ day }}: {{ start }} - {{ end }}
       </button>
       {% endfor %}
@@ -38,5 +38,38 @@
     {% else %}
     <p>예약 가능한 시간이 없습니다.</p>
     {% endif %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        // 예약 가능한 시간 버튼 클릭 이벤트
+        $(".available").click(function() {
+          const day = $(this).data("day");
+          const start = $(this).data("start");
+          const end = $(this).data("end");
+          const counselorId = "{{ counselor_id }}";
+          const childId = "{{ session['child_name'] }}";  // session에서 child_name을 가져옴
+
+          $.ajax({
+            url: "/reserve_timeslot",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+              counselorId: counselorId,
+              childId: childId, // childId를 포함
+              day: day,
+              start: start,
+              end: end
+            }),
+            success: function(response) {
+              alert("예약이 완료되었습니다.");
+              location.reload();
+            },
+            error: function() {
+              alert("예약에 실패했습니다.");
+            }
+          });
+        });
+      });
+    </script>
   </body>
 </html>
