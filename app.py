@@ -6,7 +6,7 @@ from flask import Flask, jsonify, render_template, request, redirect, session, u
 from dbcl import DBconnector
 import pymysql
 import dbcl
-import datetime
+from datetime import datetime, timedelta
 from flask_socketio import SocketIO
 from flask_socketio import emit
 from flask_socketio import SocketIO, join_room, leave_room, send
@@ -24,9 +24,45 @@ counselordb = DBconnector('COUNSELOR')
 child_infodb = DBconnector('CHILD_INFO') #아동mbti, 아동사전설문지 내용, 아동매칭상담사및상담날짜 포함
 review_listdb =  DBconnector('REVIEW')
 #code_listdb = DBconnector('CONSULTING_CODE)
-schdule_listdb = DBconnector('COUNSELOR_SCHEDULE')
+schedule_listdb = DBconnector('COUNSELOR_SCHEDULE')
 
-
+AVAILABLE_TIMESLOTS = [
+    ("월요일", "09:00", "10:00"),
+    ("월요일", "10:00", "11:00"),
+    ("월요일", "11:00", "12:00"),
+    ("월요일", "13:00", "14:00"),
+    ("월요일", "14:00", "15:00"),
+    ("월요일", "15:00", "16:00"),
+    ("월요일", "16:00", "17:00"),
+    ("화요일", "09:00", "10:00"),
+    ("화요일", "10:00", "11:00"),
+    ("화요일", "11:00", "12:00"),
+    ("화요일", "13:00", "14:00"),
+    ("화요일", "14:00", "15:00"),
+    ("화요일", "15:00", "16:00"),
+    ("화요일", "16:00", "17:00"),
+    ("수요일", "09:00", "10:00"),
+    ("수요일", "10:00", "11:00"),
+    ("수요일", "11:00", "12:00"),
+    ("수요일", "13:00", "14:00"),
+    ("수요일", "14:00", "15:00"),
+    ("수요일", "15:00", "16:00"),
+    ("수요일", "16:00", "17:00"),
+    ("목요일", "09:00", "10:00"),
+    ("목요일", "10:00", "11:00"),
+    ("목요일", "11:00", "12:00"),
+    ("목요일", "13:00", "14:00"),
+    ("목요일", "14:00", "15:00"),
+    ("목요일", "15:00", "16:00"),
+    ("목요일", "16:00", "17:00"),
+    ("금요일", "09:00", "10:00"),
+    ("금요일", "10:00", "11:00"),
+    ("금요일", "11:00", "12:00"),
+    ("금요일", "13:00", "14:00"),
+    ("금요일", "14:00", "15:00"),
+    ("금요일", "15:00", "16:00"),
+    ("금요일", "16:00", "17:00")
+]
 
 # 아동 상담 분야 가져오기
 def get_all_child_survey_consulting():
@@ -878,11 +914,33 @@ def print_matching_counselors():
 @app.route('/get_counselor_schedule')
 def get_counselor_schedule():
     counselor_id = request.args.get('counselorId')
-    get_schedule = schdule_listdb.fetch_one(f"SELECT day_of_week, start_time, end_time FROM COUNSELOR_SCHEDULE WHERE co_id = '{counselor_id}'")
     if not counselor_id:
         return "상담사 ID가 제공되지 않았습니다.", 400
-    # ID를 기반으로 데이터 처리
-    return render_template('user/get_counselor_schedule.html', counselor_id=counselor_id)
+
+    try:
+        query = f"""
+            SELECT day_of_week, start_time, end_time
+            FROM schedule_list
+            WHERE co_id = '{counselor_id}'
+        """
+        schedule = schedule_listdb.execute(query)
+
+        # datetime.timedelta를 문자열로 변환
+        reserved_timeslots = []
+        for day, start, end in schedule:
+            start_time = (datetime.min + start).time()
+            end_time = (datetime.min + end).time()
+            reserved_timeslots.append((day, start_time.strftime('%H:%M'), end_time.strftime('%H:%M')))
+
+        # 예약 가능한 시간대를 계산
+        available_timeslots = [
+            timeslot for timeslot in AVAILABLE_TIMESLOTS if timeslot not in reserved_timeslots
+        ]
+    except Exception as e:
+        app.logger.error(f"Error fetching schedule: {e}")
+        return "서버 오류가 발생했습니다.", 500
+
+    return render_template('user/get_counselor_schedule.html', counselor_id=counselor_id, reserved_timeslots=reserved_timeslots, available_timeslots=available_timeslots)
 
 @app.route('/mbti_result') 
 def mbti_result_html():
