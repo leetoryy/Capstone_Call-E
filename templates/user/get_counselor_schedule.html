@@ -4,32 +4,39 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>상담 가능 시간</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet" />
     <style>
-      body {
-        font-family: "Nanum Gothic", sans-serif;
-      }
-      button {
-        margin: 5px;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-      }
+      body { font-family: "Nanum Gothic", sans-serif; }
+      .reserved { background-color: red; color: white; }
+      .available { background-color: green; color: white; }
+      button { margin: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
     </style>
   </head>
   <body>
-    <h2>ID: {{ counselor_id }}</h2>
-    {% if schedule %}
+    <h2>상담 가능 시간 - ID: {{ counselor_id }}</h2>
+    <h3>예약된 시간</h3>
+    {% if reserved_timeslots %}
     <div>
-      {% for time in schedule %}
-      <button>{{ time }}</button>
+      {% for day, start, end in reserved_timeslots %}
+      <button class="reserved">
+        {{ day }}: {{ start }} - {{ end }}
+      </button>
       {% endfor %}
     </div>
     {% else %}
-    <p>상담 가능한 시간이 없습니다.</p>
+    <p>예약된 시간이 없습니다.</p>
+    {% endif %}
+    <h3>예약 가능한 시간</h3>
+    {% if available_timeslots %}
+    <div>
+      {% for day, start, end in available_timeslots %}
+      <button class="available">
+        {{ day }}: {{ start }} - {{ end }}
+      </button>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>예약 가능한 시간이 없습니다.</p>
     {% endif %}
   </body>
 </html>
