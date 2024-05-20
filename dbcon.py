@@ -61,18 +61,6 @@ review_list_conn = pymysql.connect(host='orion.mokpo.ac.kr',
 review_list_cur = review_list_conn.cursor()
 
 #=====
-code_list_conn = None
-code_list_cur = None
-
-code_list_conn = pymysql.connect(host='orion.mokpo.ac.kr',
-                       port=8397,
-                       user='root',
-                       passwd='ScE1234**',
-                       db='CONSULTING_CODE', 
-                       charset='utf8')
-code_list_cur = code_list_conn.cursor()
-
-#=====
 schedule_list_conn = None
 schedule_list_cur = None
 
