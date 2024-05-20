@@ -10,6 +10,8 @@ from datetime import datetime
 from flask_socketio import SocketIO
 from flask_socketio import emit
 from flask_socketio import SocketIO, join_room, leave_room, send
+import random
+import string
 import re
 
 app = Flask(__name__, static_url_path='/static')
@@ -941,6 +943,8 @@ def get_counselor_schedule():
 
     return render_template('user/get_counselor_schedule.html', counselor_id=counselor_id, reserved_timeslots=reserved_timeslots, available_timeslots=available_timeslots)
 
+
+
 @app.route('/reserve_timeslot', methods=['POST'])
 def reserve_timeslot():
     data = request.get_json()
@@ -963,15 +967,19 @@ def reserve_timeslot():
         start_time = datetime.strptime(start, '%H:%M').time()
         end_time = datetime.strptime(end, '%H:%M').time()
 
+        consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
+
+        # 상담 코드를 포함하여 새로운 일정 항목을 데이터베이스에 삽입하는 SQL 쿼리
         query = """
-            INSERT INTO schedule_list (co_id, child_id, day_of_week, start_time, end_time)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO schedule_list (co_id, child_id, day_of_week, start_time, end_time, consultation_code)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """
-        cursor = schedule_listdb.get_cursor()  # 커서 가져오기
-        cursor.execute(query, (counselor_id, child_id, day, start_time, end_time))
-        schedule_listdb.conn.commit()
+        cursor = schedule_listdb.get_cursor()
+        cursor.execute(query, (counselor_id, child_id, day, start_time, end_time, consultation_code))
+        schedule_listdb.conn.commit()  # 트랜잭션 커밋
         cursor.close()  # 커서 닫기
-        return jsonify({"success": True}), 200
+
+        return jsonify({"success": True, "consultation_code": consultation_code}), 200
     except Exception as e:
         app.logger.error(f"Error reserving timeslot: {e}")
         return jsonify({"error": "서버 오류가 발생했습니다."}), 500
