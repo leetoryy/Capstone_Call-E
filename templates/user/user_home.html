@@ -8,48 +8,39 @@
     <link rel="icon" href="/static/images/icon2.png" />
     <link rel="apple-touch-icon" href="/static/images/icon2.png" />
     <!-- boxicon -->
-    <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
     <!-- CSS -->
     <link rel="stylesheet" href="/static/css/user/user_home.css" />
   </head>
   <body>
     <header>
-      <img src="/static/images/icon.png" alt="Call-E" id="logo" />
-      <div class="header-flex">
-        <h3>{{user_name}} 님</h3>
-        <div class="profile">
-          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="" />
-          <ul class="profile-link">
-            <li>
-              <a href="#"><i class="bx bxs-cog"></i> 설정</a>
-            </li>
-            <li>
-              <a href="#"><i class="bx bxs-log-out-circle"></i> 종료하기</a>
-            </li>
-          </ul>
-        </div>
+      <div class="logout-icon">
+        <i class="bx bx-log-out home-icon"></i>
       </div>
     </header>
-    <div class="container">
-      <div class="card" id="alphabet">
-        <img src="/static/images/character.jpeg" alt="" id="character-img" height="300px" />
+    <div class="content-container">
+      <div class="top-content">
+        <div class="icon">
+          <img src="/static/images/icon2.png" alt="Logo" />
+        </div>
+        <div class="title"><span class="highlight">소중한</span> 김아동님</div>
       </div>
-      <div class="card" id="alphabet">
-        <div class="card-icon">MBTI</div>
-        <div class="text">나의 MBTI를 알 수 있어요!</div>
-        <a href="/mbti_home" class="learn-button">검사하기</a>
-      </div>
-      <div class="card" id="phonics">
-        <div class="card-icon">상담 일지</div>
-        <div class="text">상담 일지를 볼 수 있어요!</div>
-        <a href="/mbti_home" class="learn-button">보러가기</a>
-      </div>
-      <div class="card" id="readers">
-        <div class="card-icon">리뷰</div>
-        <div class="text">나의 리뷰를 볼 수 있어요!</div>
-        <a href="/mbti_home" class="learn-button">보러가기</a>
-      </div>
+      <main>
+        <div class="icons">
+          <div class="icon-item">
+            <img src="/static/images/1.png" alt="Icon 1" />
+          </div>
+          <div class="icon-item">
+            <img src="/static/images/2.png" alt="Icon 2" />
+          </div>
+          <div class="icon-item">
+            <img src="/static/images/3.png" alt="Icon 3" />
+          </div>
+          <div class="icon-item">
+            <img src="/static/images/4.png" alt="Icon 4" />
+          </div>
+        </div>
+      </main>
     </div>
-    <script src="/static/javascript/user/user_home.js"></script>
   </body>
 </html>
