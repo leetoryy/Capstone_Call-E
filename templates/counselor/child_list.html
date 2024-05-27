@@ -25,7 +25,7 @@
           <a href="#" class="active"><i class="bx bxs-widget icon"></i> 아동 조회 <i class="bx bx-chevron-right icon-right"></i></a>
           <ul class="side-dropdown">
             <li><a href="/child_list">모든 아동 조회</a></li>
-            <li><a href="/child_list">담당 아동 조회</a></li>
+            <li><a href="/counsel_child_list">담당 아동 조회</a></li>
           </ul>
         </li>
         <li>
@@ -104,86 +104,19 @@
                   </tr>
                 </thead>
                 <tbody class="table-hover">
+                  {% for child in child_info_data %}
                   <tr>
-                    <td class="text-center">박아동</td>
-                    <td class="text-center">ch06</td>
-                    <td class="text-center">발달 상담</td>
-                    <td class="text-center">INFP</td>
-                    <td class="text-center">이상담</td>
-                    <td class="text-center">최보호</td>
-                    <td class="text-center">010-6666-0000</td>
+                    <td class="text-center">{{ child.child_name }}</td>
+                    <td class="text-center">{{ child.child_id }}</td>
+                    <td class="text-center">{{ child.survey_consulting }}</td>
+                    <td class="text-center">{{ child.child_mbti }}</td>
+                    <td class="text-center">{{ child.co_name }}</td>
+                    <td class="text-center">{{ child.parent_name }}</td>
+                    <td class="text-center">{{ child.parent_phone }}</td>
                   </tr>
-
-                  <tr>
-                    <td class="text-center">김아동</td>
-                    <td class="text-center">ch01</td>
-                    <td class="text-center">학교 상담</td>
-                    <td class="text-center">ENFP</td>
-                    <td class="text-center">박상담</td>
-                    <td class="text-center">양보호</td>
-                    <td class="text-center">010-0000-1111</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">최아동</td>
-                    <td class="text-center">ch03</td>
-                    <td class="text-center">학교 상담</td>
-                    <td class="text-center">INTP</td>
-                    <td class="text-center">김상담</td>
-                    <td class="text-center">임보호</td>
-                    <td class="text-center">010-8888-8888</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">양아동</td>
-                    <td class="text-center">ch09</td>
-                    <td class="text-center">발달 상담</td>
-                    <td class="text-center">ISFP</td>
-                    <td class="text-center"></td>
-                    <td class="text-center">박보호</td>
-                    <td class="text-center">010-7777-7777</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">이아동</td>
-                    <td class="text-center">ch10</td>
-                    <td class="text-center">발달 상담</td>
-                    <td class="text-center">ISTJ</td>
-                    <td class="text-center">최상담</td>
-                    <td class="text-center">최보호</td>
-                    <td class="text-center">010-6666-6666</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">임아동</td>
-                    <td class="text-center">ch08</td>
-                    <td class="text-center">문제행동 상담</td>
-                    <td class="text-center">ENFJ</td>
-                    <td class="text-center"></td>
-                    <td class="text-center">이보호</td>
-                    <td class="text-center">010-4444-5555</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">황아동</td>
-                    <td class="text-center">ch05</td>
-                    <td class="text-center">발달 상담</td>
-                    <td class="text-center">INFP</td>
-                    <td class="text-center">김상담</td>
-                    <td class="text-center">강보호</td>
-                    <td class="text-center">010-2222-3333</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">김아동</td>
-                    <td class="text-center">ch18</td>
-                    <td class="text-center">발달 상담</td>
-                    <td class="text-center">INFP</td>
-                    <td class="text-center">유상담</td>
-                    <td class="text-center">차보호</td>
-                    <td class="text-center">010-1111-2222</td>
-                  </tr>
+                  {% endfor %}
                 </tbody>
+                             
               </table>
             </div>
           </div>
