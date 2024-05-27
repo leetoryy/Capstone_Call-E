@@ -6,10 +6,13 @@ from flask import Flask, jsonify, render_template, request, redirect, session, u
 from dbcl import DBconnector
 import pymysql
 import dbcl
-from datetime import datetime
+from datetime import datetime, time, timedelta
+import pytz
 from flask_socketio import SocketIO
 from flask_socketio import emit
 from flask_socketio import SocketIO, join_room, leave_room, send
+import random
+import string
 import re
 
 app = Flask(__name__, static_url_path='/static')
@@ -177,6 +180,8 @@ def login():
                 if auth_result:
                     # 로그인 성공 시 세션에 상담사 이름 저장
                     session['counselor_name'] = counselor_name
+                    session['co_id'] = counselor_ID
+                    print(counselor_ID)
                     return jsonify({'user_type': 'counselor', 'counselor_name': counselor_name})
                     
                 else:
@@ -357,16 +362,157 @@ def check_name_and_id_association():
         print(f"이름과 사번 연관성 확인 중 오류: {e}")
         return jsonify({"error": str(e)})
 
+# 상담 상태를 한국 시간에 맞게 얻기 위한 함수
+def get_korean_weekday(date_time):
+    weekday_map = {
+        0: "월",
+        1: "화",
+        2: "수",
+        3: "목",
+        4: "금",
+        5: "토",
+        6: "일"
+    }
+    return weekday_map[date_time.weekday()]
 
-@app.route('/counselor_home') 
+# timedelta를 time 객체로 변환
+def convert_timedelta_to_time(timedelta_obj):
+    total_seconds = int(timedelta_obj.total_seconds())
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    return time(hour=hours, minute=minutes, second=seconds)
+
+# 아동 정보를 가져오는 함수
+def get_children_info(co_id):
+    korea_timezone = pytz.timezone('Asia/Seoul')
+    current_time = datetime.now(tz=korea_timezone)
+    current_weekday = get_korean_weekday(current_time)
+
+    # SQL 쿼리를 이용해 아동 정보 조회
+    # 예를 들어, schedule_listdb.query()는 DB에서 데이터를 조회하는 가정된 함수입니다.
+    try:
+        children_info = schedule_listdb.query("""
+            SELECT ci.child_name, ci.child_mbti, ci.survey_consulting, ci.co_id, cd.parent_phone,
+                   sl.start_time, sl.end_time, sl.day_of_week
+            FROM CHILD_INFO.child_info_list ci
+            JOIN CHILD.child_list cd ON ci.child_id = cd.child_id
+            JOIN COUNSELOR_SCHEDULE.schedule_list sl ON ci.child_id = sl.child_id
+            WHERE ci.co_id = %s AND sl.day_of_week = %s
+        """, [co_id, current_weekday])
+        if not children_info:
+            logging.info("No children_info found")
+            return []
+    except Exception as e:
+        logging.error(f"Error retrieving children info: {e}")
+        return []
+
+    result = []
+    for child in children_info:
+        start_time = children_info['start_time']
+        end_time = children_info['end_time']
+
+        # timedelta 객체인 경우 time 객체로 변환
+        if isinstance(start_time, timedelta):
+            start_time = convert_timedelta_to_time(start_time)
+        if isinstance(end_time, timedelta):
+            end_time = convert_timedelta_to_time(end_time)
+
+        # 현재 시간과 상담 시간 비교하여 상태 결정
+        status = '상담 대기' if current_time.time() < start_time else '상담 완료' if current_time.time() > end_time else '상담 중'
+        result.append({
+            'child_name': child['child_name'],
+            'child_mbti': child['child_mbti'],
+            'survey_consulting': child['survey_consulting'],
+            'parent_phone': child['parent_phone'],
+            'start_time': start_time.strftime('%H:%M'),
+            'end_time': end_time.strftime('%H:%M'),
+            'counseling_status': status
+        })
+    return result
+
+# 라우트 설정
+@app.route('/counselor_home')
 def counselor_home_html():
-    counselor_name = request.args.get('counselor_name', '')  # URL 파라미터로부터 counselor_name을 가져옴
+    counselor_name = request.args.get('counselor_name', '')
+    co_id = session.get('co_id', '')
     return render_template('counselor/counselor_home.html', counselor_name=counselor_name)
 
-@app.route('/child_list') 
-def child_list_html():
-    return render_template('counselor/child_list.html')
+@app.route('/get_children_info')
+def get_children_info_route():
+    co_id = session.get('co_id', '')
+    if not co_id:
+        return jsonify([])
+    children_info = get_children_info(co_id)
+    return jsonify(children_info)
 
+def convert_to_dict(keys, values):
+    return {keys[i]: values[i] for i in range(len(keys))}
+
+@app.route('/child_list')
+def child_list():
+    try:
+        query = """
+            SELECT 
+                ci.child_name, 
+                ci.child_id, 
+                ci.child_mbti, 
+                ci.survey_consulting, 
+                co.co_name, 
+                cd.parent_name, 
+                cd.parent_phone
+            FROM 
+                CHILD_INFO.child_info_list ci
+            JOIN 
+                CHILD.child_list cd ON ci.child_id = cd.child_id 
+            LEFT JOIN 
+                COUNSELOR.counselor_list co ON ci.co_id = co.co_id;
+        """
+        child_info_data = child_infodb.query(query)
+        keys = ['child_name', 'child_id', 'child_mbti', 'survey_consulting', 'co_name', 'parent_name', 'parent_phone']
+        child_info_data_dicts = [convert_to_dict(keys, row) for row in child_info_data]
+        
+        return render_template('counselor/child_list.html', child_info_data=child_info_data_dicts)
+    except Exception as e:
+        logging.error(f"Error fetching child list: {str(e)}")
+        return render_template('counselor/child_list.html', child_info_data=[])
+
+def convert_to_dict(keys, values):
+    return {keys[i]: values[i] for i in range(len(keys))}
+
+@app.route('/counsel_child_list')
+def counsel_child_list():
+    try:
+        # 세션에서 상담사 아이디 가져오기
+        counselor_id = session.get('co_id', '')
+        
+        query = """
+            SELECT 
+                ci.child_name, 
+                ci.child_id, 
+                ci.child_mbti, 
+                ci.survey_consulting, 
+                co.co_name, 
+                cd.parent_name, 
+                cd.parent_phone
+            FROM 
+                CHILD_INFO.child_info_list ci
+            JOIN 
+                CHILD.child_list cd ON ci.child_id = cd.child_id 
+            LEFT JOIN 
+                COUNSELOR.counselor_list co ON ci.co_id = co.co_id
+            WHERE 
+                co.co_id = %s;
+        """
+        child_info_data = child_infodb.query(query, (counselor_id,))
+        keys = ['child_name', 'child_id', 'child_mbti', 'survey_consulting', 'co_name', 'parent_name', 'parent_phone']
+        child_info_data_dicts = [convert_to_dict(keys, row) for row in child_info_data]
+        
+        return render_template('counselor/counsel_child_list.html', child_info_data=child_info_data_dicts)
+    except Exception as e:
+        logging.error(f"Error fetching child list: {str(e)}")
+        return render_template('counselor/counsel_child_list.html', child_info_data=[])
+    
 @app.route('/counsel_write') 
 def counsel_write_html():
     return render_template('counselor/counsel_write.html')
@@ -941,6 +1087,8 @@ def get_counselor_schedule():
 
     return render_template('user/get_counselor_schedule.html', counselor_id=counselor_id, reserved_timeslots=reserved_timeslots, available_timeslots=available_timeslots)
 
+
+
 @app.route('/reserve_timeslot', methods=['POST'])
 def reserve_timeslot():
     data = request.get_json()
@@ -963,15 +1111,19 @@ def reserve_timeslot():
         start_time = datetime.strptime(start, '%H:%M').time()
         end_time = datetime.strptime(end, '%H:%M').time()
 
+        consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
+
+        # 상담 코드를 포함하여 새로운 일정 항목을 데이터베이스에 삽입하는 SQL 쿼리
         query = """
-            INSERT INTO schedule_list (co_id, child_id, day_of_week, start_time, end_time)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO schedule_list (co_id, child_id, day_of_week, start_time, end_time, consultation_code)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """
-        cursor = schedule_listdb.get_cursor()  # 커서 가져오기
-        cursor.execute(query, (counselor_id, child_id, day, start_time, end_time))
-        schedule_listdb.conn.commit()
+        cursor = schedule_listdb.get_cursor()
+        cursor.execute(query, (counselor_id, child_id, day, start_time, end_time, consultation_code))
+        schedule_listdb.conn.commit()  # 트랜잭션 커밋
         cursor.close()  # 커서 닫기
-        return jsonify({"success": True}), 200
+
+        return jsonify({"success": True, "consultation_code": consultation_code}), 200
     except Exception as e:
         app.logger.error(f"Error reserving timeslot: {e}")
         return jsonify({"error": "서버 오류가 발생했습니다."}), 500
@@ -1100,4 +1252,4 @@ def print_log(header, client_id, room):
     logging.info("#ConncetedClients - {} => room: {}, count: {}".format(header, room, size))
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=3000, debug=False)
+    socketio.run(app, host='0.0.0.0', port=3001, debug=False)
