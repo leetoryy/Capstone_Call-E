@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
     <!-- favicon -->
@@ -11,40 +12,40 @@
     <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
     <!-- CSS -->
     <link rel="stylesheet" href="/static/css/user/user_home.css" />
+    <script>
+      document.addEventListener("touchstart", function () {}, true);
+    </script>
   </head>
   <body>
     <header>
-      <div class="logout-icon">
-        <i class="bx bx-log-out home-icon"></i>
+      <img src="/static/images/icon.png" alt="Call-E" id="logo" />
+      <div class="header-flex">
+        <input type="text" placeholder=" 원하는 콘텐츠를 검색해보세요" id="search-bar" />
+        <i class="bx bx-search"></i>
       </div>
+      <i class="bx bxs-home" id="logout-icon"></i>
     </header>
-    <div class="content-container">
-      <div class="top-content">
-        <div class="icon">
-          <img src="/static/images/icon3.png" alt="Logo" />
-        </div>
-        <div class="title"><span class="highlight">소중한</span> 김아동님</div>
-      </div>
-      <main>
-        <div class="icons">
-          <a href="/survey_pre" class="icon-item">
-            <img src="/static/images/1.png" alt="Icon 1" />
-            <div class="icon-text">사전 질문지</div>
-          </a>
-          <a href="/user_home" class="icon-item">
-            <img src="/static/images/2.png" alt="Icon 2" />
-            <div class="icon-text">상담 일지</div>
-          </a>
-          <a href="/user_home" class="icon-item">
-            <img src="/static/images/3.png" alt="Icon 3" />
-            <div class="icon-text">리뷰</div>
-          </a>
-          <a href="/mbti_home" class="icon-item">
-            <img src="/static/images/4.png" alt="Icon 4" />
-            <div class="icon-text">MBTI</div>
-          </a>
-        </div>
-      </main>
+    <div class="container">
+      <a class="card" id="survey" href="/survey_pre" style="background-color: #6ab9ea">
+        <div class="card-title">사전 설문</div>
+        <div class="text">사전 설문을 진행할 수 있어요</div>
+        <img src="/static/images/penguin05.png" alt="Penguin1" width="200px" />
+      </a>
+      <a class="card" id="mbti" href="/mbti_home" style="background-color: #63c9a2">
+        <div class="card-title">MBTI</div>
+        <div class="text">나의 MBTI를 알 수 있어요</div>
+        <img src="/static/images/penguin03.png" alt="Penguin2" width="200px" />
+      </a>
+      <a class="card" id="consultation" href="/survey_pre" style="background-color: #f6c946">
+        <div class="card-title">상담 일지</div>
+        <div class="text">상담 일지를 볼 수 있어요</div>
+        <img src="/static/images/penguin04.png" alt="Penguin3" width="200px" />
+      </a>
+      <a class="card" id="reviews" href="/survey_pre" style="background-color: #ea8e9f">
+        <div class="card-title">리뷰</div>
+        <div class="text">나의 리뷰를 볼 수 있어요</div>
+        <img src="/static/images/penguin02.png" alt="Penguin4" width="200px" />
+      </a>
     </div>
   </body>
 </html>
