@@ -12,26 +12,41 @@ function loadData(status) {
     }
   });
 
-  // 임시 데이터
-  const data = {
-    "상담 대기": [
-      { name: "나아동", mbti: "ENFP", type: "발달 상담", status: "상담 대기", contact: "010-0000-0000" },
-      { name: "장아동", mbti: "ENTP", type: "발달 상담", status: "상담 대기", contact: "010-0000-0000" },
-    ],
-    "상담 중": [{ name: "유아동", mbti: "ESFP", type: "발달 상담", status: "상담 중", contact: "010-0000-0000" }],
-    "상담 완료": [{ name: "이아동", mbti: "ESFP", type: "발달 상담", status: "상담 완료", contact: "010-0000-0000" }],
-  };
+  fetch('/counselor_home_data')
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        console.error(data.error);
+        return;
+      }
 
-  const tbody = document.getElementById("table-body");
-  tbody.innerHTML = "";
+      console.log('Received Data:', data); // 데이터를 확인하기 위해 콘솔 로그 추가
 
-  data[status].forEach((consultation) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${consultation.name}</td>
-                        <td>${consultation.mbti}</td>
-                        <td>${consultation.type}</td>
-                        <td>${consultation.status}</td>
-                        <td>${consultation.contact}</td>`;
-    tbody.appendChild(tr);
-  });
+      const filteredData = data.filter(consultation => consultation.status === status);
+      const tbody = document.getElementById("table-body");
+      tbody.innerHTML = "";
+
+      if (filteredData.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 5;
+        td.classList.add("text-center");
+        td.textContent = "상담 일정이 존재하지 않습니다.";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      } else {
+        filteredData.forEach((consultation) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${consultation.name}</td>
+                          <td>${consultation.mbti}</td>
+                          <td>${consultation.type}</td>
+                          <td>${consultation.status}</td>
+                          <td>${consultation.contact}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });
 }

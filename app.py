@@ -362,92 +362,94 @@ def check_name_and_id_association():
         print(f"이름과 사번 연관성 확인 중 오류: {e}")
         return jsonify({"error": str(e)})
 
-# 상담 상태를 한국 시간에 맞게 얻기 위한 함수
-def get_korean_weekday(date_time):
-    weekday_map = {
-        0: "월",
-        1: "화",
-        2: "수",
-        3: "목",
-        4: "금",
-        5: "토",
-        6: "일"
-    }
-    return weekday_map[date_time.weekday()]
+def get_consultation_status(start_time, end_time):
+    seoul_tz = pytz.timezone('Asia/Seoul')
+    now = datetime.now(seoul_tz)
+    current_time = now.time()
 
-# timedelta를 time 객체로 변환
-def convert_timedelta_to_time(timedelta_obj):
+    if start_time <= current_time <= end_time:
+        return '상담 중'
+    elif current_time < start_time:
+        return '상담 대기'
+    else:
+        return '상담 완료'
+
+def timedelta_to_time(timedelta_obj):
     total_seconds = int(timedelta_obj.total_seconds())
-    hours = total_seconds // 3600
-    minutes = (total_seconds % 3600) // 60
-    seconds = total_seconds % 60
-    return time(hour=hours, minute=minutes, second=seconds)
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return time(hours, minutes, seconds)
 
-# 아동 정보를 가져오는 함수
-def get_children_info(co_id):
-    korea_timezone = pytz.timezone('Asia/Seoul')
-    current_time = datetime.now(tz=korea_timezone)
-    current_weekday = get_korean_weekday(current_time)
+@app.route('/counselor_home_data')
+def counselor_home_data():
+    co_id = session.get('co_id', '')
 
-    # SQL 쿼리를 이용해 아동 정보 조회
-    # 예를 들어, schedule_listdb.query()는 DB에서 데이터를 조회하는 가정된 함수입니다.
-    try:
-        children_info = schedule_listdb.query("""
-            SELECT ci.child_name, ci.child_mbti, ci.survey_consulting, ci.co_id, cd.parent_phone,
-                   sl.start_time, sl.end_time, sl.day_of_week
-            FROM CHILD_INFO.child_info_list ci
-            JOIN CHILD.child_list cd ON ci.child_id = cd.child_id
-            JOIN COUNSELOR_SCHEDULE.schedule_list sl ON ci.child_id = sl.child_id
-            WHERE ci.co_id = %s AND sl.day_of_week = %s
-        """, [co_id, current_weekday])
-        if not children_info:
-            logging.info("No children_info found")
-            return []
-    except Exception as e:
-        logging.error(f"Error retrieving children info: {e}")
-        return []
+    if not co_id:
+        return jsonify({"error": "No counselor ID found in session"}), 400
 
-    result = []
-    for child in children_info:
-        start_time = children_info['start_time']
-        end_time = children_info['end_time']
+    query = """
+    SELECT ci.child_name, ci.child_mbti, ci.survey_consulting, ci.co_id, cd.parent_phone, 
+           sl.start_time, sl.end_time, sl.day_of_week 
+    FROM CHILD_INFO.child_info_list ci
+    JOIN CHILD.child_list cd ON ci.child_id = cd.child_id
+    JOIN COUNSELOR_SCHEDULE.schedule_list sl ON ci.child_id = sl.child_id
+    WHERE ci.co_id = %s
+    """
+    with child_infodb.get_cursor() as cursor:
+        cursor.execute(query, (co_id,))
+        results = cursor.fetchall()
 
-        # timedelta 객체인 경우 time 객체로 변환
-        if isinstance(start_time, timedelta):
-            start_time = convert_timedelta_to_time(start_time)
-        if isinstance(end_time, timedelta):
-            end_time = convert_timedelta_to_time(end_time)
+    # SQL 결과물을 출력
+    print("SQL Query Results:")
+    for row in results:
+        print(row)
 
-        # 현재 시간과 상담 시간 비교하여 상태 결정
-        status = '상담 대기' if current_time.time() < start_time else '상담 완료' if current_time.time() > end_time else '상담 중'
-        result.append({
-            'child_name': child['child_name'],
-            'child_mbti': child['child_mbti'],
-            'survey_consulting': child['survey_consulting'],
-            'parent_phone': child['parent_phone'],
-            'start_time': start_time.strftime('%H:%M'),
-            'end_time': end_time.strftime('%H:%M'),
-            'counseling_status': status
-        })
-    return result
+    # 현재 요일을 한글 형식으로 변환
+    seoul_tz = pytz.timezone('Asia/Seoul')
+    now = datetime.now(seoul_tz)
+    today_weekday = now.strftime('%a')
+    weekday_map = {
+        'Mon': '월',
+        'Tue': '화',
+        'Wed': '수',
+        'Thu': '목',
+        'Fri': '금',
+        'Sat': '토',
+        'Sun': '일'
+    }
+    today_weekday_kr = weekday_map[today_weekday]
 
-# 라우트 설정
+    data = []
+    for row in results:
+        child_name, child_mbti, survey_consulting, co_id, parent_phone, start_time_td, end_time_td, day_of_week = row
+        
+        # `timedelta`를 `time` 객체로 변환
+        start_time = timedelta_to_time(start_time_td)
+        end_time = timedelta_to_time(end_time_td)
+        
+        if day_of_week == today_weekday_kr:
+            status = get_consultation_status(start_time, end_time)
+            data.append({
+                'name': child_name,
+                'mbti': child_mbti,
+                'type': survey_consulting,
+                'status': status,
+                'contact': parent_phone
+            })
+
+    # 데이터가 올바르게 처리되었는지 출력
+    print("Processed Data:")
+    print(data)
+
+    return jsonify(data)
+
 @app.route('/counselor_home')
 def counselor_home_html():
     counselor_name = request.args.get('counselor_name', '')
     co_id = session.get('co_id', '')
     return render_template('counselor/counselor_home.html', counselor_name=counselor_name)
 
-@app.route('/get_children_info')
-def get_children_info_route():
-    co_id = session.get('co_id', '')
-    if not co_id:
-        return jsonify([])
-    children_info = get_children_info(co_id)
-    return jsonify(children_info)
 
-def convert_to_dict(keys, values):
-    return {keys[i]: values[i] for i in range(len(keys))}
 
 @app.route('/child_list')
 def child_list():
@@ -1252,4 +1254,4 @@ def print_log(header, client_id, room):
     logging.info("#ConncetedClients - {} => room: {}, count: {}".format(header, room, size))
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=3001, debug=False)
+    socketio.run(app, host='0.0.0.0', port=3000, debug=False)
