@@ -78,5 +78,16 @@ class DBconnector:
     def get_cursor(self):
         self.__connect__()
         return self.cur
+    
+    def query(self, sql, params=None):
+        """Execute a SQL query and return the results."""
+        self.__connect__()
+        if params:
+            self.cur.execute(sql, params)
+        else:
+            self.cur.execute(sql)
+        result = self.cur.fetchall()
+        self.__disconnect__()
+        return result
 
 print(pymysql.__version__)
