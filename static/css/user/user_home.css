@@ -7,19 +7,24 @@
   box-sizing: border-box;
 }
 
+a {
+  text-decoration-line: none;
+}
+
 body,
 html {
   height: 100%;
   margin: 0;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #f0f4f7;
+  background-color: #fff5de;
 }
 
 header {
   width: 100%;
-  padding: 10px 20px;
+  padding: 10px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -27,12 +32,16 @@ header {
   top: 0;
   left: 0;
   z-index: 1000;
+  background-color: #fbedbf;
 }
 
 .header-flex {
   display: flex;
-  grid-gap: 20px;
+  align-items: center;
+  gap: 20px;
   flex-wrap: wrap;
+  flex-grow: 1;
+  justify-content: center;
 }
 
 .header-flex h3 {
@@ -43,57 +52,61 @@ header {
 }
 
 #logo {
-  height: 80px;
+  height: 75px;
+  padding: 12px;
 }
 
-.profile {
-  position: relative;
+#userNameSpan {
+  margin-left: 20px;
+  font-size: 20px;
 }
-.profile img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
+
+#search-bar {
+  width: 35vw;
+  height: 40px;
+  padding: 5px 10px;
+  font-size: 18px;
+  border: 2px solid #fff;
+  border-radius: 5px;
+}
+
+#search-bar:focus {
+  outline: none;
+}
+
+.bx-search {
+  font-size: 28px;
+  color: #ea726b;
   cursor: pointer;
 }
-.profile .profile-link {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  background: var(--light);
-  padding: 10px 0;
-  box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  width: 160px;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
+
+#alarm-icon {
+  font-size: 40px;
+  color: #ea726b;
+  cursor: pointer;
+  margin-right: 20px;
 }
-.profile .profile-link.show {
-  opacity: 1;
-  pointer-events: visible;
-  top: 100%;
+
+#user-icon {
+  font-size: 40px;
+  color: #ea726b;
+  cursor: pointer;
+  margin-right: 20px;
 }
-.profile .profile-link a {
-  padding: 10px 16px;
-  display: flex;
-  grid-gap: 10px;
-  font-size: 14px;
-  color: var(--dark);
-  align-items: center;
-  transition: all 0.3s ease;
-  font-size: 18px;
-}
-.profile .profile-link a:hover {
-  background: var(--grey);
+
+#logout-icon {
+  font-size: 40px;
+  color: #ea726b;
+  cursor: pointer;
 }
 
 .container {
   display: flex;
   flex-wrap: wrap;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 10px;
+  margin-top: 100px;
 }
 
 .card {
@@ -103,34 +116,139 @@ header {
   margin: 10px;
   padding: 20px;
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 24px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 30vw;
+  width: 290px;
+  height: 440px;
   max-width: 300px;
   justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-.card-icon {
-  font-size: 3em;
+.card-title {
+  color: #fff;
+  font-size: 2.5em;
   margin-bottom: 10px;
+}
+
+.card img {
+  margin-top: 10px;
 }
 
 .text {
   margin-bottom: 20px;
   font-size: 1.2em;
+  color: #333;
 }
 
-.learn-button {
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 1em;
-}
-
-@media screen and (orientation: landscape) {
-  .container {
-    flex-direction: row;
+@media screen and (max-width: 768px) {
+  .card {
+    width: 40vw;
+    height: 50vw;
   }
 }
+
+@media screen and (max-width: 480px) {
+  .card {
+    width: 80vw;
+    height: 80vw;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .container {
+    margin-top: 50px;
+  }
+  #logo {
+    height: 62px;
+  }
+  #search-bar {
+    height: 35px;
+    font-size: 15px;
+  }
+  .bx-search {
+    font-size: 25px;
+  }
+  #user-icon {
+    font-size: 35px;
+  }
+  #alarm-icon {
+    font-size: 35px;
+  }
+  #logout-icon {
+    font-size: 35px;
+  }
+  .card {
+    width: 20vw;
+    height: 55vh;
+    max-width: none;
+  }
+  .card-title {
+    font-size: 2em;
+  }
+  .card img {
+    width: 160px;
+    margin-top: 5px;
+  }
+  .text {
+    font-size: 15px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .card {
+    width: 80vw;
+    height: 40vh;
+    max-width: none;
+  }
+}
+
+/* 아이콘을 담는 컨테이너 */
+.icon-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* 아이콘 스타일 */
+.bx {
+  font-size: 48px;
+  color: #555;
+}
+
+/* 뱃지 스타일 */
+.badge {
+  position: absolute;
+  top: -5px;  
+  right: 19px;  
+  background-color: red;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 9.5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: none; 
+}
+
+/* 알람 박스 스타일 */
+.notification-box {
+  position: absolute;
+  top: 70px; /* 아이콘 바로 아래에 위치하도록 조정 */
+  right: 20px;
+  width: 200px;
+  padding: 20px;
+  font-size:13px;
+  text-align : center;
+  background-color: #ffffff; /* 배경색을 변경할 수 있습니다 */
+  border: 1px solid #ffe700;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+}
+

@@ -18,9 +18,18 @@
         <input type="text" placeholder=" 원하는 콘텐츠를 검색해보세요" id="search-bar" />
         <i class="bx bx-search"></i>
       </div>
+    
       <div class="header-right">
-        <a href="#"><i class="bx bxs-user-circle" id="user-icon"></i></a>
-        <i class="bx bxs-bell" id="alarm-icon"></i>
+        <a href="/survey_pre_edit"><i class="bx bxs-user-circle" id="user-icon"></i></a>
+        <!-- 아이콘과 뱃지를 담는 컨테이너 -->
+        <div class="icon-container">
+          <i class="bx bxs-bell" id="alarm-icon"></i>
+          <span class="badge" id="notification-count">new</span>
+        </div>
+        <!-- 알람 박스 -->
+        <div id="notification-box" class="notification-box" style="display: none;">
+          
+        </div>
         <i class="bx bxs-home" id="logout-icon"></i>
       </div>
     </header>
@@ -46,5 +55,57 @@
         <img src="/static/images/penguin02.png" alt="Penguin4" width="200px" />
       </a>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='javascript/user/user_home.js') }}"></script>
   </body>
 </html>
+<script>
+  const socket = io();
+
+  // 소켓 연결이 생성되면 아동 이름을 서버에 전송합니다.
+  socket.on('connect', function() {
+    const childName = document.getElementById('userNameSpan').textContent.trim().split(' ')[0];
+    socket.emit('register_child', { childName: childName });
+  });
+
+  // 소켓 알람을 받는 함수
+  socket.on('counseling_started', function(data) {
+    // 뱃지를 나타내는 요소를 가져옵니다.
+    var badge = document.getElementById('notification-count');
+    // 뱃지를 표시합니다.
+    badge.style.display = 'inline';
+
+    // 알람 메시지를 설정합니다.
+    var notificationBox = document.getElementById('notification-box');
+    notificationBox.innerHTML = data.message;
+    notificationBox.style.display = 'block';
+
+    // 알람 아이콘 클릭 이벤트 활성화
+    var alarmIcon = document.getElementById('alarm-icon');
+    alarmIcon.addEventListener('click', showNotificationBox);
+
+    // 알람 박스를 클릭하면 chat.html로 이동하도록 설정
+    notificationBox.addEventListener('click', function() {
+      window.open("/chat", "_blank");
+    });
+  });
+
+  function showNotificationBox() {
+    var notificationBox = document.getElementById('notification-box');
+    notificationBox.style.display = 'block';
+  }
+
+  // 아이콘 클릭 시 박스 표시 함수
+  var alarmIcon = document.getElementById('alarm-icon');
+  alarmIcon.addEventListener('click', function() {
+    var badge = document.getElementById('notification-count');
+    if (badge.style.display === 'inline') {
+      showNotificationBox();
+    }
+  });
+</script>
+
+
+
+
+

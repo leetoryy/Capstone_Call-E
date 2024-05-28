@@ -1,13 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap");
 @font-face {
-  font-family: 'GangwonEduSaeeum_OTFMediumA';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduSaeeum_OTFMediumA.woff') format('woff');
+  font-family: "GangwonEduSaeeum_OTFMediumA";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduSaeeum_OTFMediumA.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
+a {
+  text-decoration-line: none;
+}
+
 html {
-  background: url('/static/images/MBTI_background.png') no-repeat center fixed;
+  background: url("/static/images/MBTI_background.png") no-repeat center fixed;
   background-size: cover;
   background-position: center bottom;
 }
@@ -18,7 +22,7 @@ body {
   align-items: center;
   flex-direction: column;
   width: 98vw;
-  font-family: 'GangwonEduSaeeum_OTFMediumA';
+  font-family: "GangwonEduSaeeum_OTFMediumA";
   animation: fadein 2s;
 }
 
@@ -37,7 +41,7 @@ body {
 }
 
 .css-title {
-  font-family: 'Bagel Fat One';
+  font-family: "Bagel Fat One";
   margin-top: 10vh;
   font-size: 4rem;
   text-align: center;
@@ -67,16 +71,7 @@ body {
   color: black;
   font-size: 70px;
   opacity: 0.5;
-  font-family: 'GangwonEduSaeeum_OTFMediumA';
-}
-
-.css-ratings {
-  position: relative;
-  text-align: center;
-  margin-top: 4vh;
-  color: black;
-  font-size: 22px;
-  font-weight: bold;
+  font-family: "GangwonEduSaeeum_OTFMediumA";
 }
 
 .css-resultExplain {
@@ -84,7 +79,7 @@ body {
   width: 70%;
   color: black;
   font-size: 50px;
-  font-family: 'GangwonEduSaeeum_OTFMediumA';
+  font-family: "GangwonEduSaeeum_OTFMediumA";
   text-align: center;
 }
 
@@ -92,38 +87,42 @@ body {
   width: 60%;
   padding: 16px 48px;
   font-size: 30px;
-  background-color: white;
-  color: black;
-  border: 2px solid #3d3d3d;
-  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
-  font-family: 'GangwonEduSaeeum_OTFMediumA';
+  font-family: "GangwonEduSaeeum_OTFMediumA";
   margin-top: 30px;
   margin-bottom: 15px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
+
 .css-restart:hover {
-  transition-duration: 0.4s;
-  background-color: #3d3d3d;
-  color: white;
+  background-color: #0056b3;
+  transform: translateY(-2px);
 }
+
 .css-match {
   width: 60%;
   padding: 16px 48px;
   font-size: 30px;
-  background-color: white;
-  color: black;
-  border: 2px solid #3d3d3d;
-  border-radius: 5px;
-  cursor: pointer;
-  font-family: 'GangwonEduSaeeum_OTFMediumA';
-  margin-bottom: 15px;
-}
-.css_match:hover {
-  transition-duration: 0.4s;
-  background-color: #3d3d3d;
+  background-color: #28a745;
   color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: "GangwonEduSaeeum_OTFMediumA";
+  margin-bottom: 15px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
+.css-match:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+}
 
 .css-footer {
   position: relative;
@@ -150,5 +149,20 @@ body {
   }
   .css-worstMatch {
     margin-left: 40px;
+  }
+}
+
+#logout-icon {
+  font-size: 40px;
+  color: white;
+  cursor: pointer;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}
+
+@media screen and (max-width: 1024px) {
+  #logout-icon {
+    font-size: 35px;
   }
 }

@@ -601,6 +601,10 @@ def survey_pre_html():
                 
     return render_template('user/survey_pre.html', child_id=child_id, parent_name=parent_name)
 
+@app.route('/survey_pre_edit')
+def survey_pre_edit_html():
+    return render_template('user/survey_pre_edit.html')
+
 @app.route('/user_home')
 def user_home_html():
     return render_template('user/user_home.html')
@@ -1185,23 +1189,30 @@ def chat_html():
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
+clients = {}
+
+@socketio.on('register_child')
+def handle_register_child(data):
+    child_name = data.get('childName')
+    clients[child_name] = request.sid
+    print(f"Registered child: {child_name}, SID: {request.sid}")
+
 @socketio.on('start_counseling')
 def handle_start_counseling(data):
-    child_Name = data.get('childName')
-    print("아동 이름:", child_Name)
-    # SQL 쿼리 작성
-    sql = "SELECT child_id FROM child_list WHERE child_name = %s"
+    child_name = data.get('childName')
+    print("아동 이름:", child_name)
     
-    # 쿼리 실행
-    result = childdb.query(sql, (child_Name,))
-    
-    if result:
-        child_id = result[0][0]
-        print("찾은 아동 ID:", child_id)
+    # 특정 아동에게만 메시지를 전송합니다.
+    if child_name in clients:
+        recipient_sid = clients[child_name]
+        socketio.emit('counseling_started', {'message': '상담이 시작되었습니다.'}, room=recipient_sid)
     else:
         print("해당하는 아동이 없습니다.")
+
     # 상담이 시작되었다는 메시지를 모든 연결된 클라이언트에게 전송합니다.
-    socketio.emit('counseling_started', {'message': '상담이 시작되었습니다.'})
+    #socketio.emit('counseling_started', {'message': '상담이 시작되었습니다.'})
+
+    
 
 
 
