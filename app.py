@@ -156,15 +156,25 @@ def login():
             child_pw = request.form.get('ch_pw_2')
             
             try:
-                if authenticate_child(child_ID, child_pw):
-                    print("성공")
-                    # Store the child_id in the session
-                    session['child_name'] = child_ID
-                    return jsonify({'user_type': 'child'})
+                # SQL 쿼리 작성
+                sql = "SELECT child_name FROM child_list WHERE child_id = %s"
+    
+                # 쿼리 실행
+                result = childdb.query(sql, (child_ID,))
+                
+                if result:
+                    child_name = result[0][0]
+                    print("냥",child_name)
+                
+                    if authenticate_child(child_ID, child_pw):
+                        print("성공")
+                        session['child_name'] = child_name
+                        session['child_id'] = child_ID
+                        return jsonify({'user_type': 'child'})
 
-                else:
-                    print("실패")
-                    return "아이디 또는 비밀번호가 일치하지 않습니다."
+                    else:
+                        print("실패")
+                        return "아이디 또는 비밀번호가 일치하지 않습니다."
 
             except Exception as e:
                 print(f"Error: {e}")
@@ -1176,9 +1186,24 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 
 
 @socketio.on('start_counseling')
-def handle_start_counseling():
+def handle_start_counseling(data):
+    child_Name = data.get('childName')
+    print("아동 이름:", child_Name)
+    # SQL 쿼리 작성
+    sql = "SELECT child_id FROM child_list WHERE child_name = %s"
+    
+    # 쿼리 실행
+    result = childdb.query(sql, (child_Name,))
+    
+    if result:
+        child_id = result[0][0]
+        print("찾은 아동 ID:", child_id)
+    else:
+        print("해당하는 아동이 없습니다.")
     # 상담이 시작되었다는 메시지를 모든 연결된 클라이언트에게 전송합니다.
     socketio.emit('counseling_started', {'message': '상담이 시작되었습니다.'})
+
+
 
 users = {}
 rooms = {}
