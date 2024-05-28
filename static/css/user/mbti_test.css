@@ -1,12 +1,16 @@
 @font-face {
-  font-family: 'GangwonEduSaeeum_OTFMediumA';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduSaeeum_OTFMediumA.woff') format('woff');
+  font-family: "GangwonEduSaeeum_OTFMediumA";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduSaeeum_OTFMediumA.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
+a {
+  text-decoration-line: none;
+}
+
 html {
-  background: url('/static/images/MBTI_background.png') no-repeat center fixed;
+  background: url("/static/images/MBTI_background.png") no-repeat center fixed;
   background-size: cover;
   background-position: center bottom;
 }
@@ -29,7 +33,7 @@ body {
   font-size: 60px;
   color: white;
   text-align: center;
-  font-family: 'GangwonEduSaeeum_OTFMediumA';
+  font-family: "GangwonEduSaeeum_OTFMediumA";
 }
 
 .css-border {
@@ -74,7 +78,7 @@ body {
   border: 2px solid #3d3d3d;
   border-radius: 5px;
   cursor: pointer;
-  font-family: 'GangwonEduSaeeum_OTFMediumA';
+  font-family: "GangwonEduSaeeum_OTFMediumA";
 }
 
 .css-choice2 {
@@ -88,7 +92,7 @@ body {
   border: 2px solid #3d3d3d;
   border-radius: 5px;
   cursor: pointer;
-  font-family: 'GangwonEduSaeeum_OTFMediumA';
+  font-family: "GangwonEduSaeeum_OTFMediumA";
 }
 
 .css-backButton {
@@ -103,7 +107,7 @@ body {
   border: 2px solid #3d3d3d;
   border-radius: 5px;
   cursor: pointer;
-  font-family: 'GangwonEduSaeeum_OTFMediumA';
+  font-family: "GangwonEduSaeeum_OTFMediumA";
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
@@ -120,5 +124,29 @@ body {
     width: 90vw;
     height: 60vh;
     font-size: 12px;
+  }
+}
+
+#logout-icon {
+  font-size: 40px;
+  color: white;
+  cursor: pointer;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}
+
+@media screen and (max-width: 1024px) {
+  #logout-icon {
+    font-size: 35px;
+  }
+  .css-title {
+    font-size: 50px;
+  }
+  .css-choice1 {
+    width: 90%;
+  }
+  .css-choice2 {
+    width: 90%;
   }
 }

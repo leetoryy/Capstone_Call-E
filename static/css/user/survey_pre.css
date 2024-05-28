@@ -1,8 +1,25 @@
 #survey {
-    max-width: 60%;
-  }
-  
-#survey-name {
-    margin-top: 18px;
+  width: 60%;
 }
-  
+
+#survey-name {
+  margin-top: 18px;
+}
+
+#logout-icon {
+  font-size: 40px;
+  color: black;
+  cursor: pointer;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}
+
+@media screen and (max-width: 1024px) {
+  #survey {
+    width: 90%;
+  }
+  #logout-icon {
+    font-size: 35px;
+  }
+}
