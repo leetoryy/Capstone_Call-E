@@ -1,52 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
+    <!-- boxicon -->
+    <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet" />
+    <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user/user_home.css') }}" />
-</head>
-<body>
+  </head>
+  <body>
     <header>
-      <img src="/static/images/icon.png" alt="Call-E" id="logo" />
+      <img src="/static/images/icon3.png" alt="Call-E" id="logo" />
+      <span id="userNameSpan">{{ session['child_name'] }} 님</span>
       <div class="header-flex">
-        <span class="divider"></span>
-        <span id="childNameSpan">{{ session['child_id'] }}</span>
-        <div class="profile">
-          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="" />
-          <ul class="profile-link">
-            <li>
-              <a href="#"><i class="bx bxs-cog"></i> 설정</a>
-            </li>
-            <li>
-              <a href="#"><i class="bx bxs-log-out-circle"></i> 종료하기</a>
-            </li>
-          </ul>
-        </div>
+        <input type="text" placeholder=" 원하는 콘텐츠를 검색해보세요" id="search-bar" />
+        <i class="bx bx-search"></i>
+      </div>
+      <div class="header-right">
+        <a href="#"><i class="bx bxs-user-circle" id="user-icon"></i></a>
+        <i class="bx bxs-bell" id="alarm-icon"></i>
+        <i class="bx bxs-home" id="logout-icon"></i>
       </div>
     </header>
     <div class="container">
-      <div class="card" id="alphabet">
-        <img id="character-img" src="{{ url_for('static', filename='images/character.jpeg') }}" width="300px" >
-      </div>
-      <div class="card" id="alphabet">
-        <div class="card-icon">MBTI</div>
-        <div class="text">나의 MBTI를 알 수 있어요!</div>
-        <a href="/mbti_home" class="learn-button">검사하기</a>
-      </div>
-      <div class="card" id="phonics">
-        <div class="card-icon">상담 일지</div>
-        <div class="text">상담 일지를 볼 수 있어요!</div>
-        <a href="/mbti_home" class="learn-button">보러가기</a>
-      </div>
-      <div class="card" id="readers">
-        <div class="card-icon">리뷰</div>
-        <div class="text">나의 리뷰를 볼 수 있어요!</div>
-        <a href="/mbti_home" class="learn-button">보러가기</a>
-      </div>
+      <a class="card" id="survey" href="/survey_pre_edit" style="background-color: #6ab9ea">
+        <div class="card-title">사전 설문</div>
+        <div class="text">사전 설문을 진행할 수 있어요</div>
+        <img src="/static/images/penguin05.png" alt="Penguin1" width="200px" />
+      </a>
+      <a class="card" id="mbti" href="/mbti_home" style="background-color: #63c9a2">
+        <div class="card-title">MBTI</div>
+        <div class="text">나의 MBTI를 알 수 있어요</div>
+        <img src="/static/images/penguin03.png" alt="Penguin2" width="200px" />
+      </a>
+      <a class="card" id="consultation" href="/survey_pre" style="background-color: #f6c946">
+        <div class="card-title">상담 일지</div>
+        <div class="text">상담 일지를 볼 수 있어요</div>
+        <img src="/static/images/penguin04.png" alt="Penguin3" width="200px" />
+      </a>
+      <a class="card" id="reviews" href="/survey_pre" style="background-color: #ea8e9f">
+        <div class="card-title">리뷰</div>
+        <div class="text">나의 리뷰를 볼 수 있어요</div>
+        <img src="/static/images/penguin02.png" alt="Penguin4" width="200px" />
+      </a>
     </div>
-    <!-- JS -->
-    <script src="/static/javascript/user/user_home.js"></script>
-</body>
+  </body>
 </html>

@@ -436,7 +436,9 @@ function submitloginForm() {
             console.log('아동 로그인 성공');
             var childID = document.getElementById('child_ID2').value;
             console.log('childID:', childID);
-            window.location.href = '/mbti_match?child_id=' + encodeURIComponent(childID);
+           // window.location.href = '/mbti_match?child_id=' + encodeURIComponent(childID);
+            window.location.href = '/user_home'
+            
         } else if (response && response.user_type === 'counselor') {
             console.log('상담사 로그인 성공');
             var counselorName = response.counselor_name;

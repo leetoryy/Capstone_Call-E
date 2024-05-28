@@ -1,3 +1,5 @@
+document.addEventListener('DOMContentLoaded', initialize);
+
 function initialize() {
   loadData("상담 대기");
 }
@@ -5,7 +7,7 @@ function initialize() {
 function loadData(status) {
   const tabs = document.querySelectorAll(".status-tab button");
   tabs.forEach((tab) => {
-    if (tab.textContent === status) {
+    if (tab.textContent.trim() === status) {
       tab.classList.add("active");
     } else {
       tab.classList.remove("active");
@@ -29,7 +31,8 @@ function loadData(status) {
       if (filteredData.length === 0) {
         const tr = document.createElement("tr");
         const td = document.createElement("td");
-        td.colSpan = 5;
+        
+        td.colSpan = 5; // 버튼 열을 추가했으므로 colspan을 6으로 변경
         td.classList.add("text-center");
         td.textContent = "상담 일정이 존재하지 않습니다.";
         tr.appendChild(td);
@@ -42,6 +45,12 @@ function loadData(status) {
                           <td>${consultation.type}</td>
                           <td>${consultation.status}</td>
                           <td>${consultation.contact}</td>`;
+          tr.addEventListener('click', () => {
+            var socket = io();
+            console.log('Selected Child Name:', consultation.name);
+            socket.emit("start_counseling", { childName: consultation.name });
+            window.open("/chat", "_blank");
+          });
           tbody.appendChild(tr);
         });
       }
