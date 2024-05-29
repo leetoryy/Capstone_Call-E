@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user/user_home.css') }}" />
   </head>
   <body>
+    <input type="hidden" id="logged_in_child_id" value="{{ session['child_id'] }}" />
     <header>
       <img src="/static/images/icon3.png" alt="Call-E" id="logo" />
       <span id="userNameSpan">{{ session['child_name'] }} 님</span>
@@ -18,7 +19,7 @@
         <input type="text" placeholder=" 원하는 콘텐츠를 검색해보세요" id="search-bar" />
         <i class="bx bx-search"></i>
       </div>
-    
+
       <div class="header-right">
         <a href="/survey_pre_edit"><i class="bx bxs-user-circle" id="user-icon"></i></a>
         <!-- 아이콘과 뱃지를 담는 컨테이너 -->
@@ -27,9 +28,7 @@
           <span class="badge" id="notification-count">new</span>
         </div>
         <!-- 알람 박스 -->
-        <div id="notification-box" class="notification-box" style="display: none;">
-          
-        </div>
+        <div id="notification-box" class="notification-box" style="display: none"></div>
         <i class="bx bxs-home" id="logout-icon"></i>
       </div>
     </header>
@@ -49,7 +48,7 @@
         <div class="text">상담 일지를 볼 수 있어요</div>
         <img src="/static/images/penguin04.png" alt="Penguin3" width="200px" />
       </a>
-      <a class="card" id="reviews" href="/survey_pre" style="background-color: #ea8e9f">
+      <a class="card" id="reviews" href="/user_review" style="background-color: #ea8e9f">
         <div class="card-title">리뷰</div>
         <div class="text">나의 리뷰를 볼 수 있어요</div>
         <img src="/static/images/penguin02.png" alt="Penguin4" width="200px" />
@@ -57,55 +56,86 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="{{ url_for('static', filename='javascript/user/user_home.js') }}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
   </body>
 </html>
 <script>
   const socket = io();
 
   // 소켓 연결이 생성되면 아동 이름을 서버에 전송합니다.
-  socket.on('connect', function() {
-    const childName = document.getElementById('userNameSpan').textContent.trim().split(' ')[0];
-    socket.emit('register_child', { childName: childName });
+  socket.on("connect", function () {
+    const childName = document.getElementById("userNameSpan").textContent.trim().split(" ")[0];
+    socket.emit("register_child", { childName: childName });
   });
 
   // 소켓 알람을 받는 함수
-  socket.on('counseling_started', function(data) {
+  socket.on("counseling_started", function (data) {
     // 뱃지를 나타내는 요소를 가져옵니다.
-    var badge = document.getElementById('notification-count');
+    var badge = document.getElementById("notification-count");
     // 뱃지를 표시합니다.
-    badge.style.display = 'inline';
+    badge.style.display = "inline";
 
-    // 알람 메시지를 설정합니다.
-    var notificationBox = document.getElementById('notification-box');
-    notificationBox.innerHTML = data.message;
-    notificationBox.style.display = 'block';
+    // 알람 메시지와 코드를 설정합니다.
+    var notificationBox = document.getElementById("notification-box");
+    notificationBox.innerHTML = `상담이 시작되었습니다.<br>상담 코드: ${data.code}`;
+    notificationBox.style.display = "block";
 
     // 알람 아이콘 클릭 이벤트 활성화
-    var alarmIcon = document.getElementById('alarm-icon');
-    alarmIcon.addEventListener('click', showNotificationBox);
+    var alarmIcon = document.getElementById("alarm-icon");
+    alarmIcon.addEventListener("click", showNotificationBox);
 
     // 알람 박스를 클릭하면 chat.html로 이동하도록 설정
-    notificationBox.addEventListener('click', function() {
+    notificationBox.addEventListener("click", function () {
       window.open("/chat", "_blank");
     });
   });
 
   function showNotificationBox() {
-    var notificationBox = document.getElementById('notification-box');
-    notificationBox.style.display = 'block';
+    var notificationBox = document.getElementById("notification-box");
+    notificationBox.style.display = "block";
   }
 
   // 아이콘 클릭 시 박스 표시 함수
-  var alarmIcon = document.getElementById('alarm-icon');
-  alarmIcon.addEventListener('click', function() {
-    var badge = document.getElementById('notification-count');
-    if (badge.style.display === 'inline') {
+  var alarmIcon = document.getElementById("alarm-icon");
+  alarmIcon.addEventListener("click", function () {
+    var badge = document.getElementById("notification-count");
+    if (badge.style.display === "inline") {
       showNotificationBox();
     }
   });
+
+  // 로그아웃 버튼 클릭 이벤트 처리
+var logoutIcon = document.getElementById('logout-icon');
+logoutIcon.addEventListener('click', function () {
+    logout();
+});
+
+function logout() {
+    var childIds = Object.keys(localStorage).filter(k => k.startsWith('child_')); // 모든 child_id를 배열로 가져옵니다.
+
+    // 각 child_id에 대해 로그아웃 처리
+    childIds.forEach(function(childKey) {
+        var childId = localStorage.getItem(childKey); // 로컬 스토리지에서 child_id 읽기
+
+        $.ajax({
+            type: 'POST',
+            url: '/logout',
+            contentType: 'application/json',
+            data: JSON.stringify({ child_id: childId }),
+            success: function(response) {
+                console.log('Logout successful:', response);
+                localStorage.removeItem(childKey); // 로컬 스토리지에서 child_id 삭제
+                if (childIds.indexOf(childKey) === childIds.length - 1) { // 마지막 child_id가 처리되면 리다이렉트
+                    window.location.href = '/'; 
+                }
+            },
+            error: function(error) {
+                console.error('Logout failed:', error);
+            }
+        });
+    });
+}
+
+
 </script>
-
-
-
-
-

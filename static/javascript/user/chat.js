@@ -174,3 +174,4 @@ const onAddStream = (e) => {
   remoteVideo.srcObject = e.streams[0];
   remoteStream = e.stream;
 };
+

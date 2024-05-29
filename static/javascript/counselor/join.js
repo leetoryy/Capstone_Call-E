@@ -422,38 +422,37 @@ function submitloginForm() {
     formData.append('co_pw_2', document.getElementById('counselor_pw2').value);
   }
 
-  // AJAX를 사용하여 서버로 전송
-  $.ajax({
-    type: 'POST',
-    url: '/login',
-    data: formData,
-    contentType: false,
-    processData: false,
-    success: function (response) {
-        console.log('서버 응답:', response);
+ // AJAX를 사용하여 서버로 전송
+$.ajax({
+  type: 'POST',
+  url: '/login',
+  data: formData,
+  contentType: false,
+  processData: false,
+  success: function (response) {
+      console.log('서버 응답:', response);
 
-        if (response && response.user_type === 'child') {
-            console.log('아동 로그인 성공');
-            var childID = document.getElementById('child_ID2').value;
-            console.log('childID:', childID);
-           // window.location.href = '/mbti_match?child_id=' + encodeURIComponent(childID);
-            window.location.href = '/user_home'
-            
-        } else if (response && response.user_type === 'counselor') {
-            console.log('상담사 로그인 성공');
-            var counselorName = response.counselor_name;
-            console.log('상담사 이름:', counselorName);
-
-            // 페이지 이동
-            window.location.href = '/counselor_home?counselor_name=' + encodeURIComponent(counselorName);
-        } else {
-            console.log('조건에 맞는 경우 없음');
-        }
-    },
-    error: function (error) {
-        console.error('폼 제출 중 오류:', error);
-    }
+      if (response && response.user_type === 'child') {
+          console.log('아동 로그인 성공');
+          var childID = response.child_id; // 서버로부터 받은 child_id
+          console.log('childID:', childID);
+          localStorage.setItem('child_' + childID, childID); // localStorage에 child_id 저장
+          window.location.href = '/user_home';
+      } else if (response && response.user_type === 'counselor') {
+          console.log('상담사 로그인 성공');
+          var counselorName = response.counselor_name;
+          console.log('상담사 이름:', counselorName);
+          window.location.href = '/counselor_home?counselor_name=' + encodeURIComponent(counselorName);
+      } else {
+          console.log('조건에 맞는 경우 없음');
+      }
+  },
+  error: function (error) {
+      console.error('폼 제출 중 오류:', error);
+  }
 });
+
+
 
 }
 
