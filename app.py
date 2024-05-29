@@ -169,8 +169,9 @@ def login():
                     if authenticate_child(child_ID, child_pw):
                         print("성공")
                         session['child_name'] = child_name
-                        session['child_id'] = child_ID
-                        return jsonify({'user_type': 'child'})
+                        session[child_ID] = {'logged_in': True, 'child_name':child_name}
+                        print(session[child_ID])
+                        return jsonify({'user_type': 'child', 'child_id': child_ID})
 
                     else:
                         print("실패")
@@ -192,7 +193,7 @@ def login():
                     session['counselor_name'] = counselor_name
                     session['co_id'] = counselor_ID
                     print(counselor_ID)
-                    return jsonify({'user_type': 'counselor', 'counselor_name': counselor_name})
+                    return jsonify({'user_type': 'counselor', 'counselor_name': counselor_name, 'co_id': counselor_ID})
                     
                 else:
                     print("실패")
@@ -399,7 +400,7 @@ def counselor_home_data():
 
     query = """
     SELECT ci.child_name, ci.child_mbti, ci.survey_consulting, ci.co_id, cd.parent_phone, 
-           sl.start_time, sl.end_time, sl.day_of_week 
+           sl.start_time, sl.end_time, sl.day_of_week, sl.consultation_code
     FROM CHILD_INFO.child_info_list ci
     JOIN CHILD.child_list cd ON ci.child_id = cd.child_id
     JOIN COUNSELOR_SCHEDULE.schedule_list sl ON ci.child_id = sl.child_id
@@ -431,7 +432,7 @@ def counselor_home_data():
 
     data = []
     for row in results:
-        child_name, child_mbti, survey_consulting, co_id, parent_phone, start_time_td, end_time_td, day_of_week = row
+        child_name, child_mbti, survey_consulting, co_id, parent_phone, start_time_td, end_time_td, day_of_week, consultation_code = row
         
         # `timedelta`를 `time` 객체로 변환
         start_time = timedelta_to_time(start_time_td)
@@ -444,7 +445,8 @@ def counselor_home_data():
                 'mbti': child_mbti,
                 'type': survey_consulting,
                 'status': status,
-                'contact': parent_phone
+                'contact': parent_phone,
+                'code': consultation_code
             })
 
     # 데이터가 올바르게 처리되었는지 출력
@@ -612,6 +614,10 @@ def user_home_html():
 @app.route('/mbti_home')
 def mbti_home_html():
     return render_template('user/mbti_home.html')
+
+@app.route('/user_review')
+def user_reivew_html():
+    return render_template('user/user_review.html')
 
 # 상담사 상담 분야 가져오기
 def get_counselor_consulting():
@@ -1185,6 +1191,18 @@ def chat_html():
     
     return render_template('user/chat.html')
 
+@app.route('/logout', methods=['POST'])
+def logout():
+    data = request.get_json()
+    child_id = data.get('child_id')
+
+    # 세션에서 해당 child_id에 대한 정보가 있는지 확인하고, 있으면 삭제
+    if child_id in session:
+        session.pop(child_id, None)
+        return jsonify({'success': True, 'message': f'Logout successful for child_id {child_id}'})
+    else:
+        return jsonify({'success': False, 'message': 'No session found for this child_id'}), 404
+
 # 로깅 설정
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -1200,19 +1218,21 @@ def handle_register_child(data):
 @socketio.on('start_counseling')
 def handle_start_counseling(data):
     child_name = data.get('childName')
+    child_code = data.get('code')
     print("아동 이름:", child_name)
+    print("아동 코드:",child_code)
     
     # 특정 아동에게만 메시지를 전송합니다.
     if child_name in clients:
         recipient_sid = clients[child_name]
-        socketio.emit('counseling_started', {'message': '상담이 시작되었습니다.'}, room=recipient_sid)
+        socketio.emit('counseling_started', {'message': '상담이 시작되었습니다.','code': child_code}, room=recipient_sid)
     else:
         print("해당하는 아동이 없습니다.")
 
     # 상담이 시작되었다는 메시지를 모든 연결된 클라이언트에게 전송합니다.
     #socketio.emit('counseling_started', {'message': '상담이 시작되었습니다.'})
 
-    
+
 
 
 
@@ -1288,6 +1308,8 @@ def print_log(header, client_id, room):
     size = len(participants_list)
 
     logging.info("#ConncetedClients - {} => room: {}, count: {}".format(header, room, size))
+
+
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=3000, debug=False)

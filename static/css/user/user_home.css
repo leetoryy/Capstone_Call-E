@@ -213,17 +213,11 @@ header {
   display: inline-block;
 }
 
-/* 아이콘 스타일 */
-.bx {
-  font-size: 48px;
-  color: #555;
-}
-
 /* 뱃지 스타일 */
 .badge {
   position: absolute;
-  top: -5px;  
-  right: 19px;  
+  top: -5px;
+  right: 19px;
   background-color: red;
   color: white;
   width: 20px;
@@ -233,7 +227,7 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
-  display: none; 
+  display: none;
 }
 
 /* 알람 박스 스타일 */
@@ -243,12 +237,23 @@ header {
   right: 20px;
   width: 200px;
   padding: 20px;
-  font-size:13px;
-  text-align : center;
+  font-size: 13px;
+  text-align: center;
   background-color: #ffffff; /* 배경색을 변경할 수 있습니다 */
   border: 1px solid #ffe700;
   border-radius: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1001;
 }
-
+.notification-box::before {
+  content: "클릭!!"; /* 뱃지처럼 보여줄 텍스트 */
+  display: inline-block;
+  font-size: 20px;
+  color: #2879ff; /* 텍스트 색상을 변경할 수 있습니다 */
+  padding: 5px 10px;
+  border-radius: 50%;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  z-index: 1002; /* 다른 요소 위에 표시되도록 설정 */
+}

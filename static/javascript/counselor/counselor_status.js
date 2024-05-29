@@ -32,7 +32,7 @@ function loadData(status) {
         const tr = document.createElement("tr");
         const td = document.createElement("td");
         
-        td.colSpan = 5; // 버튼 열을 추가했으므로 colspan을 6으로 변경
+        td.colSpan = 6; // 버튼 열을 추가했으므로 colspan을 6으로 변경
         td.classList.add("text-center");
         td.textContent = "상담 일정이 존재하지 않습니다.";
         tr.appendChild(td);
@@ -44,12 +44,14 @@ function loadData(status) {
                           <td>${consultation.mbti}</td>
                           <td>${consultation.type}</td>
                           <td>${consultation.status}</td>
-                          <td>${consultation.contact}</td>`;
+                          <td>${consultation.contact}</td>
+                          <td>${consultation.code}</td>`;
           tr.addEventListener('click', () => {
             var socket = io();
             console.log('Selected Child Name:', consultation.name);
-            socket.emit("start_counseling", { childName: consultation.name });
+            socket.emit("start_counseling", { childName: consultation.name, code: consultation.code }); 
             window.open("/chat", "_blank");
+            
           });
           tbody.appendChild(tr);
         });
