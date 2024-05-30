@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Call-E</title>
+    <!-- boxicon -->
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user/user_review.css') }}" />
+  </head>
+  <body>
+    <header>
+      <img src="/static/images/icon3.png" alt="Call-E" id="logo" />
+      <span id="userNameSpan">김아동 님</span>
+      <div class="header-flex">
+        <input type="text" placeholder=" 원하는 콘텐츠를 검색해보세요" id="search-bar" />
+        <i class="bx bx-search"></i>
+      </div>
+      <div class="header-right">
+        <i class="bx bxs-user-circle" id="user-icon"></i>
+        <i class="bx bxs-bell" id="alarm-icon"></i>
+        <i class="bx bxs-home" id="home-icon"></i>
+      </div>
+    </header>
+    <div class="container">
+      <div class="card">
+        <div class="left-section">
+          <input type="text" placeholder="상담사 이름 검색" id="search-consultant" />
+          <div class="filters">
+            <div class="header">
+              <div class="filter-title">상세조건</div>
+              <button class="reset-filters">선택 초기화</button>
+            </div>
+            <div class="divider"></div>
+            <div class="filter-group">
+              <div class="filter-category">상담 분야</div>
+              <div class="input-group-checkbox">
+                <div class="checkbox-group1">
+                  <input type="checkbox" id="area1" checked />
+                  <label for="area1" class="cb1"></label>
+                  <label>발달 상담</label>
+                </div>
+                <div class="checkbox-group1">
+                  <input type="checkbox" id="area2" checked />
+                  <label for="area2" class="cb1"></label>
+                  <label>학교 상담</label>
+                </div>
+                <div class="checkbox-group1">
+                  <input type="checkbox" id="area3" checked />
+                  <label for="area3" class="cb1"></label>
+                  <label>문제행동 상담</label>
+                </div>
+                <div class="checkbox-group1">
+                  <input type="checkbox" id="area4" checked />
+                  <label for="area4" class="cb1"></label>
+                  <label>정서 상담</label>
+                </div>
+              </div>
+            </div>
+            <div class="filter-group">
+              <div class="filter-category">키워드</div>
+              <div class="input-group-checkbox">
+                <div class="checkbox-group1">
+                  <input type="checkbox" id="area5" checked />
+                  <label for="area5" class="cb1"></label>
+                  <label>공감과 위로</label>
+                </div>
+                <div class="checkbox-group1">
+                  <input type="checkbox" id="area6" checked />
+                  <label for="area6" class="cb1"></label>
+                  <label>현실적인 조언</label>
+                </div>
+                <div class="checkbox-group1">
+                  <input type="checkbox" id="area7" checked />
+                  <label for="area7" class="cb1"></label>
+                  <label>능동적인 참여유도</label>
+                </div>
+                <div class="checkbox-group1">
+                  <input type="checkbox" id="area8" checked />
+                  <label for="area8" class="cb1"></label>
+                  <label>성장지향적 접근성</label>
+                </div>
+                <div class="checkbox-group1">
+                  <input type="checkbox" id="area9" checked />
+                  <label for="area9" class="cb1"></label>
+                  <label>위기대응 및 안정화</label>
+                </div>
+              </div>
+            </div>
+            <div class="filter-group">
+              <div class="filter-category">성별</div>
+              <div class="input-group-checkbox">
+                <div class="checkbox-group2">
+                  <input type="checkbox" id="area10" checked />
+                  <label for="area10" class="cb1"></label>
+                  <label>남자</label>
+                </div>
+                <div class="checkbox-group2">
+                  <input type="checkbox" id="area11" checked />
+                  <label for="area11" class="cb1"></label>
+                  <label>여자</label>
+                </div>
+              </div>
+            </div>
+            <div class="filter-group">
+              <div class="filter-category">MBTI</div>
+              <div class="input-group-checkbox">
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area12" checked />
+                  <label for="area12" class="cb1"></label>
+                  <label>ISTJ</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area13" checked />
+                  <label for="area13" class="cb1"></label>
+                  <label>ISFJ</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area14" checked />
+                  <label for="area14" class="cb1"></label>
+                  <label>INFJ</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area15" checked />
+                  <label for="area15" class="cb1"></label>
+                  <label>INTJ</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area16" checked />
+                  <label for="area16" class="cb1"></label>
+                  <label>ISTP</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area17" checked />
+                  <label for="area17" class="cb1"></label>
+                  <label>ISFP</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area18" checked />
+                  <label for="area18" class="cb1"></label>
+                  <label>INFP</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area19" checked />
+                  <label for="area19" class="cb1"></label>
+                  <label>INTP</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area20" checked />
+                  <label for="area20" class="cb1"></label>
+                  <label>ESTP</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area21" checked />
+                  <label for="area21" class="cb1"></label>
+                  <label>ESFP</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area22" checked />
+                  <label for="area22" class="cb1"></label>
+                  <label>ENFP</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area23" checked />
+                  <label for="area23" class="cb1"></label>
+                  <label>ENTP</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area24" checked />
+                  <label for="area24" class="cb1"></label>
+                  <label>ESTJ</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area25" checked />
+                  <label for="area25" class="cb1"></label>
+                  <label>ESFJ</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area26" checked />
+                  <label for="area26" class="cb1"></label>
+                  <label>ENFJ</label>
+                </div>
+                <div class="checkbox-group3">
+                  <input type="checkbox" id="area27" checked />
+                  <label for="area27" class="cb1"></label>
+                  <label>ENTJ</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="right-section">
+          <div class="lists-header">
+            <span>검색결과 00건</span>
+            <select>
+              <option>별점 높은 순</option>
+              <option>별점 낮은 순</option>
+            </select>
+          </div>
+          <div class="lists">
+            <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">박전문</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>5.0</span>
+                <p>INFP</p>
+              </div>
+              <div class="list-details">
+                <p>학교상담, 정서상담</p>
+                <p>공감과 위로, 성장지향적 접근성</p>
+              </div>
+            </a>
+            <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">박전문</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>5.0</span>
+                <p>INFP</p>
+              </div>
+              <div class="list-details">
+                <p>학교상담, 정서상담</p>
+                <p>공감과 위로, 성장지향적 접근성</p>
+              </div>
+            </a>
+            <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">박전문</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>5.0</span>
+                <p>INFP</p>
+              </div>
+              <div class="list-details">
+                <p>학교상담, 정서상담</p>
+                <p>공감과 위로, 성장지향적 접근성</p>
+              </div>
+            </a>
+            <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">박전문</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>5.0</span>
+                <p>INFP</p>
+              </div>
+              <div class="list-details">
+                <p>학교상담, 정서상담</p>
+                <p>공감과 위로, 성장지향적 접근성</p>
+              </div>
+            </a>
+            <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">박전문</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>5.0</span>
+                <p>INFP</p>
+              </div>
+              <div class="list-details">
+                <p>학교상담, 정서상담</p>
+                <p>능동적인 참여유도, 성장지향적 접근성</p>
+              </div>
+            </a>
+            <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">박전문</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>5.0</span>
+                <p>INFP</p>
+              </div>
+              <div class="list-details">
+                <p>학교상담, 정서상담</p>
+                <p>성장지향적 접근성, 위기대응 및 안정화</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

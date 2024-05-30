@@ -29,7 +29,7 @@
         </div>
         <!-- 알람 박스 -->
         <div id="notification-box" class="notification-box" style="display: none"></div>
-        <i class="bx bxs-home" id="logout-icon"></i>
+        <i class="bx bxs-log-out" id="logout-icon"></i>
       </div>
     </header>
     <div class="container">
@@ -57,7 +57,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="{{ url_for('static', filename='javascript/user/user_home.js') }}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
   </body>
 </html>
 <script>
@@ -91,10 +90,9 @@
     var alarmIcon = document.getElementById("alarm-icon");
     alarmIcon.addEventListener("click", showNotificationBox);
 
-    
     // 알람 박스를 클릭하면 chat.html로 이동하도록 설정
     notificationBox.addEventListener("click", function () {
-      const childID = getQueryParameter('child_id'); // URL에서 child_id 가져오기
+      const childID = getQueryParameter("child_id"); // URL에서 child_id 가져오기
       window.open(`/chat?child_id=${encodeURIComponent(childID)}`, "_blank"); // 새 창에서 URL에 child_id 포함하여 chat 페이지를 엽니다.
     });
   });
@@ -114,36 +112,35 @@
   });
 
   // 로그아웃 버튼 클릭 이벤트 처리
-var logoutIcon = document.getElementById('logout-icon');
-logoutIcon.addEventListener('click', function () {
+  var logoutIcon = document.getElementById("logout-icon");
+  logoutIcon.addEventListener("click", function () {
     logout();
-});
+  });
 
-function logout() {
-    var childIds = Object.keys(localStorage).filter(k => k.startsWith('child_')); // 모든 child_id를 배열로 가져옵니다.
+  function logout() {
+    var childIds = Object.keys(localStorage).filter((k) => k.startsWith("child_")); // 모든 child_id를 배열로 가져옵니다.
 
     // 각 child_id에 대해 로그아웃 처리
-    childIds.forEach(function(childKey) {
-        var childId = localStorage.getItem(childKey); // 로컬 스토리지에서 child_id 읽기
+    childIds.forEach(function (childKey) {
+      var childId = localStorage.getItem(childKey); // 로컬 스토리지에서 child_id 읽기
 
-        $.ajax({
-            type: 'POST',
-            url: '/logout',
-            contentType: 'application/json',
-            data: JSON.stringify({ child_id: childId }),
-            success: function(response) {
-                console.log('Logout successful:', response);
-                localStorage.removeItem(childKey); // 로컬 스토리지에서 child_id 삭제
-                if (childIds.indexOf(childKey) === childIds.length - 1) { // 마지막 child_id가 처리되면 리다이렉트
-                    window.location.href = '/'; 
-                }
-            },
-            error: function(error) {
-                console.error('Logout failed:', error);
-            }
-        });
+      $.ajax({
+        type: "POST",
+        url: "/logout",
+        contentType: "application/json",
+        data: JSON.stringify({ child_id: childId }),
+        success: function (response) {
+          console.log("Logout successful:", response);
+          localStorage.removeItem(childKey); // 로컬 스토리지에서 child_id 삭제
+          if (childIds.indexOf(childKey) === childIds.length - 1) {
+            // 마지막 child_id가 처리되면 리다이렉트
+            window.location.href = "/";
+          }
+        },
+        error: function (error) {
+          console.error("Logout failed:", error);
+        },
+      });
     });
-}
-
-
+  }
 </script>

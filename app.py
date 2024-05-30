@@ -621,6 +621,10 @@ def mbti_home_html():
 def user_reivew_html():
     return render_template('user/user_review.html')
 
+@app.route('/user_review_detail') 
+def user_review_detail_html():
+    return render_template('user/user_review_detail.html')
+
 # 상담사 상담 분야 가져오기
 def get_counselor_consulting():
     query = "SELECT co_id, co_consulting FROM COUNSELOR.counselor_list"
@@ -1156,14 +1160,6 @@ def reserve_timeslot():
 def mbti_result_html():
     return render_template('user/mbti_result.html')
 
-@app.route('/user_review') 
-def user_review_html():
-    return render_template('user/user_review.html')
-
-@app.route('/user_review_detail') 
-def user_review_detail_html():
-    return render_template('user/user_review_detail.html')
-
 @app.route('/save_mbti_result', methods=['POST'])
 def save_mbti_result():
     child_id = session.get('child_id')
@@ -1236,6 +1232,55 @@ def cologout():
     except Exception as e:
         print(f"로그아웃 처리 중 오류 발생: {e}")
         return jsonify({'error': 'Logout failed', 'message': str(e)}), 500
+    
+@app.route('/roomcode', methods=['POST'])
+def handle_room_code():
+    # 요청 본문에서 roomCode를 추출합니다.
+    data = request.get_json()
+    room_code = data['roomCode']
+    
+    
+    print('Received Room Code:', room_code)
+    
+    # 데이터베이스에서 consultation_code가 roomCode와 일치하는 co_id를 조회합니다.
+    sql_query = """
+    SELECT co_id
+    FROM schedule_list
+    WHERE consultation_code = %s;
+    """
+    results = schedule_listdb.query(sql_query, (room_code,))
+
+    # 결과 반환
+    if results:
+        co_id = results[0][0]  # 첫 번째 행의 첫 번째 열 값만 추출
+        print(co_id)
+        return jsonify({'co_id': co_id})
+    else:
+        return jsonify({'message': 'No matching counselor found for the given room code.'})
+    
+@app.route('/review', methods=['POST'])
+def handle_review_submission():
+    # 요청 본문에서 데이터를 추출합니다.
+    data = request.get_json()
+    rating = data['rating']
+    reviewText = data['reviewText']
+    reviewDate = data['reviewDate']
+    childID = data['childID']
+    counselorID = data['counselorID']
+    tags = data['tags']
+    
+    # 받은 데이터를 콘솔에 출력합니다.
+    print('Received rating:', rating)
+    print('Received review text:', reviewText)
+    print('Received review date:', reviewDate)
+    print('Received child ID:', childID)
+    print('Received counselorID:', counselorID)
+    print('Received tags:', tags)
+
+    
+
+    return jsonify({'message': 'Review submitted successfully'})
+    
 
 # 로깅 설정
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
