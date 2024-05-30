@@ -1,7 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap");
 
+:root {
+  --grey: #f1f0f6;
+  --dark-grey: #8d8d8d;
+  --light: #fff;
+  --dark: #000;
+  --green: #81d43a;
+  --light-green: #e3ffcb;
+  --primary-color: #4ea685;
+  --secondary-color: #57b894;
+  --light-blue: #d0e4ff;
+  --red: #fc3b56;
+}
+
 body {
-  background-color: #4ea685;
+  background-color: var(--primary-color);
   color: #ffffff;
   font-family: "Open Sans", sans-serif;
 }
@@ -88,7 +101,7 @@ video {
 .modal-body {
   font-size: 18px;
   text-align: center;
-  padding: 20px;
+  padding: 30px 30px 10px;
 }
 
 .modal-footer {
@@ -100,7 +113,6 @@ video {
 .star-rating {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
 }
 
 .star-rating input {
@@ -108,7 +120,6 @@ video {
 }
 
 .rating-prompt {
-  font-size: 22 px;
   text-align: center;
   color: black;
 }
@@ -131,6 +142,95 @@ video {
 
 .star-rating input:checked ~ label ~ label {
   color: #ddd;
+}
+
+/* 체크박스 스타일 */
+.input-group-checkbox {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  background-color: var(--gray);
+  border-radius: 0.5rem;
+  border: 0.125rem solid var(--white);
+  padding: 10px 35px;
+  margin-bottom: 10px;
+}
+
+.input-group-checkbox label {
+  display: flex;
+  align-items: center;
+  color: black;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  width: 48%;
+  box-sizing: border-box;
+  margin: 5px 0;
+}
+
+.checkbox-group label {
+  margin-right: 10px;
+}
+
+.input-group-checkbox input {
+  display: none;
+}
+
+.input-group-checkbox .cb1 {
+  height: 20px;
+  width: 20px;
+  background-color: transparent;
+  border: 2px solid #000;
+  border-radius: 5px;
+  box-sizing: border-box;
+  position: relative;
+  display: inline-block;
+  transition: border-color ease 0.2s;
+  cursor: pointer;
+}
+
+.input-group-checkbox .cb1::after,
+.input-group-checkbox .cb1::before {
+  position: absolute;
+  height: 0;
+  width: 4px;
+  background-color: #34b93d;
+  box-sizing: border-box;
+  display: inline-block;
+  transform-origin: left top;
+  border-radius: 5px;
+  content: " ";
+  transition: opacity ease 0.5;
+}
+
+.input-group-checkbox .cb1::before {
+  top: 14.4px;
+  left: 8.2px;
+  box-shadow: 0 0 0 1px transparent;
+  transform: rotate(-135deg);
+}
+
+.input-group-checkbox .cb1::after {
+  top: 7.4px;
+  left: 1px;
+  transform: rotate(-45deg);
+}
+
+.input-group-checkbox input:checked + .cb1 {
+  border-color: #34b93d;
+}
+
+.input-group-checkbox input:checked + .cb1::after {
+  height: 10px;
+  animation: bottomcheck 0.2s ease 0s forwards;
+}
+
+.input-group-checkbox input:checked + .cb1::before {
+  height: 24px;
+  animation: topcheck 0.4s ease 0s forwards;
 }
 
 /* Review Textarea */
