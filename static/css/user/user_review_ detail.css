@@ -81,7 +81,7 @@ header {
   margin-right: 20px;
 }
 
-#logout-icon {
+#home-icon {
   font-size: 40px;
   color: #ea726b;
   cursor: pointer;
@@ -104,7 +104,7 @@ header {
   border-radius: 24px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 1000px;
-  height: 600px;
+  height: 630px;
 }
 
 .left-section {
@@ -270,14 +270,22 @@ header {
   background-color: #f4f4f4;
   padding: 10px 20px;
   border-radius: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
-.review span {
-  font-size: 17px;
+.review-name {
+  font-size: 22px;
   font-weight: bold;
-  display: block;
-  margin-bottom: 5px;
+}
+
+.review-rating {
+  font-size: 18px;
+  margin-left: 5px;
+  color: #ea726b;
+}
+
+.review-feature {
+  color: #5aa7d6;
 }
 
 @media screen and (max-width: 768px) {
@@ -320,7 +328,7 @@ header {
   #alarm-icon {
     font-size: 35px;
   }
-  #logout-icon {
+  #home-icon {
     font-size: 35px;
   }
   .card {
