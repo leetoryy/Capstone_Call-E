@@ -441,7 +441,10 @@ $.ajax({
       } else if (response && response.user_type === 'counselor') {
           console.log('상담사 로그인 성공');
           var counselorName = response.counselor_name;
+          var counselorID = response.counselor_ID;
+          console.log('counselorID:',counselorID)
           console.log('상담사 이름:', counselorName);
+          localStorage.setItem('co_' + counselorID, counselorID);
           window.location.href = '/counselor_home?counselor_name=' + encodeURIComponent(counselorName);
       } else {
           console.log('조건에 맞는 경우 없음');
@@ -455,4 +458,3 @@ $.ajax({
 
 
 }
-

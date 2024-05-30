@@ -270,11 +270,11 @@ header {
   background-color: #f4f4f4;
   padding: 10px 20px;
   border-radius: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .review span {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: bold;
   display: block;
   margin-bottom: 5px;
