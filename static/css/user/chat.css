@@ -56,3 +56,105 @@ video {
 .input-group {
   width: 100%;
 }
+
+/* Modal */
+.modal-dialog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.modal-content {
+  border-radius: 10px;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: black;
+  margin-left: 10px;
+}
+
+.modal-divider {
+  margin: 0;
+  color: #ccc;
+}
+
+.modal-body {
+  font-size: 18px;
+  text-align: center;
+  padding: 20px;
+}
+
+.modal-footer {
+  border-top: none;
+  justify-content: center;
+}
+
+/* Star Rating */
+.star-rating {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.rating-prompt {
+  font-size: 22 px;
+  text-align: center;
+  color: black;
+}
+
+.star-rating label {
+  font-size: 50px;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.star-rating input:checked ~ label {
+  color: #ffcc00;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color: #ffcc00;
+}
+
+.star-rating input:checked ~ label ~ label {
+  color: #ddd;
+}
+
+/* Review Textarea */
+textarea {
+  width: 100%;
+  border-radius: 5px;
+  padding: 15px;
+  font-size: 18px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+/* Review Save Button */
+#saveReview {
+  background-color: #286960;
+  color: #ffffff;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  transition: background-color 0.3s;
+  margin-bottom: 10px;
+}
+
+#saveReview:hover {
+  background-color: #16382c;
+}

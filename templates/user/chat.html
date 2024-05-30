@@ -40,14 +40,29 @@
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="endCallModalLabel">상담 종료 확인</h5>
+                  <h5 class="modal-title" id="endCallModalLabel">리뷰하기</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <hr class="modal-divider" />
                 <div class="modal-body">
-                  리뷰를 작성해주세요!
+                  <h4 class="rating-prompt">오늘 상담은 어떠셨나요?</h4>
+                  <h4 class="rating-prompt">평점을 남겨주세요</h4>
+                  <div class="star-rating">
+                    <input type="radio" id="star-5" name="rating" value="5" />
+                    <label for="star-5" class="star">&#9733;</label>
+                    <input type="radio" id="star-4" name="rating" value="4" />
+                    <label for="star-4" class="star">&#9733;</label>
+                    <input type="radio" id="star-3" name="rating" value="3" />
+                    <label for="star-3" class="star">&#9733;</label>
+                    <input type="radio" id="star-2" name="rating" value="2" />
+                    <label for="star-2" class="star">&#9733;</label>
+                    <input type="radio" id="star-1" name="rating" value="1" />
+                    <label for="star-1" class="star">&#9733;</label>
+                  </div>
+                  <textarea id="reviewText" rows="4" placeholder="리뷰 내용을 작성해주세요."></textarea>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-danger">상담 종료</button>
+                  <button id="saveReview" type="button" class="btn btn-primary">리뷰 저장하고 상담 종료</button>
                 </div>
               </div>
             </div>
@@ -61,11 +76,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <!-- JS -->
     <script src="{{ url_for('static', filename='javascript/user/chat.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascript/user/chat_rating.js') }}"></script>
     <script>
-      document.getElementById('endCall').addEventListener('click', function() {
-        var modal = new bootstrap.Modal(document.getElementById('endCallModal'));
-        modal.show();
+      // URL에서 특정 쿼리 파라미터 값을 추출하는 함수 정의
+      function getQueryParameter(param) {
+        var urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+      }
+    
+      // 페이지 로딩 시 URL 확인 및 모달 활성화 조건 검사
+      document.addEventListener("DOMContentLoaded", function() {
+        var childID = getQueryParameter('child_id'); // URL에서 child_id 추출
+        if (childID) { // child_id가 존재하는 경우에만 모달 관련 이벤트 리스너를 설정
+          document.getElementById("endCall").addEventListener("click", function () {
+            var modal = new bootstrap.Modal(document.getElementById("endCallModal"));
+            modal.show();
+          });
+        }
       });
-      </script>
+    </script>
+    
   </body>
 </html>

@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', initialize);
 
+// URL에서 특정 쿼리 파라미터 값을 추출하는 함수 정의
+function getQueryParameter(param) {
+  var urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param);
+}
+
 function initialize() {
   loadData("상담 대기");
 }
@@ -50,7 +56,9 @@ function loadData(status) {
             var socket = io();
             console.log('Selected Child Name:', consultation.name);
             socket.emit("start_counseling", { childName: consultation.name, code: consultation.code }); 
-            window.open("/chat", "_blank");
+            const coID = getQueryParameter('counselor_id'); // URL에서 co_id 가져오기
+            window.open(`/chat?counselor_id=${encodeURIComponent(coID)}`, "_blank"); // 새 창에서 URL에 co_id 포함하여 chat 페이지를 엽니다.
+            //window.open("/chat", "_blank");
             
           });
           tbody.appendChild(tr);

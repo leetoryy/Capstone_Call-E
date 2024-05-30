@@ -273,11 +273,15 @@ header {
   margin-bottom: 15px;
 }
 
-.review span {
+.review-name {
   font-size: 20px;
   font-weight: bold;
-  display: block;
   margin-bottom: 5px;
+}
+
+.review-rating {
+  margin-left: 5px;
+  color: #ea726b;
 }
 
 @media screen and (max-width: 768px) {
