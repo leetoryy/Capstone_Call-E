@@ -1133,22 +1133,50 @@ def reserve_timeslot():
         start_time = datetime.strptime(start, '%H:%M').time()
         end_time = datetime.strptime(end, '%H:%M').time()
 
-        consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
+        # 중복 예약 확인
+        check_query = """
+            SELECT COUNT(*) FROM schedule_list
+            WHERE co_id = %s AND child_id = %s AND day_of_week = %s
+        """
+        cursor = schedule_listdb.get_cursor()
+        cursor.execute(check_query, (counselor_id, child_id, day))
+        count = cursor.fetchone()[0]
+
+        if count > 0:
+            app.logger.error("Duplicate entry found")
+            cursor.close()  # 커서 닫기
+            return jsonify({"error": "동일한 요일에는 예약을 할 수 없습니다."}), 400
 
         # 상담 코드를 포함하여 새로운 일정 항목을 데이터베이스에 삽입하는 SQL 쿼리
-        query = """
+        consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
+
+        insert_query = """
             INSERT INTO schedule_list (co_id, child_id, day_of_week, start_time, end_time, consultation_code)
             VALUES (%s, %s, %s, %s, %s, %s)
         """
-        cursor = schedule_listdb.get_cursor()
-        cursor.execute(query, (counselor_id, child_id, day, start_time, end_time, consultation_code))
+        cursor.execute(insert_query, (counselor_id, child_id, day, start_time, end_time, consultation_code))
+        
+        # CHILD_INFO.child_info_list 테이블에 co_id, consultation_day, consultation_time 업데이트
+        update_query = """
+            UPDATE child_info_list
+            SET co_id = %s, consultation_day = %s, consultation_time = %s
+            WHERE child_id = %s
+        """
+        child_infodb_cursor = child_infodb.get_cursor()
+        consultation_day = day
+        consultation_time = start_time.strftime('%H:%M')
+        child_infodb_cursor.execute(update_query, (counselor_id, consultation_day, consultation_time, child_id))
+        
         schedule_listdb.conn.commit()  # 트랜잭션 커밋
+        child_infodb.conn.commit()  # 트랜잭션 커밋
         cursor.close()  # 커서 닫기
+        child_infodb_cursor.close()  # 커서 닫기
 
         return jsonify({"success": True, "consultation_code": consultation_code}), 200
     except Exception as e:
         app.logger.error(f"Error reserving timeslot: {e}")
         return jsonify({"error": "서버 오류가 발생했습니다."}), 500
+
 
 @app.route('/mbti_result') 
 def mbti_result_html():

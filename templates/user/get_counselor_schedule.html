@@ -64,8 +64,12 @@
               alert("예약이 완료되었습니다.");
               top.location.href = '/user_home'; // 전체 페이지를 user_home으로 리디렉트
             },
-            error: function() {
-              alert("예약에 실패했습니다.");
+            error: function(xhr) {
+              if (xhr.responseJSON && xhr.responseJSON.error) {
+                alert(xhr.responseJSON.error);
+              } else {
+                alert("예약에 실패했습니다.");
+              }
             }
           });
         });
