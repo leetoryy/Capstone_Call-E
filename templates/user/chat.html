@@ -33,6 +33,40 @@
           <button id="toggleAudio" class="btn-circle enabled-style">
             <i id="audioIcon" class="bi bi-mic-fill"></i>
           </button>
+          <!-- 상담 종료 버튼 추가 -->
+          <button id="endCall" class="btn btn-danger">상담 종료</button>
+          <!-- 모달 창 -->
+          <div class="modal fade" id="endCallModal" tabindex="-1" aria-labelledby="endCallModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="endCallModalLabel">리뷰하기</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <hr class="modal-divider" />
+                <div class="modal-body">
+                  <h4 class="rating-prompt">오늘 상담은 어떠셨나요?</h4>
+                  <h4 class="rating-prompt">평점을 남겨주세요</h4>
+                  <div class="star-rating">
+                    <input type="radio" id="star-5" name="rating" value="5" />
+                    <label for="star-5" class="star">&#9733;</label>
+                    <input type="radio" id="star-4" name="rating" value="4" />
+                    <label for="star-4" class="star">&#9733;</label>
+                    <input type="radio" id="star-3" name="rating" value="3" />
+                    <label for="star-3" class="star">&#9733;</label>
+                    <input type="radio" id="star-2" name="rating" value="2" />
+                    <label for="star-2" class="star">&#9733;</label>
+                    <input type="radio" id="star-1" name="rating" value="1" />
+                    <label for="star-1" class="star">&#9733;</label>
+                  </div>
+                  <textarea id="reviewText" rows="4" placeholder="리뷰 내용을 작성해주세요."></textarea>
+                </div>
+                <div class="modal-footer">
+                  <button id="saveReview" type="button" class="btn btn-primary">리뷰 저장하고 상담 종료</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <video muted id="localVideo" autoplay style="width: 200px; height: 200px; position: absolute; bottom: 20px; right: 20px"></video>
@@ -42,5 +76,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <!-- JS -->
     <script src="/static/javascript/user/chat.js"></script>
+    <script src="/static/javascript/user/chat_rating.js"></script>
+    <script>
+      document.getElementById("endCall").addEventListener("click", function () {
+        var modal = new bootstrap.Modal(document.getElementById("endCallModal"));
+        modal.show();
+      });
+    </script>
   </body>
 </html>
