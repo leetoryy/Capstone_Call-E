@@ -62,7 +62,8 @@
 				<ul class="profile-link">
 					<li><a href="#"><i class='bx bxs-user-circle icon' ></i> Profile</a></li>
 					<li><a href="#"><i class='bx bxs-cog' ></i> Settings</a></li>
-					<li><a href="#"><i class='bx bxs-log-out-circle' ></i> Logout</a></li>
+					<li><a href="#" onclick="logout()"><i class='bx bxs-log-out-circle'></i> Logout</a></li>
+
 				</ul>
 			</div>
 		</nav>
@@ -128,8 +129,20 @@
 				<button class="day" data-day="토">토</button>
 				</div>
 				<div class="schedule">
-				  <span class="time">10:00 ~ 11:00</span>
-				  <span class="activity">회의</span>
+					<div class="timeline-main-container">
+						<div class="timeline-first-container xyz">
+						  <span>09:00 - 10:00</span>
+						  <span>김아동과의 상담</span>
+						</div>
+						<div class="timeline-second-container xyz">
+						  <span>11:00 - 12:00</span>
+						  <span>박아동과의 상담</span>
+						</div>
+						<div class="timeline-third-container xyz">
+						  <span>14:00 - 15:00</span>
+						  <span>최아동과의 상담</span>
+						</div>
+					  </div>
 				</div>
 				</div>
 			  </div>
@@ -244,5 +257,37 @@
 	<script src="{{ url_for('static', filename='javascript/counselor/date_day.js') }}"></script>
 	<script src="{{ url_for('static', filename='javascript/counselor/counselor_status.js') }}"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </body>
 </html>
+<script>
+
+
+function logout() {
+    var coIds = Object.keys(localStorage).filter(k => k.startsWith('co_')); // 모든 child_id를 배열로 가져옵니다.
+
+    // 각 child_id에 대해 로그아웃 처리
+    coIds.forEach(function(coKey) {
+        var coId = localStorage.getItem(coKey); // 로컬 스토리지에서 child_id 읽기
+
+        $.ajax({
+            type: 'POST',
+            url: '/cologout',
+            contentType: 'application/json',
+            data: JSON.stringify({ counselor_ID: coId }),
+            success: function(response) {
+                console.log('Logout successful:', response);
+                localStorage.removeItem(coKey); // 로컬 스토리지에서 child_id 삭제
+                if (coIds.indexOf(coKey) === coIds.length - 1) { // 마지막 child_id가 처리되면 리다이렉트
+                    window.location.href = '/'; 
+                }
+            },
+            error: function(error) {
+                console.error('Logout failed:', error);
+            }
+        });
+    });
+}
+
+
+</script>

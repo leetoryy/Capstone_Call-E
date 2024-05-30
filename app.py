@@ -169,6 +169,7 @@ def login():
                     if authenticate_child(child_ID, child_pw):
                         print("성공")
                         session['child_name'] = child_name
+                        
                         session[child_ID] = {'logged_in': True, 'child_name':child_name}
                         print(session[child_ID])
                         return jsonify({'user_type': 'child', 'child_id': child_ID})
@@ -192,8 +193,9 @@ def login():
                     # 로그인 성공 시 세션에 상담사 이름 저장
                     session['counselor_name'] = counselor_name
                     session['co_id'] = counselor_ID
-                    print(counselor_ID)
-                    return jsonify({'user_type': 'counselor', 'counselor_name': counselor_name, 'co_id': counselor_ID})
+                    session[counselor_ID] = {'logged_in': True}
+                    print(session[counselor_ID])
+                    return jsonify({'user_type': 'counselor', 'counselor_name': counselor_name, 'counselor_ID': counselor_ID})
                     
                 else:
                     print("실패")
@@ -1182,6 +1184,14 @@ def reserve_timeslot():
 def mbti_result_html():
     return render_template('user/mbti_result.html')
 
+@app.route('/user_review') 
+def user_review_html():
+    return render_template('user/user_review.html')
+
+@app.route('/user_review_detail') 
+def user_review_detail_html():
+    return render_template('user/user_review_detail.html')
+
 @app.route('/save_mbti_result', methods=['POST'])
 def save_mbti_result():
     child_id = session.get('child_id')
@@ -1230,6 +1240,30 @@ def logout():
         return jsonify({'success': True, 'message': f'Logout successful for child_id {child_id}'})
     else:
         return jsonify({'success': False, 'message': 'No session found for this child_id'}), 404
+    
+@app.route('/cologout', methods=['POST'])
+def cologout():
+    try:
+        data = request.get_json()
+        counselor_id = data.get('counselor_ID')
+        print(counselor_id)
+
+       
+        if counselor_id in session:
+            print(f"세션에서 발견된 상담사 ID: {counselor_id}, 로그아웃 처리 진행")
+            session.pop(counselor_id, None)
+            
+            print(f"{counselor_id} 로그아웃 성공")
+            # 세션 정보 확인 (디버깅 용)
+            print("현재 세션 상태:", dict(session))
+        else:
+            print(f"세션에서 상담사 ID: {counselor_id}를 찾을 수 없음.")
+
+        return jsonify({'message': 'Logout successful'})
+
+    except Exception as e:
+        print(f"로그아웃 처리 중 오류 발생: {e}")
+        return jsonify({'error': 'Logout failed', 'message': str(e)}), 500
 
 # 로깅 설정
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')

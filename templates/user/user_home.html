@@ -63,6 +63,12 @@
 <script>
   const socket = io();
 
+  // URL에서 특정 쿼리 파라미터 값을 추출하는 함수 정의
+  function getQueryParameter(param) {
+    var urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
+
   // 소켓 연결이 생성되면 아동 이름을 서버에 전송합니다.
   socket.on("connect", function () {
     const childName = document.getElementById("userNameSpan").textContent.trim().split(" ")[0];
@@ -85,9 +91,11 @@
     var alarmIcon = document.getElementById("alarm-icon");
     alarmIcon.addEventListener("click", showNotificationBox);
 
+    
     // 알람 박스를 클릭하면 chat.html로 이동하도록 설정
     notificationBox.addEventListener("click", function () {
-      window.open("/chat", "_blank");
+      const childID = getQueryParameter('child_id'); // URL에서 child_id 가져오기
+      window.open(`/chat?child_id=${encodeURIComponent(childID)}`, "_blank"); // 새 창에서 URL에 child_id 포함하여 chat 페이지를 엽니다.
     });
   });
 

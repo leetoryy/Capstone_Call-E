@@ -437,12 +437,15 @@ $.ajax({
           var childID = response.child_id; // 서버로부터 받은 child_id
           console.log('childID:', childID);
           localStorage.setItem('child_' + childID, childID); // localStorage에 child_id 저장
-          window.location.href = '/user_home';
+          window.location.href = '/user_home?child_id=' + encodeURIComponent(childID);
       } else if (response && response.user_type === 'counselor') {
           console.log('상담사 로그인 성공');
           var counselorName = response.counselor_name;
+          var counselorID = response.counselor_ID;
+          console.log('counselorID:',counselorID)
           console.log('상담사 이름:', counselorName);
-          window.location.href = '/counselor_home?counselor_name=' + encodeURIComponent(counselorName);
+          localStorage.setItem('co_' + counselorID, counselorID);
+          window.location.href = '/counselor_home?counselor_id=' + encodeURIComponent(counselorID);
       } else {
           console.log('조건에 맞는 경우 없음');
       }
@@ -455,4 +458,3 @@ $.ajax({
 
 
 }
-
