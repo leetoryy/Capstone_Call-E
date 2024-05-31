@@ -280,17 +280,13 @@
 </html>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-  $(document).ready(function() {
+$(document).ready(function() {
     $('.reset-filters').click(function() {
-        // 모든 체크박스를 선택 상태로 설정
-        $('input[type="asserted"]').prop('checked', true);
-        
-        // AJAX 요청을 서버에 전송
+        $('input[type="checkbox"]').prop('checked', true);
         $.ajax({
-            url: '/reviewall',  // 서버의 라우트
+            url: '/reviewall',
             method: 'POST',
             success: function(response) {
-                // 서버로부터 받은 HTML을 웹페이지에 동적으로 추가
                 $('.lists').html(response);
             },
             error: function(xhr, status, error) {
@@ -298,22 +294,32 @@
             }
         });
     });
-});
 
-
-  $(document).ready(function() {
-    // 모든 체크박스 그룹에 대한 change 이벤트 리스너 추가
     $('.checkbox-group1 input[type="checkbox"], .checkbox-group2 input[type="checkbox"], .checkbox-group4 input[type="checkbox"]').change(function() {
-        var $group = $(this).closest('.input-group-checkbox'); // 현재 체크박스의 부모 그룹을 찾음
-        var isChecked = $group.find('input[type="checkbox"]:checked').length > 0; // 그룹 내에서 선택된 체크박스가 있는지 확인
-
+        var $group = $(this).closest('.input-group-checkbox');
+        var isChecked = $group.find('input[type="checkbox"]:checked').length > 0;
         if (!isChecked) {
-            // 선택된 체크박스가 없다면, 체크 해제 방지
             $(this).prop('checked', true);
             alert('각 항목에서 최소 한 개의 옵션을 선택해야 합니다.');
         }
+        sendData();
+    });
 
-        sendData(); // 상태가 변경될 때마다 데이터 전송
+    $('#search-consultant').on('input', function() {
+        var searchQuery = $(this).val().trim();  // 입력란의 값을 가져옴
+        if (searchQuery.length > 2) {  // 최소 3자 이상 입력될 때만 요청 보냄
+            $.ajax({
+                url: '/reviewcheck',
+                type: 'POST',
+                data: { 'searchQuery': searchQuery },
+                success: function(response) {
+                    $('.lists').html(response);  // 서버로부터 받은 응답으로 리스트를 업데이트
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
     });
 
     function sendData() {
@@ -342,7 +348,8 @@
             data: {
                 'consultationAreas': consultationAreas,
                 'keywords': keywords,
-                'mbti': mbti
+                'mbti': mbti,
+                'searchQuery': $('#search-consultant').val().trim()
             },
             success: function(response) {
               $('.lists').html(response);

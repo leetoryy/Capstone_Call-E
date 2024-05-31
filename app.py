@@ -1373,23 +1373,20 @@ def review_check():
     consultation_areas = request.form.getlist('consultationAreas[]')
     keywords = request.form.getlist('keywords[]')
     mbti = request.form.getlist('mbti[]')
-    
+    search_query = request.form.get('searchQuery', None)  # 상담사 이름 검색값 받기 (기본값은 None)
+
     # 데이터 로깅
     print("Received consultation areas:", consultation_areas)
     print("Received keywords:", keywords)
     print("Received MBTI types:", mbti)
-    
+    print("Received search query:", search_query)
+
     # SQL 쿼리를 안전하게 생성하기 위해 매개변수를 문자열로 결합
     consultation_area_str = "'" + "', '".join(consultation_areas) + "'"
     mbti_str = "'" + "', '".join(mbti) + "'"
     keyword_str = "'" + "', '".join(keywords) + "'"
-    
-    # 데이터 로그 출력
-    print("SQL-safe consultation areas:", consultation_area_str) 
-    print("SQL-safe MBTI types:", mbti_str)
-    print("SQL-safe keywords:", keyword_str)
-    
-    # SQL 쿼리
+
+    # 기본 SQL 쿼리 구성
     query = f"""
             SELECT 
                 c.co_name,
@@ -1405,12 +1402,14 @@ def review_check():
                 c.co_consulting IN ({consultation_area_str}) OR
                 c.co_mbti IN ({mbti_str}) OR
                 r.consulting_priority IN({keyword_str})
-            GROUP BY 
-                c.co_name, c.co_mbti, c.co_consulting
-            ORDER BY 
-                c.co_name;
     """
-    
+
+    # searchQuery가 제공된 경우 쿼리에 추가
+    if search_query:
+        query += f" OR c.co_name LIKE '%{search_query}%'"
+
+    query += " GROUP BY c.co_name, c.co_mbti, c.co_consulting ORDER BY c.co_name;"
+
     # DB 쿼리 실행
     result = review_listdb.execute(query)
     print(result)
@@ -1433,6 +1432,7 @@ def review_check():
             </a>
         """
     return result_html
+
 
 
 @app.route('/reviewall', methods=['POST'])
