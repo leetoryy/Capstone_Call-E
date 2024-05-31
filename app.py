@@ -1367,10 +1367,71 @@ def handle_review_submission():
     else:
         return jsonify({'message': 'Counselor not found'})
 
-    
+@app.route('/reviewcheck', methods=['POST'])
+def review_check():
+    # 클라이언트로부터 전송된 데이터를 받기
+    consultation_areas = request.form.getlist('consultationAreas[]')
+    keywords = request.form.getlist('keywords[]')
+    mbti = request.form.getlist('mbti[]')
 
+    # 데이터 로그 출력
+    print("Received consultation areas:", consultation_areas)
+    print("Received keywords:", keywords)
+    print("Received MBTI types:", mbti)
+
+    # 데이터 확인을 위한 간단한 JSON 응답
+    return jsonify({
+        'status': 'success',
+        'message': 'Data received successfully',
+        'consultationAreas': consultation_areas,
+        'keywords': keywords,
+        'mbti': mbti
+    })
+
+@app.route('/reviewall', methods=['POST'])
+def review_all():
+    # 데이터베이스에서 정보를 가져오는 SQL 쿼리 실행
+    query = """
+        SELECT 
+            c.co_name,
+            GROUP_CONCAT(DISTINCT r.consulting_priority ORDER BY r.consulting_priority SEPARATOR ', ') AS consulting_priorities,
+            AVG(r.consulting_scope) AS avg_consulting_scope,
+            c.co_mbti,
+            c.co_consulting
+        FROM
+            REVIEW.review_list r
+        JOIN
+            COUNSELOR.counselor_list c ON c.co_name = r.co_name
+        GROUP BY 
+            c.co_name, c.co_mbti, c.co_consulting
+        ORDER BY 
+            c.co_name;
+    """
     
+    result=review_listdb.execute(query)
     
+    result_html = ""
+    for row in result:
+        co_name, consulting_priorities, avg_consulting_scope, co_mbti, co_consulting = row
+        rating = round(avg_consulting_scope)
+        
+        result_html += f"""
+        <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">{co_name}</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>{rating}</span>
+                <p>{co_mbti}</p>
+              </div>
+              <div class="list-details">
+                <p>{co_consulting}</p>
+                <p>{consulting_priorities}</p>
+              </div>
+            </a>
+        """
+    return result_html
+        
+
 
 # 로깅 설정
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -1400,10 +1461,7 @@ def handle_start_counseling(data):
 
     # 상담이 시작되었다는 메시지를 모든 연결된 클라이언트에게 전송합니다.
     #socketio.emit('counseling_started', {'message': '상담이 시작되었습니다.'})
-
-
-
-
+    
 
 users = {}
 rooms = {}

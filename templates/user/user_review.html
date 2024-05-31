@@ -62,27 +62,27 @@
             <div class="filter-group">
               <div class="filter-category">키워드</div>
               <div class="input-group-checkbox">
-                <div class="checkbox-group1">
+                <div class="checkbox-group2">
                   <input type="checkbox" id="area5" checked />
                   <label for="area5" class="cb1"></label>
                   <label>공감과 위로</label>
                 </div>
-                <div class="checkbox-group1">
+                <div class="checkbox-group2">
                   <input type="checkbox" id="area6" checked />
                   <label for="area6" class="cb1"></label>
                   <label>현실적인 조언</label>
                 </div>
-                <div class="checkbox-group1">
+                <div class="checkbox-group2">
                   <input type="checkbox" id="area7" checked />
                   <label for="area7" class="cb1"></label>
                   <label>능동적인 참여유도</label>
                 </div>
-                <div class="checkbox-group1">
+                <div class="checkbox-group2">
                   <input type="checkbox" id="area8" checked />
                   <label for="area8" class="cb1"></label>
                   <label>성장지향적 접근성</label>
                 </div>
-                <div class="checkbox-group1">
+                <div class="checkbox-group2">
                   <input type="checkbox" id="area9" checked />
                   <label for="area9" class="cb1"></label>
                   <label>위기대응 및 안정화</label>
@@ -92,12 +92,12 @@
             <div class="filter-group">
               <div class="filter-category">성별</div>
               <div class="input-group-checkbox">
-                <div class="checkbox-group2">
+                <div class="checkbox-group3">
                   <input type="checkbox" id="area10" checked />
                   <label for="area10" class="cb1"></label>
                   <label>남자</label>
                 </div>
-                <div class="checkbox-group2">
+                <div class="checkbox-group3">
                   <input type="checkbox" id="area11" checked />
                   <label for="area11" class="cb1"></label>
                   <label>여자</label>
@@ -107,82 +107,82 @@
             <div class="filter-group">
               <div class="filter-category">MBTI</div>
               <div class="input-group-checkbox">
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area12" checked />
                   <label for="area12" class="cb1"></label>
                   <label>ISTJ</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area13" checked />
                   <label for="area13" class="cb1"></label>
                   <label>ISFJ</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area14" checked />
                   <label for="area14" class="cb1"></label>
                   <label>INFJ</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area15" checked />
                   <label for="area15" class="cb1"></label>
                   <label>INTJ</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area16" checked />
                   <label for="area16" class="cb1"></label>
                   <label>ISTP</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area17" checked />
                   <label for="area17" class="cb1"></label>
                   <label>ISFP</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area18" checked />
                   <label for="area18" class="cb1"></label>
                   <label>INFP</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area19" checked />
                   <label for="area19" class="cb1"></label>
                   <label>INTP</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area20" checked />
                   <label for="area20" class="cb1"></label>
                   <label>ESTP</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area21" checked />
                   <label for="area21" class="cb1"></label>
                   <label>ESFP</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area22" checked />
                   <label for="area22" class="cb1"></label>
                   <label>ENFP</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area23" checked />
                   <label for="area23" class="cb1"></label>
                   <label>ENTP</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area24" checked />
                   <label for="area24" class="cb1"></label>
                   <label>ESTJ</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area25" checked />
                   <label for="area25" class="cb1"></label>
                   <label>ESFJ</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area26" checked />
                   <label for="area26" class="cb1"></label>
                   <label>ENFJ</label>
                 </div>
-                <div class="checkbox-group3">
+                <div class="checkbox-group4">
                   <input type="checkbox" id="area27" checked />
                   <label for="area27" class="cb1"></label>
                   <label>ENTJ</label>
@@ -278,3 +278,81 @@
     </div>
   </body>
 </html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('.reset-filters').click(function() {
+        // 모든 체크박스를 선택 상태로 설정
+        $('input[type="asserted"]').prop('checked', true);
+        
+        // AJAX 요청을 서버에 전송
+        $.ajax({
+            url: '/reviewall',  // 서버의 라우트
+            method: 'POST',
+            success: function(response) {
+                // 서버로부터 받은 HTML을 웹페이지에 동적으로 추가
+                $('.lists').html(response);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error occurred: " + error);
+            }
+        });
+    });
+});
+
+
+  $(document).ready(function() {
+    // 모든 체크박스 그룹에 대한 change 이벤트 리스너 추가
+    $('.checkbox-group1 input[type="checkbox"], .checkbox-group2 input[type="checkbox"], .checkbox-group4 input[type="checkbox"]').change(function() {
+        var $group = $(this).closest('.input-group-checkbox'); // 현재 체크박스의 부모 그룹을 찾음
+        var isChecked = $group.find('input[type="checkbox"]:checked').length > 0; // 그룹 내에서 선택된 체크박스가 있는지 확인
+
+        if (!isChecked) {
+            // 선택된 체크박스가 없다면, 체크 해제 방지
+            $(this).prop('checked', true);
+            alert('각 항목에서 최소 한 개의 옵션을 선택해야 합니다.');
+        }
+
+        sendData(); // 상태가 변경될 때마다 데이터 전송
+    });
+
+    function sendData() {
+        var consultationAreas = [];
+        var keywords = [];
+        var mbti = [];
+
+        $('.checkbox-group1 input[type="checkbox"]:checked').each(function() {
+            var labelText = $(this).siblings('label').last().text().trim();
+            consultationAreas.push(labelText);
+        });
+
+        $('.checkbox-group2 input[type="checkbox"]:checked').each(function() {
+            var labelText = $(this).siblings('label').last().text().trim();
+            keywords.push(labelText);
+        });
+
+        $('.checkbox-group4 input[type="checkbox"]:checked').each(function() {
+            var labelText = $(this).siblings('label').last().text().trim();
+            mbti.push(labelText);
+        });
+
+        $.ajax({
+            url: '/reviewcheck',
+            type: 'POST',
+            data: {
+                'consultationAreas': consultationAreas,
+                'keywords': keywords,
+                'mbti': mbti
+            },
+            success: function(response) {
+                console.log('Data sent and response received:', response);
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+            }
+        });
+    }
+});
+</script>
+
+
