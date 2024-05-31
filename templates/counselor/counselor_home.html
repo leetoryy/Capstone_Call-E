@@ -129,21 +129,7 @@
             <button class="day" data-day="토">토</button>
             </div>
             <div class="schedule">
-               <div class="timeline-main-container">
-                  <div class="timeline-first-container xyz">
-                    <span>09:00 - 10:00</span>
-                    <span>김아동과의 상담</span>
-                  </div>
-                  <div class="timeline-second-container xyz">
-                    <span>11:00 - 12:00</span>
-                    <span>박아동과의 상담</span>
-                  </div>
-                  <div class="timeline-third-container xyz">
-                    <span>14:00 - 15:00</span>
-                    <span>최아동과의 상담</span>
-                  </div>
-                 </div>
-            </div>
+               <div class="timeline-main-container" id="timeline-main-container"></div>
             </div>
            </div>
            </div>
@@ -256,6 +242,7 @@
    <script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>
    <script src="{{ url_for('static', filename='javascript/counselor/date_day.js') }}"></script>
    <script src="{{ url_for('static', filename='javascript/counselor/counselor_status.js') }}"></script>
+   <script src="{{ url_for('static', filename='javascript/counselor/counselor_today.js') }}"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </body>

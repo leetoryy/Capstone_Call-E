@@ -150,62 +150,57 @@
 
       document.getElementById("saveReview").addEventListener("click", function () {
         // 별점을 가져오는 코드
-        const rating = document.querySelector('input[name="rating"]:checked').value;
-        console.log("Rating:", rating);
-
+        const rating = document.querySelector('input[name="rating"]:checked')?.value;
         // 리뷰 내용을 가져오는 코드
         const reviewText = document.getElementById("reviewText").value;
-        console.log("Review Text:", reviewText);
-
-        // 모든 체크박스 요소를 선택하고 선택된 체크박스의 라벨 텍스트를 가져옵니다.
+        const childID = getQueryParameter("child_id");
+    
+        // 체크박스에서 선택된 태그들을 가져오는 코드
         const selectedTags = [];
         const checkboxGroups = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
-        
         checkboxGroups.forEach((checkbox) => {
-          if (checkbox.checked) { // 체크박스가 선택된 경우
-            const label = checkbox.nextElementSibling.nextElementSibling.textContent;
-            selectedTags.push(label);
-          }
+            if (checkbox.checked) {
+                const label = checkbox.nextElementSibling.nextElementSibling.textContent;
+                selectedTags.push(label);
+            }
         });
-        const tags = selectedTags.join(", ")
-        console.log("Selected Tags:", selectedTags.join(", ")); // 콘솔에 선택된 태그들을 출력합니다.
-        console.log(tags)
-        
-
-        // 현재 날짜를 'YYYY-MM-DD' 형식으로 가져오는 코드
-        const currentDate = new Date();
-        const formattedDate = currentDate.toISOString().slice(0, 10); // ISO 문자열을 잘라서 'YYYY-MM-DD' 형식으로 만듦
-        console.log("Review Date:", formattedDate);
-
-        // 여기서 childID는 어떤 방식으로든 URL 쿼리에서 가져옵니다.
-        const childID = getQueryParameter("child_id"); // 이 함수가 정의되어 있어야 합니다.
-        console.log("Child ID:", childID);
-        console.log("Counselor ID:", counselorId);
-
-        // 서버의 /review 엔드포인트에 POST 요청을 보냅니다.
-        fetch("/review", {
-          method: "POST", // HTTP 메소드 설정
-          headers: {
-            "Content-Type": "application/json", // 내용 타입을 JSON으로 설정
-          },
-          body: JSON.stringify({
-            counselorID: counselorId,
-            rating: rating,
-            reviewText: reviewText,
-            reviewDate: formattedDate,
-            childID: childID,
-            tags: tags,
-            
-          }), // 전송할 데이터
-        })
-          .then((response) => response.json()) // 서버로부터 받은 응답을 JSON으로 파싱
-          .then((data) => {
-            console.log("Response from server:", data); // 서버로부터 받은 응답을 콘솔에 출력
-          })
-          .catch((error) => {
-            console.error("Error:", error); // 에러 처리
-          });
-      });
+    
+        // 모든 필수 입력 항목을 확인합니다.
+        if (!rating || reviewText === "" || selectedTags.length === 0) {
+            alert("모든 답을 입력하셔야 리뷰를 작성할 수 있습니다. 작성하지 않고 종료하시겠습니까?");
+            window.location.href = '/user_home?child_id=' + encodeURIComponent(childID);
+        } else {
+            const tags = selectedTags.join(", ");
+            const currentDate = new Date();
+            const formattedDate = currentDate.toISOString().slice(0, 10);
+            const childID = getQueryParameter("child_id");
+            const counselorID = counselorId; // counselorId가 정의되어 있어야 합니다.
+    
+            // 서버로 데이터를 전송하는 POST 요청을 보냅니다.
+            fetch("/review", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    counselorID: counselorId,
+                    rating: rating,
+                    reviewText: reviewText,
+                    reviewDate: formattedDate,
+                    childID: childID,
+                    tags: tags,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Response from server:", data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+    });
+    
     </script>
   </body>
 </html>

@@ -28,6 +28,7 @@ child_infodb = DBconnector('CHILD_INFO') #아동mbti, 아동사전설문지 내�
 review_listdb =  DBconnector('REVIEW')
 #code_listdb = DBconnector('CONSULTING_CODE)
 schedule_listdb = DBconnector('COUNSELOR_SCHEDULE')
+consulting_listdb = DBconnector('CONSULTING')
 
 AVAILABLE_TIMESLOTS = [
     ("월", "09:00", "10:00"),
@@ -456,6 +457,64 @@ def counselor_home_data():
     print(data)
 
     return jsonify(data)
+
+@app.route('/counselor_today_data')
+def counselor_today_data():
+    co_id = session.get('co_id', '')
+
+    if not co_id:
+        return jsonify({"error": "No counselor ID found in session"}), 400
+
+    seoul_tz = pytz.timezone('Asia/Seoul')
+    now = datetime.now(seoul_tz)
+    today_weekday = now.strftime('%a')
+    weekday_map = {
+        'Mon': '월',
+        'Tue': '화',
+        'Wed': '수',
+        'Thu': '목',
+        'Fri': '금',
+        'Sat': '토',
+        'Sun': '일'
+    }
+    today_weekday_kr = weekday_map[today_weekday]
+
+    query = """
+    SELECT ci.child_name, sl.start_time, sl.end_time, sl.day_of_week
+    FROM CHILD_INFO.child_info_list ci
+    JOIN CHILD.child_list cd ON ci.child_id = cd.child_id
+    JOIN COUNSELOR_SCHEDULE.schedule_list sl ON ci.child_id = sl.child_id
+    WHERE ci.co_id = %s
+    """
+    with child_infodb.get_cursor() as cursor:
+        cursor.execute(query, (co_id,))
+        results = cursor.fetchall()
+
+    print("SQL Query today:")
+    for row in results:
+        print(row)
+
+    today_data = []
+    for row in results:
+        child_name, start_time_td, end_time_td, day_of_week = row
+        
+        start_time = timedelta_to_time(start_time_td)
+        end_time = timedelta_to_time(end_time_td)
+
+        if day_of_week == today_weekday_kr:
+            today_data.append({
+                'name': child_name,
+                'start_time': start_time.strftime('%H:%M'),
+                'end_time': end_time.strftime('%H:%M')
+            })
+
+
+    print("today Data:")
+    print(today_data)
+
+    return jsonify(today_data)
+
+
 
 @app.route('/counselor_home')
 def counselor_home_html():
@@ -1263,13 +1322,13 @@ def handle_review_submission():
     # 요청 본문에서 데이터를 추출합니다.
     data = request.get_json()
     rating = data['rating']
-    reviewText = data['reviewText']
+    reviewText = data['reviewText'].replace("'", "\\'")  # SQL 인젝션 방지를 위한 간단한 처리
     reviewDate = data['reviewDate']
     childID = data['childID']
     counselorID = data['counselorID']
-    tags = data['tags']
-    
-    # 받은 데이터를 콘솔에 출력합니다.
+    tags = data['tags'].replace("'", "\\'")  # SQL 인젝션 방지를 위한 간단한 처리
+
+    # 데이터를 콘솔에 출력합니다.
     print('Received rating:', rating)
     print('Received review text:', reviewText)
     print('Received review date:', reviewDate)
@@ -1277,9 +1336,40 @@ def handle_review_submission():
     print('Received counselorID:', counselorID)
     print('Received tags:', tags)
 
+    # 상담사 이름을 조회합니다.
+    sql_query = f"SELECT co_name FROM COUNSELOR.counselor_list WHERE co_id = '{counselorID}';"
+    results = counselordb.query(sql_query)
+    if results:
+        counselor_name = results[0][0]
+        print(counselor_name)
+
+        # 상담 정보를 데이터베이스에 저장합니다.
+        insert_consulting_sql = f"""
+        INSERT INTO consulting_list (child_id, co_id, consulting_day)
+        VALUES ('{childID}', '{counselorID}', '{reviewDate}');
+        """
+        try:
+            consulting_listdb.insert(insert_consulting_sql)
+            # 리뷰 정보를 데이터베이스에 저장합니다.
+            insert_review_sql = f"""
+            INSERT INTO review_list (co_id, co_name, child_id, consulting_day, consulting_priority, consulting_scope, consulting_etc)
+            VALUES ('{counselorID}', '{counselor_name}', '{childID}', '{reviewDate}', '{tags}', '{rating}', '{reviewText}');
+            """
+            try:
+                review_listdb.insert(insert_review_sql)
+                return jsonify({'message': 'Review submitted successfully'})
+            except Exception as e:
+                print(e)
+                return jsonify({'message': 'Failed to submit review due to an error in saving the review information'})
+        except Exception as e:
+            print(e)
+            return jsonify({'message': 'Failed to submit review due to an error in saving the consulting information'})
+    else:
+        return jsonify({'message': 'Counselor not found'})
+
     
 
-    return jsonify({'message': 'Review submitted successfully'})
+    
     
 
 # 로깅 설정
