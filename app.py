@@ -1465,9 +1465,19 @@ def handle_answer(payload):
     emit("answer", sdp, room=room)
     print_log("onAnswer", request.sid, room)
 
-@socketio.on('leaveRoom')
 def handle_leave_room(room):
     leave_room(room)
+    # 사용자를 rooms 딕셔너리에서 제거합니다.
+    if request.sid in users:
+        del users[request.sid]
+
+    # 방에 더 이상 참가자가 없는지 확인합니다.
+    participants = list(socketio.server.manager.get_participants('/', room))
+    if len(participants) == 0:
+        # 방을 rooms 딕셔너리에서 삭제합니다.
+        if room in rooms:
+            del rooms[room]
+
     print_log("onLeaveRoom", request.sid, room)
 
 def print_log(header, client_id, room):
