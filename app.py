@@ -1395,10 +1395,118 @@ def handle_review_submission():
     else:
         return jsonify({'message': 'Counselor not found'})
 
-    
+@app.route('/reviewcheck', methods=['POST'])
+def review_check():
+    # 클라이언트로부터 전송된 데이터를 받기
+    consultation_areas = request.form.getlist('consultationAreas[]')
+    keywords = request.form.getlist('keywords[]')
+    mbti = request.form.getlist('mbti[]')
+    search_query = request.form.get('searchQuery', None)  # 상담사 이름 검색값 받기 (기본값은 None)
 
+    # 데이터 로깅
+    print("Received consultation areas:", consultation_areas)
+    print("Received keywords:", keywords)
+    print("Received MBTI types:", mbti)
+    print("Received search query:", search_query)
+
+    # SQL 쿼리를 안전하게 생성하기 위해 매개변수를 문자열로 결합
+    consultation_area_str = "'" + "', '".join(consultation_areas) + "'"
+    mbti_str = "'" + "', '".join(mbti) + "'"
+    keyword_str = "'" + "', '".join(keywords) + "'"
+
+    # 기본 SQL 쿼리 구성
+    query = f"""
+            SELECT 
+                c.co_name,
+                GROUP_CONCAT(DISTINCT r.consulting_priority ORDER BY r.consulting_priority SEPARATOR ', ') AS consulting_priorities,
+                AVG(r.consulting_scope) AS avg_consulting_scope,
+                c.co_mbti,
+                c.co_consulting
+            FROM
+                REVIEW.review_list r
+            JOIN
+                COUNSELOR.counselor_list c ON c.co_name = r.co_name
+            WHERE
+                c.co_consulting IN ({consultation_area_str}) OR
+                c.co_mbti IN ({mbti_str}) OR
+                r.consulting_priority IN({keyword_str})
+    """
+
+    # searchQuery가 제공된 경우 쿼리에 추가
+    if search_query:
+        query += f" OR c.co_name LIKE '%{search_query}%'"
+
+    query += " GROUP BY c.co_name, c.co_mbti, c.co_consulting ORDER BY c.co_name;"
+
+    # DB 쿼리 실행
+    result = review_listdb.execute(query)
+    print(result)
+    result_html = ""
+    for row in result:
+        co_name, consulting_priorities, avg_consulting_scope, co_mbti, co_consulting = row
+        rating = round(avg_consulting_scope)
+        result_html += f"""
+        <a class="list" href="#">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">{co_name}</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>{rating}</span>
+                <p>{co_mbti}</p>
+              </div>
+              <div class="list-details">
+                <p>{co_consulting}</p>
+                <p>{consulting_priorities}</p>
+              </div>
+            </a>
+        """
+    return result_html
+
+
+
+@app.route('/reviewall', methods=['POST'])
+def review_all():
+    # 데이터베이스에서 정보를 가져오는 SQL 쿼리 실행
+    query = """
+        SELECT 
+            c.co_name,
+            GROUP_CONCAT(DISTINCT r.consulting_priority ORDER BY r.consulting_priority SEPARATOR ', ') AS consulting_priorities,
+            AVG(r.consulting_scope) AS avg_consulting_scope,
+            c.co_mbti,
+            c.co_consulting
+        FROM
+            REVIEW.review_list r
+        JOIN
+            COUNSELOR.counselor_list c ON c.co_name = r.co_name
+        GROUP BY 
+            c.co_name, c.co_mbti, c.co_consulting
+        ORDER BY 
+            c.co_name;
+    """
     
+    result=review_listdb.execute(query)
     
+    result_html = ""
+    for row in result:
+        co_name, consulting_priorities, avg_consulting_scope, co_mbti, co_consulting = row
+        rating = round(avg_consulting_scope)
+        
+        result_html += f"""
+        <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">{co_name}</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>{rating}</span>
+                <p>{co_mbti}</p>
+              </div>
+              <div class="list-details">
+                <p>{co_consulting}</p>
+                <p>{consulting_priorities}</p>
+              </div>
+            </a>
+        """
+    return result_html
+        
+
 
 # 로깅 설정
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -1428,10 +1536,7 @@ def handle_start_counseling(data):
 
     # 상담이 시작되었다는 메시지를 모든 연결된 클라이언트에게 전송합니다.
     #socketio.emit('counseling_started', {'message': '상담이 시작되었습니다.'})
-
-
-
-
+    
 
 users = {}
 rooms = {}

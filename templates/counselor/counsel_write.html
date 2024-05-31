@@ -87,29 +87,54 @@
 
         <div class="data">
           <div class="content-data">
-            <form id="counselingForm">
-              <div class="form-section">
-                <label for="childName">아동 이름</label>
-                <select id="childName" name="childName" class="input-select">
-                  <option value="child1">아동 1</option>
-                  <option value="child2">아동 2</option>
-                  <option value="child3">아동 3</option>
+            <div class="left-section">
+              <div class="form-group">
+                <label for="counsel-date">상담 날짜</label>
+                <input type="date" id="counsel-date" />
+              </div>
+
+              <div class="form-group">
+                <label for="child-name">아동 이름</label>
+                <select id="child-name">
+                  <option value="name1">Name1</option>
+                  <option value="name2">Name2</option>
                 </select>
               </div>
-              <div class="form-section">
-                <label for="counselingDate">상담 날짜</label>
-                <select id="childName" name="childName" class="input-select">
-                  <option value="2024.05.13">2024.05.13</option>
-                  <option value="2024.05.14">2024.05.14</option>
-                  <option value="2024.05.15">2024.05.15</option>
-                </select>
+
+              <div class="form-group">
+                <label for="counsel-field">상담 분야</label>
+                <input type="text" id="counsel-field" />
               </div>
-              <div class="form-section">
-                <label for="counselingNotes">상담 내용</label>
-                <textarea id="counselingNotes" name="counselingNotes" rows="4" cols="50" required></textarea>
+
+              <div class="form-group">
+                <label for="mbti">MBTI</label>
+                <input type="text" id="mbti" />
               </div>
-              <button type="submit">저장</button>
-            </form>
+
+              <div class="priority-group">
+                <label for="priority1">상담 우선순위 1</label>
+                <input type="text" id="priority1" />
+
+                <label for="priority2">상담 우선순위 2</label>
+                <input type="text" id="priority2" />
+
+                <label for="priority3">상담 우선순위 3</label>
+                <input type="text" id="priority3" />
+
+                <label for="priority4">상담 우선순위 4</label>
+                <input type="text" id="priority4" />
+              </div>
+            </div>
+
+            <div class="right-section">
+              <label for="counsel-content">상담 내용</label>
+              <textarea id="counsel-content" class="notes"></textarea>
+
+              <label for="counsel-result">상담 결과</label>
+              <textarea id="counsel-result" class="notes"></textarea>
+
+              <button>저장하기</button>
+            </div>
           </div>
         </div>
       </main>

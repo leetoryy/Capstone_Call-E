@@ -318,10 +318,14 @@ a.list:hover {
 }
 
 .checkbox-group2 {
-  width: 50%;
+  width: 100%;
 }
 
 .checkbox-group3 {
+  width: 50%;
+}
+
+.checkbox-group4 {
   width: 25%;
 }
 
