@@ -345,7 +345,7 @@
                 'mbti': mbti
             },
             success: function(response) {
-                console.log('Data sent and response received:', response);
+              $('.lists').html(response);
             },
             error: function(xhr, status, error) {
                 console.log('Error:', error);

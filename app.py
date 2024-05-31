@@ -1373,20 +1373,67 @@ def review_check():
     consultation_areas = request.form.getlist('consultationAreas[]')
     keywords = request.form.getlist('keywords[]')
     mbti = request.form.getlist('mbti[]')
-
-    # 데이터 로그 출력
+    
+    # 데이터 로깅
     print("Received consultation areas:", consultation_areas)
     print("Received keywords:", keywords)
     print("Received MBTI types:", mbti)
+    
+    # SQL 쿼리를 안전하게 생성하기 위해 매개변수를 문자열로 결합
+    consultation_area_str = "'" + "', '".join(consultation_areas) + "'"
+    mbti_str = "'" + "', '".join(mbti) + "'"
+    keyword_str = "'" + "', '".join(keywords) + "'"
+    
+    # 데이터 로그 출력
+    print("SQL-safe consultation areas:", consultation_area_str) 
+    print("SQL-safe MBTI types:", mbti_str)
+    print("SQL-safe keywords:", keyword_str)
+    
+    # SQL 쿼리
+    query = f"""
+            SELECT 
+                c.co_name,
+                GROUP_CONCAT(DISTINCT r.consulting_priority ORDER BY r.consulting_priority SEPARATOR ', ') AS consulting_priorities,
+                AVG(r.consulting_scope) AS avg_consulting_scope,
+                c.co_mbti,
+                c.co_consulting
+            FROM
+                REVIEW.review_list r
+            JOIN
+                COUNSELOR.counselor_list c ON c.co_name = r.co_name
+            WHERE
+                c.co_consulting IN ({consultation_area_str}) OR
+                c.co_mbti IN ({mbti_str}) OR
+                r.consulting_priority IN({keyword_str})
+            GROUP BY 
+                c.co_name, c.co_mbti, c.co_consulting
+            ORDER BY 
+                c.co_name;
+    """
+    
+    # DB 쿼리 실행
+    result = review_listdb.execute(query)
+    print(result)
+    result_html = ""
+    for row in result:
+        co_name, consulting_priorities, avg_consulting_scope, co_mbti, co_consulting = row
+        rating = round(avg_consulting_scope)
+        result_html += f"""
+        <a class="list" href="#">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">{co_name}</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>{rating}</span>
+                <p>{co_mbti}</p>
+              </div>
+              <div class="list-details">
+                <p>{co_consulting}</p>
+                <p>{consulting_priorities}</p>
+              </div>
+            </a>
+        """
+    return result_html
 
-    # 데이터 확인을 위한 간단한 JSON 응답
-    return jsonify({
-        'status': 'success',
-        'message': 'Data received successfully',
-        'consultationAreas': consultation_areas,
-        'keywords': keywords,
-        'mbti': mbti
-    })
 
 @app.route('/reviewall', methods=['POST'])
 def review_all():
