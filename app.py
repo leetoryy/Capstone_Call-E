@@ -2,6 +2,7 @@ import base64
 import logging
 from multiprocessing import connection
 import traceback
+from typing import Counter
 from flask import Flask, jsonify, render_template, request, redirect, session, url_for
 from dbcl import DBconnector
 import pymysql
@@ -677,12 +678,13 @@ def mbti_home_html():
     return render_template('user/mbti_home.html')
 
 @app.route('/user_review')
-def user_reivew_html():
+def user_review_html():
     return render_template('user/user_review.html')
 
 @app.route('/user_review_detail') 
 def user_review_detail_html():
-    return render_template('user/user_review_detail.html')
+    return render_template('user/user_review_ detail.html')
+
 
 # 상담사 상담 분야 가져오기
 def get_counselor_consulting():
@@ -1367,6 +1369,76 @@ def handle_review_submission():
     else:
         return jsonify({'message': 'Counselor not found'})
 
+@app.route('/counselor/<co_id>')
+def counselor_detail(co_id):
+    query = f"""
+            SELECT 
+                r.co_name,
+                r.consulting_priority,
+                r.consulting_scope,
+                r.consulting_etc,
+                r.child_id,
+                c.co_mbti,
+                c.co_consulting,
+                ch.child_name  
+            FROM 
+                REVIEW.review_list r
+            JOIN 
+                COUNSELOR.counselor_list c ON r.co_id = c.co_id
+            JOIN 
+                CHILD.child_list ch ON r.child_id = ch.child_id  
+            WHERE 
+                r.co_id = {co_id};
+    """
+    result = review_listdb.execute(query)
+    print(result)
+
+    if not result:
+        return "No counselor found with the given ID.", 404
+
+    # 첫 번째 행에서 상담사 이름, MBTI, 상담 분야 추출
+    counselor_name = result[0][0]
+    #counselor_priority = result[0][1]
+    #counselor_scope = result[0][2]
+    #counselor_etc = result[0][3]
+    child_id = result[0][4]
+    counselor_mbti = result[0][5]
+    counselor_consulting = result[0][6]
+    #child_name = result[0][7]
+    
+    # 리뷰 데이터를 리스트로 저장
+    reviews = [
+        {
+            'child_name': row[7],
+            'counselor_scope': int(row[2]),
+            'counselor_consulting': row[1],
+            'counselor_etc': row[3]
+        }
+        for row in result
+    ]
+    # 별점 개수 계산
+    star_counts = Counter([review['counselor_scope'] for review in reviews])
+    total_reviews = len(reviews)
+    
+    # 별점 평균 계산
+    average_rating = sum(review['counselor_scope'] for review in reviews) / total_reviews if total_reviews > 0 else 0
+    
+
+    # 상담사 정보를 템플릿에 전달
+    return render_template('user/user_review_ detail.html',
+                           counselor_name=counselor_name,
+                           counselor_mbti=counselor_mbti,
+                           counselor_consulting=counselor_consulting,
+                           reviews=reviews,
+                           star_counts=star_counts,
+                           total_reviews=total_reviews,
+                           average_rating=average_rating)
+
+
+
+
+    
+
 @app.route('/reviewcheck', methods=['POST'])
 def review_check():
     # 클라이언트로부터 전송된 데이터를 받기
@@ -1393,7 +1465,8 @@ def review_check():
                 GROUP_CONCAT(DISTINCT r.consulting_priority ORDER BY r.consulting_priority SEPARATOR ', ') AS consulting_priorities,
                 AVG(r.consulting_scope) AS avg_consulting_scope,
                 c.co_mbti,
-                c.co_consulting
+                c.co_consulting,
+                c.co_id
             FROM
                 REVIEW.review_list r
             JOIN
@@ -1415,10 +1488,10 @@ def review_check():
     print(result)
     result_html = ""
     for row in result:
-        co_name, consulting_priorities, avg_consulting_scope, co_mbti, co_consulting = row
+        co_name, consulting_priorities, avg_consulting_scope, co_mbti, co_consulting, co_id = row
         rating = round(avg_consulting_scope)
         result_html += f"""
-        <a class="list" href="#">
+        <a class="list" href="counselor/{co_id}">
               <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
               <div class="list-text">
                 <span class="list-name">{co_name}</span>
@@ -1444,7 +1517,8 @@ def review_all():
             GROUP_CONCAT(DISTINCT r.consulting_priority ORDER BY r.consulting_priority SEPARATOR ', ') AS consulting_priorities,
             AVG(r.consulting_scope) AS avg_consulting_scope,
             c.co_mbti,
-            c.co_consulting
+            c.co_consulting,
+            c.co_id
         FROM
             REVIEW.review_list r
         JOIN
@@ -1456,14 +1530,15 @@ def review_all():
     """
     
     result=review_listdb.execute(query)
+    print(result)
     
     result_html = ""
     for row in result:
-        co_name, consulting_priorities, avg_consulting_scope, co_mbti, co_consulting = row
+        co_name, consulting_priorities, avg_consulting_scope, co_mbti, co_consulting, co_id = row
         rating = round(avg_consulting_scope)
         
         result_html += f"""
-        <a class="list" href="">
+        <a class="list" href="counselor/{co_id}">
               <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
               <div class="list-text">
                 <span class="list-name">{co_name}</span>

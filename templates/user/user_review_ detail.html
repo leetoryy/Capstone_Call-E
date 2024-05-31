@@ -8,7 +8,7 @@
     <!-- boxicon -->
     <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
     <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user/user_review_detail.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user/user_review_ detail.css') }}" />
   </head>
   <body>
     <header>
@@ -30,9 +30,9 @@
           <div class="counselor-profile">
             <div class="profile-picture"></div>
             <div class="profile-details">
-              <h2>박상담</h2>
-              <p>학교상담 정서상담</p>
-              <p>INFP</p>
+              <h2>{{ counselor_name }}</h2>
+              <p>{{ counselor_consulting }}</p>
+              <p>{{ counselor_mbti }}</p>
             </div>
           </div>
           <div class="counselor-message">
@@ -41,57 +41,35 @@
           </div>
           <div class="rating">
             <div class="rating-score">
-              <span>4.7</span>
+              <span>{{ '%.1f' % average_rating }}</span>
               <div class="stars">
-                <i class="bx bxs-star"></i>
-                <i class="bx bxs-star"></i>
-                <i class="bx bxs-star"></i>
-                <i class="bx bxs-star"></i>
-                <i class="bx bxs-star-half"></i>
+                {% for i in range(1, 6) %}
+                  {% if average_rating >= i %}
+                    <i class="bx bxs-star"></i>
+                  {% elif average_rating >= i - 0.5 %}
+                    <i class="bx bxs-star-half"></i>
+                  {% else %}
+                    <i class="bx bx-star"></i>
+                  {% endif %}
+                {% endfor %}
               </div>
             </div>
             <div class="rating-details">
+              {% for i in range(5, 0, -1) %}
               <div class="rating-bar">
-                <span>5점</span>
+                <span>{{ i }}점</span>
                 <div class="progress">
-                  <div class="progress-bar" style="width: 90%"></div>
+                  <div class="progress-bar" style="width: {{ (star_counts.get(i, 0) / total_reviews * 100) if total_reviews > 0 else 0 }}%"></div>
                 </div>
-                <span>14</span>
+                <span>{{ star_counts.get(i, 0) }}</span>
               </div>
-              <div class="rating-bar">
-                <span>4점</span>
-                <div class="progress">
-                  <div class="progress-bar" style="width: 40%"></div>
-                </div>
-                <span>8</span>
-              </div>
-              <div class="rating-bar">
-                <span>3점</span>
-                <div class="progress">
-                  <div class="progress-bar" style="width: 20%"></div>
-                </div>
-                <span>4</span>
-              </div>
-              <div class="rating-bar">
-                <span>2점</span>
-                <div class="progress">
-                  <div class="progress-bar" style="width: 10%"></div>
-                </div>
-                <span>2</span>
-              </div>
-              <div class="rating-bar">
-                <span>1점</span>
-                <div class="progress">
-                  <div class="progress-bar" style="width: 0%"></div>
-                </div>
-                <span>0</span>
-              </div>
+              {% endfor %}
             </div>
           </div>
         </div>
         <div class="right-section">
           <div class="reviews-header">
-            <span>최근 리뷰 13개</span>
+            <span>최근 리뷰 {{ reviews|length }}개</span>
             <select>
               <option>최신순</option>
               <option>오래된순</option>
@@ -100,36 +78,14 @@
             </select>
           </div>
           <div class="reviews">
+            {% for review in reviews %}
             <div class="review">
-              <span class="review-name">김아동</span>
-              <span class="review-rating"><i class="bx bxs-star"></i>5.0</span>
-              <p class="review-feature">공감과 위로, 현실적인 조언</p>
-              <p class="review-text">상담사 선생님께서 친절하게 상담해주셔서 좋았어요! 진지하게 고민을 들어주시고 항상 감사합니다~!</p>
+              <span class="review-name">{{ review.child_name }}</span>
+              <span class="review-rating"><i class="bx bxs-star"></i>{{ review.counselor_scope }}</span>
+              <p class="review-feature">{{ review.counselor_consulting }}</p>
+              <p class="review-text">{{ review.counselor_etc }}</p>
             </div>
-            <div class="review">
-              <span class="review-name">김아동</span>
-              <span class="review-rating"><i class="bx bxs-star"></i>5.0</span>
-              <p class="review-feature">공감과 위로, 현실적인 조언</p>
-              <p>상담사 선생님께서 친절하게 상담해주셔서 좋았어요! 진지하게 고민을 들어주시고 항상 감사합니다~!</p>
-            </div>
-            <div class="review">
-              <span class="review-name">김아동</span>
-              <span class="review-rating"><i class="bx bxs-star"></i>5.0</span>
-              <p class="review-feature">공감과 위로, 현실적인 조언</p>
-              <p>상담사 선생님께서 친절하게 상담해주셔서 좋았어요! 진지하게 고민을 들어주시고 항상 감사합니다~!</p>
-            </div>
-            <div class="review">
-              <span class="review-name">김아동</span>
-              <span class="review-rating"><i class="bx bxs-star"></i>5.0</span>
-              <p class="review-feature">공감과 위로, 현실적인 조언</p>
-              <p>상담사 선생님께서 친절하게 상담해주셔서 좋았어요! 진지하게 고민을 들어주시고 항상 감사합니다~!</p>
-            </div>
-            <div class="review">
-              <span class="review-name">김아동</span>
-              <span class="review-rating"><i class="bx bxs-star"></i>5.0</span>
-              <p class="review-feature">공감과 위로, 현실적인 조언</p>
-              <p>상담사 선생님께서 친절하게 상담해주셔서 좋았어요! 진지하게 고민을 들어주시고 항상 감사합니다~!</p>
-            </div>
+            {% endfor %}
           </div>
         </div>
       </div>
