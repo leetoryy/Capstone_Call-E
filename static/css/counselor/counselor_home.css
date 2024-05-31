@@ -628,32 +628,29 @@ li.selected {
   align-items: center;
 }
 
-.timeline-first-container,
-.timeline-second-container,
-.timeline-third-container {
-  background: var(--light);
-  padding: 10px 15px;
-  margin-bottom: 5px;
+.timeline-item {
+  margin-bottom: 20px;
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.timeline-first-container span,
-.timeline-second-container span,
-.timeline-third-container span {
+.timeline-item span {
   margin-right: 10px;
   display: inline-block;
   font-weight: bold;
   font-size: 17px;
 }
 
-.timeline-first-container span:last-child,
-.timeline-second-container span:last-child,
-.timeline-third-container span:last-child {
-  font-weight: bold;
-  font-size: 17px;
+.timeline-time {
+  font-weight: bold; 
+  margin-right: 10px;
 }
+
+.timeline-content {
+  font-weight: normal; 
+}
+
 /* 타임라인 */
 /* 오늘 일정 달력 */
 
