@@ -1201,37 +1201,42 @@ def reserve_timeslot():
         # 중복 예약 확인
         check_query = """
             SELECT COUNT(*) FROM schedule_list
-            WHERE co_id = %s AND child_id = %s AND day_of_week = %s
+            WHERE child_id = %s
         """
         cursor = schedule_listdb.get_cursor()
-        cursor.execute(check_query, (counselor_id, child_id, day))
+        cursor.execute(check_query, (child_id,))
         count = cursor.fetchone()[0]
 
         if count > 0:
-            app.logger.error("Duplicate entry found")
-            cursor.close()  # 커서 닫기
-            return jsonify({"error": "동일한 요일에는 예약을 할 수 없습니다."}), 400
-
-        # 상담 코드를 포함하여 새로운 일정 항목을 데이터베이스에 삽입하는 SQL 쿼리
-        consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
-
-        insert_query = """
-            INSERT INTO schedule_list (co_id, child_id, day_of_week, start_time, end_time, consultation_code)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """
-        cursor.execute(insert_query, (counselor_id, child_id, day, start_time, end_time, consultation_code))
+            # 업데이트 쿼리
+            update_query = """
+                UPDATE schedule_list
+                SET co_id = %s, day_of_week = %s, start_time = %s, end_time = %s, consultation_code = %s
+                WHERE child_id = %s
+            """
+            consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
+            cursor.execute(update_query, (counselor_id, day, start_time, end_time, consultation_code, child_id))
+            schedule_listdb.conn.commit()
+        else:
+            # 삽입 쿼리
+            insert_query = """
+                INSERT INTO schedule_list (co_id, child_id, day_of_week, start_time, end_time, consultation_code)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
+            cursor.execute(insert_query, (counselor_id, child_id, day, start_time, end_time, consultation_code))
+            schedule_listdb.conn.commit()
 
         # CHILD_INFO.child_info_list 테이블에 co_id 업데이트
-        update_query = """
+        update_query_child_info = """
             UPDATE child_info_list
             SET co_id = %s
             WHERE child_id = %s
         """
         child_infodb_cursor = child_infodb.get_cursor()
-        child_infodb_cursor.execute(update_query, (counselor_id, child_id))
+        child_infodb_cursor.execute(update_query_child_info, (counselor_id, child_id))
+        child_infodb.conn.commit()
 
-        schedule_listdb.conn.commit()  # 트랜잭션 커밋
-        child_infodb.conn.commit()  # 트랜잭션 커밋
         cursor.close()  # 커서 닫기
         child_infodb_cursor.close()  # 커서 닫기
 
@@ -1239,6 +1244,7 @@ def reserve_timeslot():
     except Exception as e:
         app.logger.error(f"Error reserving timeslot: {e}")
         return jsonify({"error": "서버 오류가 발생했습니다."}), 500
+
 
 @app.route('/mbti_result') 
 def mbti_result_html():
