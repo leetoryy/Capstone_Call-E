@@ -1145,8 +1145,8 @@ def print_matching_counselors():
             return None
     return render_template('user/mbti_match.html')
 
-@app.route('/get_counselor_schedule')
-def get_counselor_schedule():
+@app.route('/timetable')
+def timetable():
     counselor_id = request.args.get('counselorId')
     if not counselor_id:
         return "상담사 ID가 제공되지 않았습니다.", 400
@@ -1174,9 +1174,7 @@ def get_counselor_schedule():
         app.logger.error(f"Error fetching schedule: {e}")
         return "서버 오류가 발생했습니다.", 500
 
-    return render_template('user/get_counselor_schedule.html', counselor_id=counselor_id, reserved_timeslots=reserved_timeslots, available_timeslots=available_timeslots)
-
-
+    return render_template('user/timetable.html', counselor_id=counselor_id, reserved_timeslots=reserved_timeslots, available_timeslots=available_timeslots)
 
 @app.route('/reserve_timeslot', methods=['POST'])
 def reserve_timeslot():
@@ -1222,18 +1220,16 @@ def reserve_timeslot():
             VALUES (%s, %s, %s, %s, %s, %s)
         """
         cursor.execute(insert_query, (counselor_id, child_id, day, start_time, end_time, consultation_code))
-        
-        # CHILD_INFO.child_info_list 테이블에 co_id, consultation_day, consultation_time 업데이트
+
+        # CHILD_INFO.child_info_list 테이블에 co_id 업데이트
         update_query = """
             UPDATE child_info_list
-            SET co_id = %s, consultation_day = %s, consultation_time = %s
+            SET co_id = %s
             WHERE child_id = %s
         """
         child_infodb_cursor = child_infodb.get_cursor()
-        consultation_day = day
-        consultation_time = start_time.strftime('%H:%M')
-        child_infodb_cursor.execute(update_query, (counselor_id, consultation_day, consultation_time, child_id))
-        
+        child_infodb_cursor.execute(update_query, (counselor_id, child_id))
+
         schedule_listdb.conn.commit()  # 트랜잭션 커밋
         child_infodb.conn.commit()  # 트랜잭션 커밋
         cursor.close()  # 커서 닫기
@@ -1243,7 +1239,6 @@ def reserve_timeslot():
     except Exception as e:
         app.logger.error(f"Error reserving timeslot: {e}")
         return jsonify({"error": "서버 오류가 발생했습니다."}), 500
-
 
 @app.route('/mbti_result') 
 def mbti_result_html():
