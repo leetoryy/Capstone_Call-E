@@ -602,6 +602,63 @@ li.selected {
   padding: 4px 8px;
 }
 
+/* 타임라인 */
+.timeline-main-container {
+  border-left: 4px solid rgb(170, 169, 169);
+  margin-left: 20px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.xyz::before {
+  content: "";
+  border-radius: 50%;
+  height: 15px;
+  width: 15px;
+  background-color: rgb(170, 169, 169);
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.xyz {
+  margin-bottom: 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.timeline-first-container,
+.timeline-second-container,
+.timeline-third-container {
+  background: var(--light);
+  padding: 10px 15px;
+  margin-bottom: 5px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.timeline-first-container span,
+.timeline-second-container span,
+.timeline-third-container span {
+  margin-right: 10px;
+  display: inline-block;
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.timeline-first-container span:last-child,
+.timeline-second-container span:last-child,
+.timeline-third-container span:last-child {
+  font-weight: bold;
+  font-size: 17px;
+}
+/* 타임라인 */
+
+/* 오늘 일정 달력 */
+
 main form {
   margin-top: 6px;
 }
