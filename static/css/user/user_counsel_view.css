@@ -1,0 +1,300 @@
+@import url("https://fonts.googleapis.com/css2?family=Jua&display=swap");
+
+* {
+  font-family: "Jua", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff5de;
+}
+
+header {
+  width: 100%;
+  padding: 10px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background-color: #fbedbf;
+}
+
+.header-flex {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+#logo {
+  height: 75px;
+  padding: 12px;
+}
+
+#userNameSpan {
+  margin-left: 20px;
+  font-size: 20px;
+}
+
+#search-bar {
+  width: 35vw;
+  height: 40px;
+  padding: 5px 10px;
+  font-size: 18px;
+  border: 2px solid #fff;
+  border-radius: 5px;
+}
+
+#search-bar:focus {
+  outline: none;
+}
+
+.bx-search {
+  font-size: 28px;
+  color: #ea726b;
+  cursor: pointer;
+}
+
+#alarm-icon,
+#user-icon {
+  font-size: 40px;
+  color: #ea726b;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+#home-icon {
+  font-size: 40px;
+  color: #ea726b;
+  cursor: pointer;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 100px;
+}
+
+.card {
+  display: flex;
+  margin: 10px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 24px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 1000px;
+  height: 630px;
+}
+
+.left-section {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  padding: 20px;
+}
+
+.right-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 60%;
+  padding: 20px;
+}
+
+#search-consultant {
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+  font-size: 18px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+}
+
+.lists-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.lists-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.lists-header span {
+  font-size: 20px;
+}
+
+.lists-header select {
+  padding: 7px;
+  margin-left: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  background-color: #eeeeee;
+}
+
+.lists {
+  overflow-y: auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+a.list {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+}
+
+a.list:hover {
+  background-color: #e0e0e0;
+}
+
+.list {
+  background-color: #f4f4f4;
+  padding: 15px 25px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.list p {
+  font-size: 18px;
+}
+
+.list-name {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.left-section .list {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.right-section .lists {
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  height: calc(100% - 60px);
+}
+
+#counsel-paper {
+  height: 100%;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+.list-detail {
+  margin-top: 5px;
+}
+
+#counsel-paper .list-title {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#counsel-paper .counsel-section {
+  margin-top: 20px;
+}
+
+#counsel-paper .counsel-section strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+#counsel-name {
+  display: flex;
+  justify-content: right;
+  font-size: 22px;
+}
+
+.list-content {
+  margin-bottom: 30px;
+}
+
+@media screen and (max-width: 768px) {
+  .list {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .list-details {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .card {
+    flex-direction: column;
+    width: 80vw;
+    height: auto;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .container {
+    margin-top: 80px;
+  }
+  #logo {
+    height: 62px;
+  }
+  #search-bar {
+    height: 35px;
+    font-size: 15px;
+  }
+  .bx-search {
+    font-size: 25px;
+  }
+  #user-icon {
+    font-size: 35px;
+  }
+  #alarm-icon {
+    font-size: 35px;
+  }
+  #home-icon {
+    font-size: 35px;
+  }
+  .card {
+    width: 850px;
+    height: 500px;
+  }
+  .checkbox-group3 {
+    width: 33%;
+  }
+}

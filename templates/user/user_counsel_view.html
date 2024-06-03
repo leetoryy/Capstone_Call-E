@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Call-E</title>
+    <!-- boxicon -->
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/user/user_counsel_view.css" />
+    <script>
+      document.addEventListener("touchstart", function () {}, true);
+    </script>
+  </head>
+  <body>
+    <header>
+      <img src="/static/images/icon3.png" alt="Call-E" id="logo" />
+      <span id="userNameSpan">김아동 님</span>
+      <div class="header-flex">
+        <input type="text" placeholder=" 원하는 콘텐츠를 검색해보세요" id="search-bar" />
+        <i class="bx bx-search"></i>
+      </div>
+      <div class="header-right">
+        <i class="bx bxs-user-circle" id="user-icon"></i>
+        <i class="bx bxs-bell" id="alarm-icon"></i>
+        <i class="bx bxs-home" id="home-icon"></i>
+      </div>
+    </header>
+    <div class="container">
+      <div class="card">
+        <div class="left-section">
+          <div class="lists-header">
+            <input type="text" placeholder="상담사 이름 검색" id="search-consultant" />
+            <select>
+              <option>최신 순</option>
+              <option>오래된 순</option>
+            </select>
+          </div>
+          <div class="lists">
+            <a class="list" href="">
+              <div class="list-text">
+                <span class="list-name">제목: 1분기 학교 생활 회고</span>
+                <div class="list-detail">
+                  <p>상담사: 박전문</p>
+                  <p>상담시간: 2024-06-02 09:00</p>
+                </div>
+              </div>
+            </a>
+            <a class="list" href="">
+              <div class="list-text">
+                <span class="list-name">제목: 1분기 학교 생활 회고</span>
+                <div class="list-detail">
+                  <p>상담사: 박전문</p>
+                  <p>상담시간: 2024-06-02 09:00</p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="right-section">
+          <div class="lists-header">
+            <span>상담 일지</span>
+          </div>
+          <div class="lists">
+            <div class="list" id="counsel-paper">
+              <div class="list-text">
+                <span class="list-title">1분기 학교 생활 회고</span>
+                <div class="counsel-section" id="counsel-name">
+                  <span>상담사: 박전문</span>
+                </div>
+                <div class="list-content">
+                  <div class="counsel-section">
+                    <span><strong>상담 내용</strong></span>
+                    <p>상담 내용 부분입니다.상담 내용 부분입니다.</p>
+                  </div>
+                  <div class="counsel-section">
+                    <span><strong>상담 결과</strong></span>
+                    <p>상담 결과 부분입니다.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
