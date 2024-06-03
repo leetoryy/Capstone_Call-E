@@ -1,56 +1,144 @@
-/* 폼 섹션 스타일 */
-#counselingForm {
-  justify-content: center;
-  align-items: center;
+.content-section {
+  display: flex;
+  justify-content: space-between;
 }
 
-.form-section {
-  margin-bottom: 20px;
+.left-section {
+  width: 40%;
+  margin: 0px 20px;
 }
 
-.form-section label {
+.right-section {
+  width: 60%;
+  margin: 15px 20px 0px;
+}
+
+.left-section label,
+.right-section label {
   display: inline-block;
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  width: 100px;
+  font-size: 18px;
+  font-weight: 500;
+  width: auto;
 }
 
-.input-select,
-textarea {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
+.right-section label {
+  display: inline;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.left-section input,
+.left-section select,
+.right-section textarea {
+  width: 100%;
+  padding: 8px;
   border-radius: 5px;
   box-sizing: border-box;
-  margin-top: 5px;
-  display: inline-block;
 }
 
-.input-select {
-  width: calc(50% - 110px);
+.left-section select {
+  border: 2px solid #d8d8d8;
+  padding: 8px 14px;
 }
 
-textarea {
-  width: 50%;
-  height: 300px;
-  display: block;
-  margin-top: 5px;
+.left-section input,
+.left-section select {
+  font-size: 16px;
+}
+
+.left-section input[type="text"],
+.left-section input[type="date"],
+.left-section select {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.left-section input[type="text"]:focus,
+.left-section input[type="date"]:focus,
+.left-section select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.right-section textarea {
+  width: 100%;
+  height: 200px;
+  resize: vertical;
+  margin-bottom: 15px;
   resize: none;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 0px 20px;
+  overflow: auto;
 }
 
-/* 저장 버튼 스타일 */
-button[type="submit"] {
-  padding: 10px 20px;
-  background-color: #4ea685;
-  color: #fff;
+.notes {
+  background-attachment: local;
+  background-image: linear-gradient(to right, white 10px, transparent 10px), linear-gradient(to left, white 10px, transparent 10px), repeating-linear-gradient(white, white 30px, #ccc 30px, #ccc 31px, white 31px);
+  line-height: 31px;
+  padding: 8px 0px;
+}
+
+#counsel-title {
+  height: 45px;
+}
+
+main .left-section .form-group {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+}
+
+main .right-section .form-group {
+  display: inline;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.form-group label {
+  width: 120px;
+  margin-right: 10px;
+  text-align: left;
+}
+
+.priority-group {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0px;
+}
+
+.priority-group input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 100%;
+}
+
+.priority-group label {
+  margin-top: 15px;
+  width: 100%;
+}
+
+.priority-group input {
+  outline: none;
+  background: var(--grey);
   border: none;
-  border-radius: 5px;
+  padding: 10px 16px;
+}
+
+.right-section button {
+  margin: 10px;
+  padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  float: right;
 }
 
-button[type="submit"]:hover {
-  background-color: #3c896d;
+.left-section input[type="date"] {
+  border: 2px solid #d8d8d8;
+  background-color: white;
 }
