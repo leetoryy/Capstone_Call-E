@@ -1,11 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
-</head>
-<body>
-    
-</body>
+    <!-- boxicon -->
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/user/mbti_match.css" />
+    <script>
+      document.addEventListener("touchstart", function () {}, true);
+    </script>
+  </head>
+  <body>
+    <header>
+      <img src="/static/images/icon3.png" alt="Call-E" id="logo" />
+      <span id="userNameSpan">김아동 님</span>
+      <div class="header-flex">
+        <input type="text" placeholder=" 원하는 콘텐츠를 검색해보세요" id="search-bar" />
+        <i class="bx bx-search"></i>
+      </div>
+      <div class="header-right">
+        <i class="bx bxs-user-circle" id="user-icon"></i>
+        <i class="bx bxs-bell" id="alarm-icon"></i>
+        <i class="bx bxs-home" id="home-icon"></i>
+      </div>
+    </header>
+    <div class="container">
+      <div class="card">
+        <div class="left-section">
+          <div class="lists-header">
+            <p>상담사 추천 리스트</p>
+          </div>
+          <input type="text" placeholder="상담사 이름 검색" id="search-consultant" />
+          <div class="filter-tags">
+            <button class="filter-tag" id="call-e">Call-E 추천순</button>
+            <button class="filter-tag" id="concern">고민연관순</button>
+            <button class="filter-tag" id="mbti">MBTI 궁합순</button>
+            <button class="filter-tag" id="review">상담 만족도순</button>
+            <button class="filter-tag" id="survey">사전설문 우선순</button>
+          </div>
+        </div>
+        <div class="right-section">
+          <div class="lists-header">
+            <span>모든 상담사 00명</span>
+          </div>
+          <div class="lists">
+            <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">박전문</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>5.0</span>
+                <p>INFP</p>
+              </div>
+              <div class="list-details">
+                <p>학교상담, 정서상담</p>
+                <p>공감과 위로, 성장지향적 접근성</p>
+              </div>
+            </a>
+            <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">박전문</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>5.0</span>
+                <p>INFP</p>
+              </div>
+              <div class="list-details">
+                <p>학교상담, 정서상담</p>
+                <p>공감과 위로, 성장지향적 접근성</p>
+              </div>
+            </a>
+            <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">박전문</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>5.0</span>
+                <p>INFP</p>
+              </div>
+              <div class="list-details">
+                <p>학교상담, 정서상담</p>
+                <p>공감과 위로, 성장지향적 접근성</p>
+              </div>
+            </a>
+            <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">박전문</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>5.0</span>
+                <p>INFP</p>
+              </div>
+              <div class="list-details">
+                <p>학교상담, 정서상담</p>
+                <p>공감과 위로, 성장지향적 접근성</p>
+              </div>
+            </a>
+            <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">박전문</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>5.0</span>
+                <p>INFP</p>
+              </div>
+              <div class="list-details">
+                <p>학교상담, 정서상담</p>
+                <p>능동적인 참여유도, 성장지향적 접근성</p>
+              </div>
+            </a>
+            <a class="list" href="">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">박전문</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>5.0</span>
+                <p>INFP</p>
+              </div>
+              <div class="list-details">
+                <p>학교상담, 정서상담</p>
+                <p>성장지향적 접근성, 위기대응 및 안정화</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/static/javascript/user/mbti_match.js"></script>
+  </body>
 </html>
