@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Call-E</title>
+    <!-- boxicon -->
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user/user_counsel_view.css') }}" />
+  </head>
+  <body>
+    <header>
+      <img src="/static/images/icon3.png" alt="Call-E" id="logo" />
+      <span id="userNameSpan">{{ session['child_name'] }} 님</span>
+      <div class="header-flex">
+        <input type="text" placeholder=" 원하는 콘텐츠를 검색해보세요" id="search-bar" />
+        <i class="bx bx-search"></i>
+      </div>
+      <div class="header-right">
+        <i class="bx bxs-user-circle" id="user-icon"></i>
+        <i class="bx bxs-bell" id="alarm-icon"></i>
+        <a href="/user_home"><i class="bx bxs-home" id="home-icon"></i></a>
+      </div>
+    </header>
+    <div class="container">
+      <div class="card">
+        <div class="left-section">
+          <div class="lists-header">
+            <input type="text" placeholder="상담사 이름 검색" id="search-consultant" />
+            <select>
+              <option value="latest">최신 순</option>
+              <option value="oldest">오래된 순</option>
+            </select>
+          </div>
+          <div class="lists" id="consultant-list">
+            <!-- Dynamically populated list of consultants -->
+          </div>
+        </div>
+        <div class="right-section">
+          <div class="lists-header">
+            <span>상담 일지</span>
+          </div>
+          <div class="lists" id="counsel-paper">
+            <!-- Dynamically populated counsel details -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="{{ url_for('static', filename='javascript/user/user_counsel_view.js') }}"></script>
+  </body>
+</html>

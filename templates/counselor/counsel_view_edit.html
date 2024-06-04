@@ -77,7 +77,7 @@
         <main>
             <h1 class="title">상담 일지</h1>
             <ul class="breadcrumbs">
-                <li><a href="#">상담 일지 작성</a></li>
+                <li><a href="#">상담 일지 수정</a></li>
                 <li class="divider">/</li>
                 <li><a href="#" class="active">상담 일지</a></li>
             </ul>
@@ -85,78 +85,90 @@
             <div class="data">
                 <div class="content-data">
                   <div class="head">
-                    <h2>상담 일지 작성</h2>
+                    <h2>상담 일지 수정</h2>
                     <box-icon name="down-arrow-alt"></box-icon>
                   </div>
-                    <form id="journal-form" method="POST" action="/save_journal">
+                    <form id="journal-form" method="POST" action="/update_journal">
                         <div class="content-section">
                             <div class="left-section">
                                 <div class="form-group">
                                     <label for="counsel-date">상담 날짜</label>
-                                    <select id="counsel-date" name="counsel-date">
-                                        <option value="">상담 날짜</option>
-                                    </select>
+                                    <input type="text" id="counsel-date" name="counsel-date" value="{{ consulting_day }}" readonly/>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="child-name">아동 이름</label>
-                                    <select id="child-name" name="child-id" onchange="fetchChildDetails()">
-                                        <option value="">아동 이름</option>
-                                    </select>
+                                    <input type="text" id="child-name" name="child-name" value="{{ child_name }}" readonly/>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="counsel-field">상담 분야</label>
-                                    <input type="text" id="counsel-field" name="counsel-field" readonly/>
+                                    <input type="text" id="counsel-field" name="counsel-field" value="{{ survey_consulting }}" readonly/>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="mbti">MBTI</label>
-                                    <input type="text" id="mbti" name="mbti" readonly/>
+                                    <input type="text" id="mbti" name="mbti" value="{{ child_mbti }}" readonly/>
                                 </div>
 
                                 <div class="priority-group">
                                     <label for="priority1">상담 우선순위 1</label>
-                                    <input type="text" id="priority1" name="priority1" readonly/>
+                                    <input type="text" id="priority1" name="priority1" value="{{ survey_priority_1 }}" readonly/>
 
                                     <label for="priority2">상담 우선순위 2</label>
-                                    <input type="text" id="priority2" name="priority2" readonly/>
+                                    <input type="text" id="priority2" name="priority2" value="{{ survey_priority_2 }}" readonly/>
 
                                     <label for="priority3">상담 우선순위 3</label>
-                                    <input type="text" id="priority3" name="priority3" readonly/>
+                                    <input type="text" id="priority3" name="priority3" value="{{ survey_priority_3 }}" readonly/>
 
                                     <label for="priority4">상담 우선순위 4</label>
-                                    <input type="text" id="priority4" name="priority4" readonly/>
+                                    <input type="text" id="priority4" name="priority4" value="{{ survey_priority_4 }}" readonly/>
                                 </div>
                             </div>
 
                             <div class="right-section">
                                 <div class="form-group">
                                     <label for="counsel-title">제목</label>
-                                    <textarea id="counsel-title" name="counsel-title" class="notes"></textarea>
+                                    <textarea id="counsel-title" name="counsel-title" class="notes">{{ consulting_title }}</textarea>
                                 </div>
-
 
                                 <div class="form-group">
                                     <label for="counsel-content">상담 내용</label>
-                                    <textarea id="counsel-content" name="counsel-content" class="notes"></textarea>
+                                    <textarea id="counsel-content" name="counsel-content" class="notes">{{ consulting_content }}</textarea>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="counsel-result">상담 결과</label>
-                                    <textarea id="counsel-result" name="counsel-result" class="notes"></textarea>
+                                    <textarea id="counsel-result" name="counsel-result" class="notes">{{ consulting_result }}</textarea>
                                 </div>
 
-                                <button type="submit">저장하기</button>
+                                <button type="submit">수정하고 저장하기</button>
                             </div>
                         </div>
+                        <input type="hidden" id="child-id" name="child-id" value="{{ child_id }}">
                     </form>
             </div>
         </main>
         <!-- MAIN -->
     </section>
     <!-- JS -->
-    <script src="{{ url_for('static', filename='javascript/counselor/counsel_write.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascript/counselor/counsel_view_edit.js') }}"></script>
+    <script>
+        // URL에서 쿼리 매개변수 추출하여 숨겨진 필드에 설정
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                child_id: params.get('child_id'),
+                consulting_day: params.get('consulting_day')
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const queryParams = getQueryParams();
+            document.getElementById('child-id').value = queryParams.child_id;
+            document.getElementById('counsel-date').value = queryParams.consulting_day;
+        });
+    </script>
 </body>
 </html>

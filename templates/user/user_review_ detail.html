@@ -8,12 +8,12 @@
     <!-- boxicon -->
     <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
     <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user/user_review_ detail.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user/user_review_detail.css') }}" />
   </head>
   <body>
     <header>
       <img src="/static/images/icon3.png" alt="Call-E" id="logo" />
-      <span id="userNameSpan">김아동 님</span>
+      <span id="userNameSpan">{{ session['child_name'] }} 님</span>
       <div class="header-flex">
         <input type="text" placeholder=" 원하는 콘텐츠를 검색해보세요" id="search-bar" />
         <i class="bx bx-search"></i>
@@ -21,7 +21,7 @@
       <div class="header-right">
         <i class="bx bxs-user-circle" id="user-icon"></i>
         <i class="bx bxs-bell" id="alarm-icon"></i>
-        <i class="bx bxs-home" id="home-icon"></i>
+        <a href="/user_home"><i class="bx bxs-home" id="home-icon"></i></a>
       </div>
     </header>
     <div class="container">
@@ -43,15 +43,13 @@
             <div class="rating-score">
               <span>{{ '%.1f' % average_rating }}</span>
               <div class="stars">
-                {% for i in range(1, 6) %}
-                  {% if average_rating >= i %}
-                    <i class="bx bxs-star"></i>
-                  {% elif average_rating >= i - 0.5 %}
-                    <i class="bx bxs-star-half"></i>
-                  {% else %}
-                    <i class="bx bx-star"></i>
-                  {% endif %}
-                {% endfor %}
+                {% for i in range(1, 6) %} {% if average_rating >= i %}
+                <i class="bx bxs-star"></i>
+                {% elif average_rating >= i - 0.5 %}
+                <i class="bx bxs-star-half"></i>
+                {% else %}
+                <i class="bx bx-star"></i>
+                {% endif %} {% endfor %}
               </div>
             </div>
             <div class="rating-details">

@@ -7,26 +7,15 @@ document.addEventListener("DOMContentLoaded", function () {
       center: "title",
       right: "dayGridMonth,timeGridWeek,timeGridDay",
     },
-    editable: true,
-    selectable: true,
-    selectMirror: true,
+    editable: false, // 수정 비활성화
+    selectable: false, // 선택 비활성화
+    selectMirror: false, // 선택 미러링 비활성화
     dayMaxEvents: true,
     select: function (arg) {
-      var title = prompt("Event Title:");
-      if (title) {
-        calendar.addEvent({
-          title: title,
-          start: arg.start,
-          end: arg.end,
-          allDay: arg.allDay,
-        });
-      }
-      calendar.unselect();
+      // 선택 기능 비활성화
     },
     eventClick: function (arg) {
-      if (confirm("Remove event?")) {
-        arg.event.remove();
-      }
+      // 클릭 이벤트 비활성화
     },
   });
   calendar.render();
