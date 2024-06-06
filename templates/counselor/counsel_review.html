@@ -22,10 +22,10 @@
         </li>
         <li class="divider" data-text="main">Main</li>
         <li>
-          <a href="#" class="active"><i class="bx bxs-widget icon"></i> 아동 조회 <i class="bx bx-chevron-right icon-right"></i></a>
+          <a href="#"><i class="bx bxs-widget icon"></i> 아동 조회 <i class="bx bx-chevron-right icon-right"></i></a>
           <ul class="side-dropdown">
             <li><a href="/child_list">모든 아동 조회</a></li>
-            <li><a href="/counsel_child_list">담당 아동 조회</a></li>
+            <li><a href="/child_list">담당 아동 조회</a></li>
           </ul>
         </li>
         <li>
@@ -39,7 +39,7 @@
           <a href="/counsel_schedule"><i class="bx bxs-notepad icon"></i> 일정 확인 </a>
         </li>
         <li>
-          <a href="/counsel_review"><i class="bx bxs-star-half icon"></i> 리뷰 조회 </a>
+          <a href="/counsel_review" class="active"><i class="bx bxs-star-half icon"></i> 리뷰 조회 </a>
         </li>
       </ul>
     </section>
@@ -77,20 +77,21 @@
       <!-- NAVBAR -->
       <!-- MAIN -->
       <main>
-        <h1 class="title">아동 조회</h1>
+        <h1 class="title">리뷰</h1>
         <ul class="breadcrumbs">
-          <li><a href="#">아동 조회</a></li>
+          <li><a href="#">리뷰 조회</a></li>
           <li class="divider">/</li>
-          <li><a href="#" class="active">담당 아동 조회</a></li>
+          <li><a href="#" class="active">리뷰 조회</a></li>
         </ul>
 
         <div class="data">
           <div class="content-data3">
             <div class="head">
-              <h2>담당 아동 리스트</h2>
+              <h2>리뷰 조회</h2>
               <box-icon name="down-arrow-alt"></box-icon>
             </div>
             <div class="input-search">
+              <input type="date" id="dateInput" />
               <input type="text" id="searchInput" placeholder="아동 이름을 검색하세요" />
               <i class="bx bx-search icon" id="searchIcon"></i>
             </div>
@@ -98,31 +99,21 @@
               <table class="table-fill">
                 <thead class="table-head">
                   <tr>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(0)">이름 <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(1)">아이디 <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(2)">상담분야 <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(3)">MBTI <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(4)">담당 상담사 <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(5)">보호자 <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center">보호자 연락처</th>
+                    <th class="text-center" style="cursor: pointer" onclick="sortTable(0)">별점 <i class="bx bxs-chevron-down"></i></th>
+                    <th class="text-center" style="cursor: pointer" onclick="sortTable(1)">아동 이름 <i class="bx bxs-chevron-down"></i></th>
+                    <th class="text-center" style="cursor: pointer">내용</th>
+                    <th class="text-center" style="cursor: pointer" onclick="sortTable(3)">날짜 <i class="bx bxs-chevron-down"></i></th>
                   </tr>
                 </thead>
-                <tbody class="table-hover">
-                  {% if not child_info_data %}
-                  <tr>
-                    <td class="text-center" colspan="7">담당 중인 아동이 존재하지 않습니다.</td>
-                  </tr>
-                  {% else %} {% for child in child_info_data %}
-                  <tr>
-                    <td class="text-center">{{ child.child_name }}</td>
-                    <td class="text-center">{{ child.child_id }}</td>
-                    <td class="text-center">{{ child.survey_consulting }}</td>
-                    <td class="text-center">{{ child.child_mbti }}</td>
-                    <td class="text-center">{{ child.co_name }}</td>
-                    <td class="text-center">{{ child.parent_name }}</td>
-                    <td class="text-center">{{ child.parent_phone }}</td>
-                  </tr>
-                  {% endfor %} {% endif %}
+                <tbody class="table-hover" id="journal-list">
+                  {% for review in reviews %}
+                    <tr>
+                      <td class="text-center">{{ review.consulting_scope }}</td>  <!-- 별점을 상담 범위로 표현했는데 필요에 따라 수정해주세요 -->
+                      <td class="text-center">{{ review.child_name }}</td>
+                      <td class="text-center">{{ review.consulting_etc }}</td>
+                      <td class="text-center">{{ review.consulting_day }}</td>
+                    </tr>
+                  {% endfor %}
                 </tbody>
               </table>
             </div>
@@ -130,32 +121,41 @@
           <!-- card -->
         </div>
       </main>
+      <!-- MAIN -->
     </section>
     <!-- JS -->
     <script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/counselor/child_list.js') }}"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.getElementById("searchInput");
-        const table = document.querySelector(".table-list table tbody");
-        const rows = table.getElementsByTagName("tr");
-
-        searchInput.addEventListener("keyup", function () {
-          const filter = searchInput.value.toLowerCase();
-
-          for (let i = 0; i < rows.length; i++) {
-            const td = rows[i].getElementsByTagName("td")[0]; // Assuming the first column is the name column
-            if (td) {
-              const txtValue = td.textContent || td.innerText;
-              if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                rows[i].style.display = "";
-              } else {
-                rows[i].style.display = "none";
-              }
-            }
-          }
-        });
-      });
-    </script>
   </body>
 </html>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const searchIcon = document.getElementById('searchIcon');
+  const dateInput = document.getElementById('dateInput');
+  const searchInput = document.getElementById('searchInput');
+
+  function fetchData() {
+    const date = dateInput.value;
+    const name = searchInput.value;
+    fetch(`/counsel_review_search?date=${date}&name=${name}`)
+      .then(response => response.json())
+      .then(data => {
+        const journalList = document.getElementById('journal-list');
+        journalList.innerHTML = '';  
+        data.forEach(review => {
+          const row = `<tr>
+                         <td class="text-center">${review.consulting_scope}</td>
+                         <td class="text-center">${review.child_name}</td>
+                         <td class="text-center">${review.consulting_etc}</td>
+                         <td class="text-center">${review.consulting_day}</td>
+                       </tr>`;
+          journalList.innerHTML += row;
+        });
+      });
+  }
+
+  searchIcon.addEventListener('click', fetchData);
+  dateInput.addEventListener('change', fetchData);
+  searchInput.addEventListener('input', fetchData);
+});
+</script>

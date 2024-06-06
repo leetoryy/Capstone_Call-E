@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" rel="payload" />
     <!-- CSS -->
@@ -14,7 +15,11 @@
     <div class="centered-content">
       <h1 class="text-center my-4">CALL-E</h1>
 
-      <div id="roomConfig" class="d-flex justify-content-center mb-3">
+      <div id="roomConfig" class="d-flex flex-column align-items-center">
+        <p>
+          통화를 시작하기 위해 아래에<br />
+          상담 코드를 입력해주세요
+        </p>
         <div class="input-group input-group-lg" style="max-width: 400px">
           <input id="roomName" type="text" class="form-control form-control-lg" placeholder="Enter room" />
           <button id="btnConnect" class="btn btn-primary btn-lg" type="button">참가하기</button>
@@ -140,7 +145,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         var childID = getQueryParameter("child_id"); // URL에서 child_id 추출
         var counselor = getQueryParameter("counselor_id"); // URL에서 counselor 추출
-      
+
         if (childID) {
           // child_id가 존재하는 경우에만 모달 관련 이벤트 리스너를 설정
           document.getElementById("endCall").addEventListener("click", function () {
@@ -150,12 +155,11 @@
         } else if (counselor) {
           // counselor가 존재하는 경우 경고창을 띄웁니다.
           document.getElementById("endCall").addEventListener("click", function () {
-          alert("돌아가서 상담일지를 작성해주세요.");
-          window.location.href = '/counselor_home?counselor_id=' + encodeURIComponent(counselorId);
-        });}
+            alert("돌아가서 상담일지를 작성해주세요.");
+            window.location.href = "/counselor_home?counselor_id=" + encodeURIComponent(counselorId);
+          });
+        }
       });
-    
-      
 
       document.getElementById("saveReview").addEventListener("click", function () {
         // 별점을 가져오는 코드
@@ -171,15 +175,15 @@
         const checkboxGroups = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
 
         checkboxGroups.forEach((checkbox) => {
-          if (checkbox.checked) { // 체크박스가 선택된 경우
+          if (checkbox.checked) {
+            // 체크박스가 선택된 경우
             const label = checkbox.nextElementSibling.nextElementSibling.textContent;
             selectedTags.push(label);
           }
         });
-        const tags = selectedTags.join(", ")
+        const tags = selectedTags.join(", ");
         console.log("Selected Tags:", selectedTags.join(", ")); // 콘솔에 선택된 태그들을 출력합니다.
-        console.log(tags)
-
+        console.log(tags);
 
         // 현재 날짜를 'YYYY-MM-DD' 형식으로 가져오는 코드
         const currentDate = new Date();
@@ -194,8 +198,8 @@
         // 모든 필수 입력 항목을 확인합니다.
         if (!rating || reviewText === "" || selectedTags.length === 0) {
           alert("모든 답을 입력하셔야 리뷰를 작성할 수 있습니다. 작성하지 않고 종료하시겠습니까?");
-          window.location.href = '/user_home?child_id=' + encodeURIComponent(childID);
-      } 
+          window.location.href = "/user_home?child_id=" + encodeURIComponent(childID);
+        }
         // 서버의 /review 엔드포인트에 POST 요청을 보냅니다.
         fetch("/review", {
           method: "POST", // HTTP 메소드 설정
@@ -209,19 +213,17 @@
             reviewDate: formattedDate,
             childID: childID,
             tags: tags,
-
           }), // 전송할 데이터
         })
           .then((response) => response.json()) // 서버로부터 받은 응답을 JSON으로 파싱
           .then((data) => {
             console.log("Response from server:", data); // 서버로부터 받은 응답을 콘솔에 출력
-            window.location.href = '/user_home?child_id=' + encodeURIComponent(childID);
+            window.location.href = "/user_home?child_id=" + encodeURIComponent(childID);
           })
           .catch((error) => {
             console.error("Error:", error); // 에러 처리
           });
       });
-    
     </script>
   </body>
 </html>

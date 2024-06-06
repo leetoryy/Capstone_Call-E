@@ -136,7 +136,7 @@ label {
 
 .left-section h1 {
   text-align: center;
-  font-size: 34px;
+  font-size: 36px;
 }
 
 .text-title {
@@ -152,6 +152,14 @@ label {
 .line-spacing {
   line-height: 1.8;
   margin-bottom: 15px;
+}
+
+.btns {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: auto;
+  gap: 20px;
 }
 
 .btn-check {

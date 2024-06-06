@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="X-UA-Compatible" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
     <!-- boxicon -->
@@ -28,15 +28,18 @@
       <div class="card">
         <div class="left-section">
           <div class="text-title">
-            <h1>{{ counselor_name }} 상담사와의</h1>
+            <h1>{{ counselor_name }} 상담사</h1>
             <h1>상담 시간 선택</h1>
           </div>
           <div class="text-ex">
-            <h4 class="line-spacing">1. 시간표를 클릭 또는 드래그하여<br />시간을 선택할 수 있습니다.</h4>
-            <h4 class="line-spacing">2. 회색으로 칠해진 시간은<br />시간을 선택할 수 없습니다.</h4>
-            <h4 class="line-spacing">3. 상담 시간을 모두 선택하면<br />아래의 버튼을 클릭합니다.</h4>
+            <h4 class="line-spacing">1. 시간표를 클릭하여 시간을 선택할 수 있습니다.</h4>
+            <h4 class="line-spacing">2. 회색으로 칠해진 시간은 선택할 수 없습니다.</h4>
+            <h4 class="line-spacing">3. 상담 시간을 모두 선택하면 아래 버튼을 클릭합니다.</h4>
           </div>
-          <button class="btn-check">선택한 시간으로 상담하기</button>
+          <div class="btns">
+            <button class="btn-check apply">신청하기</button>
+            <button class="btn-check change">변경하기</button>
+          </div>
         </div>
         <div class="right-section">
           <div id="root">
@@ -52,84 +55,21 @@
                 </tr>
               </thead>
               <tbody>
+                {% for time in times %}
                 <tr>
-                  <th>09:00</th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <th>{{ time }}</th>
+                  {% for day in days %}
+                  <td class="{% if schedule[day][time] or time == '12:00' %}unselectable{% endif %}"></td>
+                  {% endfor %}
                 </tr>
-                <tr>
-                  <th>10:00</th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>11:00</th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>12:00</th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>13:00</th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>14:00</th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>15:00</th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>16:00</th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>17:00</th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
+                {% endfor %}
               </tbody>
             </table>
           </div>
         </div>
       </div>
     </div>
+    <input type="hidden" id="co_id" value="{{ counselor_id }}">
     <!-- JS -->
     <script src="{{ url_for('static', filename='javascript/user/match_timetable.js') }}"></script>
   </body>
