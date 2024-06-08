@@ -182,47 +182,34 @@ function updateUserType(button) {
   
 // 아동 아이디 중복 검사
 function checkID() {
-  // 아이디 입력란에서 아이디 가져오기
-  var childId = document.getElementById("child_id").value;
-
-  // 중복 확인 결과를 표시할 메시지 엘리먼트
+  var child_id = document.getElementById("child_id").value;
   var duplicateIdMessage = document.getElementById("duplicate-id-message");
 
   // 새로운 요청을 보내기 전에 메시지 초기화
   duplicateIdMessage.innerHTML = "";
 
-  console.log("Sending request to server with child_id:", childId);
-
   // 아이디 중복 검사를 서버 쪽에서 수행 (AJAX를 사용하여 비동기적으로 처리)
   $.ajax({
       type: "POST",
       url: "/check_id_duplicate",
-      data: { "child_id": childId },
+      contentType: "application/json",
+      data: JSON.stringify({ "child_id": child_id }),
       success: function(response) {
-          console.log("Server response:", response);
-
           // 서버 응답이 JSON 형태인지 확인
           if (response && typeof response === 'object') {
               // duplicate 필드를 직접 확인
               if (response.duplicate !== undefined) {
                   if (response.duplicate) {
                       duplicateIdMessage.innerHTML = "이미 사용 중인 아이디입니다.";
-                      // 아이디 중복 시 회원가입 버튼 비활성화 (선택사항)
                       document.getElementById("signupClick").disabled = true;
                   } else {
                       duplicateIdMessage.innerHTML = "사용 가능한 아이디입니다.";
-                      
+                      document.getElementById("signupClick").disabled = false;
                   }
-              } else if (response.result === null) {
-                  // 쿼리 결과가 None이면 아이디가 중복되지 않은 것으로 처리
-                  duplicateIdMessage.innerHTML = "사용 가능한 아이디입니다.";
-                  
               } else {
-                  // 응답이 예상치 못한 형태인 경우
                   console.error("Unexpected server response format.");
               }
           } else {
-              // 응답이 JSON 형태가 아니라면 예외 처리 또는 적절한 로깅 수행
               console.error("Unexpected server response format.");
           }
       },

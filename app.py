@@ -329,23 +329,26 @@ def join_html():
 @app.route('/check_id_duplicate', methods=['POST'])
 def check_id_duplicate():
     try:
-        # 클라이언트로부터 전달된 아이디
-        child_id = request.form.get('child_id')
+        # 클라이언트로부터 전달된 아이디를 JSON 형식으로 받음
+        data = request.get_json()
+        child_id = data.get('child_id', None)
+
+        if not child_id:
+            raise ValueError("No child_id provided")
 
         # 데이터베이스에서 아이디 중복 확인
         query = f"SELECT COUNT(*) FROM CHILD.child_list WHERE child_id = '{child_id}'"
-        result = childdb.execute(query)
+        result = childdb.fetch_one(query)
 
         # 디버깅: 쿼리와 결과 확인
         print(f"Query: {query}")
         print(f"Query result: {result}")
 
-        # 결과가 없는 경우에 대한 예외 처리
-        if result is None or not result:
-            raise Exception(f"Query returned no result for child_id '{child_id}'. Full result: {result}")
+        if result is None:
+            raise Exception(f"Query returned no result for child_id '{child_id}'")
 
         # 결과를 JSON 형식으로 반환
-        is_duplicate = result[0][0] > 0
+        is_duplicate = result[0] > 0
         return jsonify({"query_result": result, "duplicate": is_duplicate})
 
     except Exception as e:
