@@ -7,7 +7,7 @@ from flask import Flask, jsonify, render_template, request, redirect, session, u
 from dbcl import DBconnector
 import pymysql
 import dbcl
-from datetime import datetime, time, timedelta, date
+from datetime import datetime, time, timedelta
 import pytz
 from flask_socketio import SocketIO
 from flask_socketio import emit
@@ -27,7 +27,7 @@ calledb = DBconnector('CALL_E')
 counselordb = DBconnector('COUNSELOR')
 child_infodb = DBconnector('CHILD_INFO') #아동mbti, 아동사전설문지 내용, 아동매칭상담사및상담날짜 포함
 review_listdb =  DBconnector('REVIEW')
-journal_listdb = DBconnector('JOURNAL')
+#code_listdb = DBconnector('CONSULTING_CODE)
 schedule_listdb = DBconnector('COUNSELOR_SCHEDULE')
 consulting_listdb = DBconnector('CONSULTING')
 
@@ -171,7 +171,6 @@ def login():
                     if authenticate_child(child_ID, child_pw):
                         print("성공")
                         session['child_name'] = child_name
-                        session['child_id'] = child_ID
                         
                         session[child_ID] = {'logged_in': True, 'child_name':child_name}
                         print(session[child_ID])
@@ -263,8 +262,7 @@ def join_html():
                             {birth_date_int}, '{childAddress}', '{parentName}');
                 """
 
-                childdb.insert(insert_query)
-            
+                childdb.execute(insert_query)
                 print(f"Query: {insert_query}")
                 print(childId)
                 return jsonify({'user_type': 'child', 'child_id': childId, 'parent_name': parentName})
@@ -313,7 +311,7 @@ def join_html():
                     {birth_date_int}, '{', '.join(areas)}', '{mbti}');
                 """
 
-                counselordb.insert(insert_query)
+                counselordb.execute(insert_query)
                 print(f"Query: {insert_query}")
                 return jsonify({'user_type': 'counselor'})
 
@@ -416,6 +414,11 @@ def counselor_home_data():
         cursor.execute(query, (co_id,))
         results = cursor.fetchall()
 
+    # SQL 결과물을 출력
+    print("SQL Query Results:")
+    for row in results:
+        print(row)
+
     # 현재 요일을 한글 형식으로 변환
     seoul_tz = pytz.timezone('Asia/Seoul')
     now = datetime.now(seoul_tz)
@@ -449,6 +452,10 @@ def counselor_home_data():
                 'contact': parent_phone,
                 'code': consultation_code
             })
+
+    # 데이터가 올바르게 처리되었는지 출력
+    print("Processed Data:")
+    print(data)
 
     return jsonify(data)
 
@@ -484,6 +491,10 @@ def counselor_today_data():
         cursor.execute(query, (co_id,))
         results = cursor.fetchall()
 
+    print("SQL Query today:")
+    for row in results:
+        print(row)
+
     today_data = []
     for row in results:
         child_name, start_time_td, end_time_td, day_of_week = row
@@ -498,76 +509,20 @@ def counselor_today_data():
                 'end_time': end_time.strftime('%H:%M')
             })
 
+
+    print("today Data:")
+    print(today_data)
+
     return jsonify(today_data)
 
 
-def recently_journal(co_id):
-    korea_timezone = pytz.timezone('Asia/Seoul')
-    current_date = datetime.now(korea_timezone).date()
-    
-    query = """
-    SELECT jl.co_id, jl.child_id, jl.consulting_day, jl.consulting_title, cl.child_name, cl.survey_consulting 
-    FROM journal_list jl 
-    JOIN CHILD_INFO.child_info_list cl ON cl.child_id = jl.child_id 
-    WHERE cl.co_id = %s
-    AND jl.consulting_day >= DATE_SUB(%s, INTERVAL 7 DAY)
-    AND jl.consulting_day <= %s
-    """
-    recent_journals = journal_listdb.query(query, (co_id, current_date, current_date))
-    
-    # 튜플을 딕셔너리 형태로 변환
-    recent_journals = [
-        {
-            'co_id': row[0],
-            'child_id': row[1],
-            'consulting_day': row[2],
-            'consulting_title': row[3],
-            'child_name': row[4],
-            'survey_consulting': row[5]
-        }
-        for row in recent_journals
-    ]
-    
-    print(recent_journals)
-    return recent_journals
-
-def recently_review(co_id):
-    korea_timezone = pytz.timezone('Asia/Seoul')
-    current_date = datetime.now(korea_timezone).date()
-    
-    query = """
-    SELECT rl.co_id, rl.child_id, rl.consulting_day, rl.consulting_scope, rl.consulting_etc, cl.child_name
-    FROM REVIEW.review_list rl 
-    JOIN CHILD_INFO.child_info_list cl ON cl.child_id = rl.child_id 
-    WHERE cl.co_id = %s
-    AND rl.consulting_day >= DATE_SUB(%s, INTERVAL 7 DAY)
-    AND rl.consulting_day <= %s
-    """
-    recent_reviews = review_listdb.query(query, (co_id, current_date, current_date))
-    
-    recent_reviews = [
-        {
-            'co_id': row[0],
-            'child_id': row[1],
-            'consulting_day': row[2],
-            'consulting_scope': row[3],
-            'consulting_etc': row[4],  
-            'child_name': row[5]       
-        }
-        for row in recent_reviews
-    ]
-    
-    print(recent_reviews)
-    return recent_reviews
 
 @app.route('/counselor_home')
 def counselor_home_html():
     counselor_name = request.args.get('counselor_name', '')
     co_id = session.get('co_id', '')
-    
-    recent_journals = recently_journal(co_id)
-    recent_reviews = recently_review(co_id)
-    return render_template('counselor/counselor_home.html', counselor_name=counselor_name, recent_journals=recent_journals, recent_reviews=recent_reviews)
+    return render_template('counselor/counselor_home.html', counselor_name=counselor_name)
+
 
 
 @app.route('/child_list')
@@ -604,6 +559,7 @@ def convert_to_dict(keys, values):
 @app.route('/counsel_child_list')
 def counsel_child_list():
     try:
+        # 세션에서 상담사 아이디 가져오기
         counselor_id = session.get('co_id', '')
         
         query = """
@@ -632,255 +588,18 @@ def counsel_child_list():
     except Exception as e:
         logging.error(f"Error fetching child list: {str(e)}")
         return render_template('counselor/counsel_child_list.html', child_info_data=[])
-
-@app.route('/get_children_by_date', methods=['GET'])
-def get_children_by_date():
-    co_id = session.get('co_id', '')
-    
-    query = """
-    SELECT cl.child_id, cl.consulting_day, ci.child_name  
-    FROM CONSULTING.consulting_list cl 
-    JOIN CHILD_INFO.child_info_list ci ON cl.child_id = ci.child_id 
-    WHERE cl.co_id = %s
-    """
-    children = childdb.query(query, (co_id,))
-    
-    children_list = []
-    for child in children:
-        children_list.append((child[0], child[1].strftime('%Y-%m-%d'), child[2]))
-    
-    return jsonify(children=children_list, ensure_ascii=False)
-
-@app.route('/get_child_details', methods=['GET'])
-def get_child_details():
-    child_id = request.args.get('child_id')
-    query = """
-    SELECT ci.survey_consulting, ci.child_mbti, ci.survey_priority_1, ci.survey_priority_2, ci.survey_priority_3, ci.survey_priority_4 
-    FROM CHILD_INFO.child_info_list ci 
-    WHERE ci.child_id = %s
-    """
-    child_details = child_infodb.query(query, (child_id,))
-    
-    child_details_dict = {
-        "survey_consulting": child_details[0][0],
-        "child_mbti": child_details[0][1],
-        "survey_priority_1": child_details[0][2],
-        "survey_priority_2": child_details[0][3],
-        "survey_priority_3": child_details[0][4],
-        "survey_priority_4": child_details[0][5]
-    }
-    
-    return jsonify(child_details_dict)
-
-@app.route('/save_journal', methods=['POST'])
-def save_journal():
-    co_id = session.get('co_id', '')
-    
-    child_id = request.form['child-id']
-    consulting_day = request.form['counsel-date']
-    consulting_content = request.form['counsel-content']
-    consulting_result = request.form['counsel-result']
-    consulting_title = request.form['counsel-title']
-    
-    select_query = f"""
-    SELECT co_id, child_id, consulting_day
-    FROM CONSULTING.consulting_list
-    WHERE child_id='{child_id}' AND consulting_day='{consulting_day}' AND co_id='{co_id}';
-    """
-    consulting_data = consulting_listdb.execute(select_query)
-
-    if consulting_data:
-        check_journal_query = f"""
-        SELECT *
-        FROM JOURNAL.journal_list
-        WHERE child_id='{child_id}' AND consulting_day='{consulting_day}' AND co_id='{co_id}';
-        """
-        journal_data = journal_listdb.execute(check_journal_query)
-        
-        if journal_data:
-            return jsonify(message="이미 등록된 상담일지 입니다."), 400
-        else:
-            insert_query = f"""
-            INSERT INTO JOURNAL.journal_list (child_id, co_id, consulting_day, consulting_content, consulting_result, consulting_title)
-            VALUES ('{child_id}', '{co_id}', '{consulting_day}', '{consulting_content}', '{consulting_result}', '{consulting_title}');
-            """
-
-            journal_listdb.insert(insert_query)
-            return jsonify(message="상담일지가 저장되었습니다."), 200
-    else:
-
-        return jsonify(message="No matching consulting data found"), 404
     
 @app.route('/counsel_write') 
 def counsel_write_html():
-    co_id = session.get('co_id', '')
     return render_template('counselor/counsel_write.html')
-
-
-@app.route('/counsel_view_data')
-def get_counsel_view_data():
-    co_id = session.get('co_id', '')
-    if not co_id:
-        return jsonify({"error": "Counselor ID not found in session"}), 400
-
-    query = """
-    SELECT jl.co_id, jl.child_id, jl.consulting_day, jl.consulting_title, cl.child_name, cl.survey_consulting
-    FROM JOURNAL.journal_list jl 
-    JOIN CHILD_INFO.child_info_list cl ON cl.child_id = jl.child_id 
-    WHERE cl.co_id = %s
-    """
-    
-    try:
-        rows = journal_listdb.query(query, (co_id,))
-        result = []
-        for row in rows:
-            result.append({
-                "co_id": row[0],
-                "child_id": row[1],
-                "consulting_day": row[2].strftime("%Y-%m-%d"),
-                "consulting_title": row[3],
-                "child_name": row[4],
-                "survey_consulting": row[5]
-            })
-        return jsonify(result)
-    except Exception as e:
-        logging.error("Failed to fetch data from database", exc_info=True)
-        return jsonify({"error": str(e)}), 500
-
 
 @app.route('/counsel_view') 
 def counsel_view_html():
-    co_id = session.get('co_id', '')
     return render_template('counselor/counsel_view.html')
 
-@app.route('/update_journal', methods=['POST'])
-def update_journal():
-    try:
-        co_id = session.get('co_id', '')
-        if not co_id:
-            return jsonify({"error": "Counselor ID not found in session"}), 400
-        
-        child_id = request.form['child-id']
-        consulting_day = request.form['counsel-date']
-        consulting_content = request.form.get('counsel-content')
-        consulting_result = request.form.get('counsel-result')
-        consulting_title = request.form.get('counsel-title')
-        
-        update_fields = []
-        
-        if consulting_content:
-            update_fields.append(f"consulting_content='{consulting_content}'")
-        
-        if consulting_result:
-            update_fields.append(f"consulting_result='{consulting_result}'")
-        
-        if consulting_title:
-            update_fields.append(f"consulting_title='{consulting_title}'")
-        
-        if not update_fields:
-            return jsonify({"error": "No fields to update"}), 400
-        
-        update_query = f"UPDATE JOURNAL.journal_list SET {', '.join(update_fields)} WHERE child_id='{child_id}' AND consulting_day='{consulting_day}' AND co_id='{co_id}'"
-                
-        journal_listdb.update(update_query)
-        
-        return jsonify(message="상담일지가 수정되었습니다."), 200
-    except Exception as e:
-        logging.error("Failed to update journal", exc_info=True)
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/counsel_view_edit')
-def counsel_view_edit():
-    co_id = session.get('co_id', '')
-    child_id = request.args.get('child_id')
-    consulting_day = request.args.get('consulting_day')
-    
-    query = """
-    SELECT jl.consulting_title, jl.consulting_content, jl.consulting_result, 
-           ci.child_name, ci.survey_consulting, ci.child_mbti, ci.survey_priority_1, 
-           ci.survey_priority_2, ci.survey_priority_3, ci.survey_priority_4 
-    FROM JOURNAL.journal_list jl 
-    JOIN CHILD_INFO.child_info_list ci ON jl.child_id = ci.child_id 
-    WHERE jl.child_id = %s AND jl.consulting_day = %s
-    """
-    
-    journal_data = journal_listdb.query(query, (child_id, consulting_day))
-    
-    if journal_data:
-        journal_data = journal_data[0]
-        context = {
-            'consulting_title': journal_data[0],
-            'consulting_content': journal_data[1],
-            'consulting_result': journal_data[2],
-            'child_name': journal_data[3],
-            'survey_consulting': journal_data[4],
-            'child_mbti': journal_data[5],
-            'survey_priority_1': journal_data[6],
-            'survey_priority_2': journal_data[7],
-            'survey_priority_3': journal_data[8],
-            'survey_priority_4': journal_data[9],
-            'child_id': child_id,
-            'consulting_day': consulting_day
-        }
-        return render_template('counselor/counsel_view_edit.html', **context)
-    else:
-        return "No data found", 404
-
-@app.route('/counsel_schedule')
+@app.route('/counsel_schedule') 
 def counsel_schedule_html():
-    co_id = session.get('co_id', '')
-    if not co_id:
-        return redirect(url_for('login'))  # 세션에 상담사 ID가 없는 경우 로그인 페이지로 리디렉션
-    
-    # 데이터베이스에서 상담사 일정 가져오기
-    query = """
-        SELECT cl.child_name, sl.day_of_week, sl.start_time, sl.end_time
-        FROM COUNSELOR_SCHEDULE.schedule_list sl
-        JOIN CHILD_INFO.child_info_list cl ON cl.child_id = sl.child_id
-        WHERE sl.co_id = %s
-    """
-    schedule_data = schedule_listdb.query(query, (co_id,))
-    
-    # 가져온 데이터 콘솔에 출력
-    print("Schedule Data:", schedule_data)
-    
-    # 데이터를 JSON 형식으로 변환
-    schedule_events = []
-    for entry in schedule_data:
-        start_time = timedelta_to_str(entry[2])
-        end_time = timedelta_to_str(entry[3])
-        event = {
-            'title': f"{start_time} ~ {end_time} {entry[0]} 아동",  # 시작 시간 ~ 종료 시간 - 아동 이름
-            'daysOfWeek': [convert_day_to_number(entry[1])],  # day_of_week
-            'startTime': start_time,  # start_time
-            'endTime': end_time,  # end_time
-            'display': 'block'  # 시간 정보를 표시하지 않도록 설정
-        }
-        schedule_events.append(event)
-    
-    # 변환된 데이터 콘솔에 출력
-    print("Schedule Events:", schedule_events)
-    
-    return render_template('counselor/counsel_schedule.html', schedule_events=schedule_events)
-
-def convert_day_to_number(day_of_week):
-    days = {
-        '일': 0,
-        '월': 1,
-        '화': 2,
-        '수': 3,
-        '목': 4,
-        '금': 5,
-        '토': 6
-    }
-    return days.get(day_of_week, 0)
-
-def timedelta_to_str(timedelta_obj):
-    total_seconds = int(timedelta_obj.total_seconds())
-    hours, remainder = divmod(total_seconds, 3600)
-    minutes, _ = divmod(remainder, 60)
-    return f"{hours:02}:{minutes:02}"
-
+    return render_template('counselor/counsel_schedule.html')
 
 @app.route('/counsel_counseling') 
 def counsel_counseling_html():
@@ -946,139 +665,9 @@ def survey_pre_html():
                 
     return render_template('user/survey_pre.html', child_id=child_id, parent_name=parent_name)
 
-@app.route('/survey_pre_edit', methods=['GET', 'POST'])
+@app.route('/survey_pre_edit')
 def survey_pre_edit_html():
-    child_id = session.get('child_id')
-    if request.method == 'POST':
-        # 폼이 제출된 경우에만 처리
-        child_name = request.form.get('childName', default=None)
-        parent_name = request.form.get('guardianName', default=None)
-        priority1 = request.form.get('paymentMethod1', default=None)
-        priority2 = request.form.get('paymentMethod2', default=None)
-        priority3 = request.form.get('paymentMethod3', default=None)
-        priority4 = request.form.get('paymentMethod4', default=None)
-        subject = request.form.get('paymentMethod', default=None)
-        medicine_name = request.form.get('medicineName', default=None)
-        additional_notes = request.form.get('additionalNotes', default=None)
-
-        try:
-            # CHILD_INFO.child_info_list에 데이터 업데이트
-            update_query = f"""
-                UPDATE CHILD_INFO.child_info_list
-                SET child_name='{child_name}', survey_priority_1='{priority1}', survey_priority_2='{priority2}', 
-                    survey_priority_3='{priority3}', survey_priority_4='{priority4}', survey_consulting='{subject}', 
-                    survey_diagnosis='{medicine_name}', survey_etc='{additional_notes}'
-                WHERE child_id='{child_id}';
-            """
-            child_infodb.insert(update_query)
-             # JSON 응답 반환
-             
-            return jsonify(message="상담일지가 수정되었습니다."), 200
-        except Exception as e:
-            logging.error("Failed to update survey", exc_info=True)
-            return jsonify({"error": str(e)}), 500
-                       
-    # 데이터베이스에서 아동 이름과 보호자 성함을 각각 가져옴
-    child_name_result = childdb.fetch_one(f"SELECT child_name FROM CHILD.child_list WHERE child_id = '{child_id}'")
-    parent_name_result = childdb.fetch_one(f"SELECT parent_name FROM CHILD.child_list WHERE child_id = '{child_id}'")
-
-    # 반환 값이 문자열로 가정하고 그대로 할당
-    child_name = child_name_result if child_name_result else ""
-    parent_name = parent_name_result if parent_name_result else ""
-
-    return render_template('user/survey_pre_edit.html', child_id=child_id, child_name=child_name, parent_name=parent_name)
-
-@app.route('/counsel_review') 
-def counsel_review_html():
-    co_id = session.get('co_id')
-    query = """
-        SELECT
-            cl.child_name,
-            r.consulting_day,
-            r.consulting_scope,
-            r.consulting_etc
-        FROM
-            REVIEW.review_list r
-        JOIN
-            CHILD.child_list cl ON r.child_id = cl.child_id
-        WHERE
-            r.co_id = %s;       
-    """
-    result = review_listdb.execute(query,(co_id))
-    child_name = result[0][0]
-    consulting_day = result[0][1]
-    consulting_scope = result[0][2]
-    consulting_etc = result[0][3]
-    
-    reviews =[
-        {
-            'child_name' : row[0],
-            'consulting_day' : row[1],
-            'consulting_scope' : row[2],
-            'consulting_etc' : row[3]
-        }
-        for row in result
-    ]
-    
-    return render_template('counselor/counsel_review.html',reviews=reviews)
-
-@app.route('/counsel_review_search')
-def counsel_review_search():
-    date = request.args.get('date')
-    name = request.args.get('name')
-    co_id = session.get('co_id', None)  
-
-    base_query = """
-        SELECT
-            cl.child_name,
-            r.consulting_day,
-            r.consulting_scope,
-            r.consulting_etc
-        FROM
-            REVIEW.review_list r
-        JOIN
-            CHILD.child_list cl ON r.child_id = cl.child_id
-        WHERE
-            r.co_id = %s
-    """
-
-    conditions = []
-    params = [co_id]  # 초기 파라미터로 co_id 설정
-
-    if date:
-        conditions.append("r.consulting_day = %s")
-        params.append(date)  # 날짜 파라미터 추가
-    if name:
-        conditions.append("cl.child_name LIKE %s")
-        params.append(name)  # 이름 파라미터 추가
-
-    if conditions:
-        query = base_query + " AND " + " AND ".join(conditions)
-    else:
-        query = base_query
-
-    print("최종 쿼리:", query)
-    print("사용된 파라미터:", params)
-
-    # 데이터베이스 쿼리 실행
-    review_listdb = DBconnector('REVIEW')
-    result = review_listdb.query(query, params)
-    print("리뷰 검색 결과:", result)
-
-    # 결과를 JSON으로 변환
-    reviews = [
-        {
-            'child_name': row[0],
-            'consulting_day': row[1].strftime('%Y-%m-%d'),
-            'consulting_scope': row[2],
-            'consulting_etc': row[3]
-        }
-        for row in result
-    ]
-    return jsonify(reviews)
-
-
-
+    return render_template('user/survey_pre_edit.html')
 
 @app.route('/user_home')
 def user_home_html():
@@ -1088,40 +677,6 @@ def user_home_html():
 def mbti_home_html():
     return render_template('user/mbti_home.html')
 
-@app.route('/user_counsel_view_data')
-def get_user_counsel_view_data():
-    child_id = session.get('child_id','')
-    if not child_id:
-        return jsonify({"error": "Counselor ID not found in session"}), 400
-    
-    query = """
-    SELECT jl.consulting_title , cl.co_name , jl.consulting_day  , jl.consulting_content , jl.consulting_result
-    FROM JOURNAL.journal_list jl 
-    JOIN COUNSELOR.counselor_list cl ON jl.co_id = cl.co_id 
-    WHERE jl.child_id  = %s
-    """ 
-    
-    try:
-        rows = journal_listdb.query(query, (child_id,))
-        user_counsel_view = []
-        for row in rows:
-            user_counsel_view.append({
-            "consulting_title": row[0],
-            "co_name": row[1],
-            "consulting_day": row[2],
-            "consulting_content": row[3],
-            "consulting_result": row[4]
-            })
-        return jsonify(user_counsel_view)
-    except Exception as e:
-        logging.error("Failed to fetch data from database", exc_info=True)
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/user_counsel_view')
-def user_counsel_view_html():
-    child_id = session.get('child_id')    
-    return render_template('user/user_counsel_view.html')
-
 @app.route('/user_review')
 def user_review_html():
     return render_template('user/user_review.html')
@@ -1129,6 +684,7 @@ def user_review_html():
 @app.route('/user_review_detail') 
 def user_review_detail_html():
     return render_template('user/user_review_ detail.html')
+
 
 # 상담사 상담 분야 가져오기
 def get_counselor_consulting():
@@ -1233,591 +789,364 @@ def calculate_total_rating():
         logging.error(f"Error calculating total rating: {e}")
         return None
 
-
-
-def get_best_match_counselors(child_id):
-    # 아동의 MBTI 가져오기
-    child_mbti_query = f"""
-        SELECT child_mbti
-        FROM CHILD_INFO.child_info_list
-        WHERE child_id = '{child_id}';
-    """
-    child_mbti_result = child_infodb.execute(child_mbti_query)
-    child_mbti = child_mbti_result[0][0] if child_mbti_result else None
-    
-    if not child_mbti:
-        return []
-
-    # 상담사 정보 및 평균 점수 가져오기
-    counselor_query = """
-        SELECT
-            co.co_id,
-            co.co_name,
-            co.co_mbti,
-            co.co_consulting,
-            IFNULL(AVG(r.consulting_scope), 0) AS avg_scope,
-            GROUP_CONCAT(DISTINCT r.consulting_priority ORDER BY r.consulting_priority) AS priorities
-        FROM COUNSELOR.counselor_list co
-        LEFT JOIN REVIEW.review_list r ON co.co_id = r.co_id
-        GROUP BY co.co_id, co.co_name, co.co_mbti, co.co_consulting
-        ORDER BY co.co_id;
-    """
-    counselor_rows = counselordb.execute(counselor_query)
-    counselors = [
-        (row[0], row[1], row[2], row[3], row[4], row[5])
-        for row in counselor_rows
-    ]
-
-    # 궁합표에 따른 추가 점수 계산 및 튜플에 추가
-    best_mbti_matches = {
-        'INFP': ['ENFJ', 'ENTJ'],
-        'ENFP': ['ENFJ', 'ENTJ'],
-        'INFJ': ['ENFP', 'ENTP'],
-        'ENFJ': ['ENFP', 'ENTJ', 'ENTP'],
-        'INTJ': ['ISTP', 'ESTP'],
-        'ENTJ': ['ISTP', 'ESTP'],
-        'INTP': ['ISTP', 'ESTP'],
-        'ENTP': ['ESTP'],
-        'ISFP': ['ISTP', 'ESTP'],
-        'ESFP': ['ISTP', 'ESTP'],
-        'ISTP': ['ISTP', 'ESTP'],
-        'ESTP': ['ISTP', 'ESTP'],
-        'ISFJ': ['ISTP', 'ESTP'],
-        'ESFJ': ['ISTP', 'ESTP'],
-        'ISTJ': ['ISTP', 'ESTP'],
-        'ESTJ': ['ISTP', 'ESTP']
-    }
-
-    counselors_with_scores = [
-        (counselor[0], counselor[1], counselor[2], counselor[3], counselor[4], counselor[5], 20 if counselor[2] in best_mbti_matches.get(child_mbti, []) else 0)
-        for counselor in counselors
-    ]
-
-    # 점수가 높은 순서대로 정렬
-    sorted_counselors = sorted(counselors_with_scores, key=lambda x: x[6], reverse=True)
-    return sorted_counselors
-
-
-
-
-
-
-
-@app.route('/mbti_match', methods=['GET', 'POST'])
-def counselor_match():
-    # session에서 child_id를 안전하게 문자열로 변환
-    child_id = str(session.get('child_id')).strip()
-
-    if not child_id:
-        return "Child ID is not set in session.", 400
-    print("db 아이디 :" ,child_id)
-    
-    if child_id is None:
-        return "Child ID is not set in session.", 400
-
-    filter_value = request.form.get('filter') if request.method == 'POST' else '0'
-
-    function_mapping = {
-        '0': all_match,
-        '1': consulting_match,
-        '2': get_best_match_counselors,
-        '3': scope_match,
-        '4': priority_match
-    }
-
-    filter_function = function_mapping.get(filter_value)
-    if filter_function is None:
-        return "Invalid filter option.", 400
-
-    result = filter_function(child_id)
-
-    if not result:
-        return "No counselor found with the given filter.", 404
-
-    reviews = [
-        {   'co_id':row[0],
-            'co_name': row[1],
-            'avg_consulting_scope': int(row[4]) if row[4] is not None else 0,
-            'co_mbti': row[2],
-            'co_consulting': row[3],
-            'consulting_priorities': row[5] if row[5] is not None else '없음'
-        }
-        for row in result
-]
-
-    
-
-    if request.method == 'POST':
-        reviews_html = ""
-        for review in reviews:
-            reviews_html += f"""
-            <a class="list" href="/mbti_match_detail/{ review['co_id']}">
-                <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
-                <div class="list-text">
-                    <span class="list-name">{review['co_name']}</span>
-                    <span class="list-rating"><i class="bx bxs-star"></i>{review['avg_consulting_scope']}</span>
-                    <p>{review['co_mbti']}</p>
-                </div>
-                <div class="list-details">
-                    <p>{review['co_consulting']}</p>
-                    <p>{review['consulting_priorities']}</p>
-                </div>
-            </a>
-            """
-        return jsonify({
-            'html': reviews_html,
-            'count': len(reviews)
-        })
-    else:
-        return render_template('user/mbti_match.html', reviews=reviews)
-
-def consulting_match(child_id):
-    if child_id is None:
-        return []
-
-    query = """
-            SELECT 
-                c.co_id, 
-                c.co_name, 
-                c.co_mbti, 
-                c.co_consulting, 
-                AVG(r.consulting_scope) AS avg_consulting_scope,
-                GROUP_CONCAT(DISTINCT r.consulting_priority ORDER BY r.consulting_priority) AS consulting_priorities
-            FROM 
-                COUNSELOR.counselor_list AS c
-            JOIN 
-                CHILD_INFO.child_info_list AS ci 
-                ON c.co_consulting LIKE CONCAT('%%', ci.survey_consulting, '%%')
-            LEFT JOIN 
-                REVIEW.review_list AS r 
-                ON c.co_id = r.co_id
-            WHERE 
-                ci.child_id = %s
-            GROUP BY
-                c.co_id, c.co_name, c.co_mbti, c.co_consulting;
-    """
-    print(f"Executing consulting_match query with child_id: {child_id}")  # Debugging line
-    print("주요분야 쿼리:", query)  # 쿼리 출력
-    return counselordb.execute(query, (child_id,))
-
-
-def scope_match(child_id):
-    if child_id is None:
-        return []
-
-    query = f"""
-        SELECT 
-            c.co_id,
-            c.co_name,  
-            c.co_mbti,
-            c.co_consulting, 
-            AVG(r.consulting_scope) AS avg_consulting_scope,
-            GROUP_CONCAT(DISTINCT r.consulting_priority ORDER BY r.consulting_priority) AS consulting_priorities
-        FROM 
-            REVIEW.review_list AS r
-        JOIN 
-            COUNSELOR.counselor_list AS c ON c.co_id = r.co_id
-        GROUP BY 
-            c.co_id, 
-            c.co_name, 
-            c.co_consulting, 
-            c.co_mbti
-        ORDER BY 
-            avg_consulting_scope DESC;
-    """
-    print(f"Executing scope_match query: {query}")  # Debugging line
-    return counselordb.execute(query)
-
-def all_match(child_id):
-    if child_id is None:
-        return []
-
-    query = """
-
-        -- 첫 번째 쿼리: 상담사 정보와 리뷰 정보
-        WITH CounselorReview AS (
-            SELECT 
-                c.co_id,  
-                c.co_name, 
-                c.co_mbti, 
-                c.co_consulting, 
-                AVG(CASE WHEN r.consulting_scope IS NULL THEN 0 ELSE r.consulting_scope END) AS avg_consulting_scope,
-                GROUP_CONCAT(DISTINCT r.consulting_priority ORDER BY r.consulting_priority) AS consulting_priorities,
-                CASE WHEN AVG(CASE WHEN r.consulting_scope IS NULL THEN 0 ELSE r.consulting_scope END) > 4.0 THEN 10 ELSE 0 END AS totalscore
-            FROM 
-                COUNSELOR.counselor_list AS c
-            LEFT JOIN 
-                REVIEW.review_list AS r ON c.co_id = r.co_id 
-            GROUP BY  
-                c.co_id, c.co_name, c.co_mbti, c.co_consulting
-        )
-
-        -- 두 번째 쿼리: 전체 상담사 정보와 특정 어린이의 상담 우선순위 정보와 조인 및 점수 계산
-        SELECT 
-            cr.co_id, 
-            cr.co_name, 
-            cr.co_mbti, 
-            cr.co_consulting, 
-            cr.avg_consulting_scope AS consulting_scope, 
-            cr.consulting_priorities AS consulting_priority
-        FROM 
-            CounselorReview AS cr
-        JOIN 
-            CHILD_INFO.child_info_list AS ci 
-        ON ci.child_id = %s
-        ORDER BY 
-            cr.totalscore +
-                CASE 
-                    WHEN ci.survey_consulting IS NOT NULL AND cr.co_consulting LIKE CONCAT('%%', ci.survey_consulting, '%%') THEN 40 
-                    ELSE 0 
-                END +
-                CASE 
-                    WHEN (
-                        (CASE WHEN ci.survey_priority_1 IS NOT NULL AND FIND_IN_SET(ci.survey_priority_1, cr.consulting_priorities) THEN 5 ELSE 0 END) +
-                        (CASE WHEN ci.survey_priority_2 IS NOT NULL AND FIND_IN_SET(ci.survey_priority_2, cr.consulting_priorities) THEN 4 ELSE 0 END) +
-                        (CASE WHEN ci.survey_priority_3 IS NOT NULL AND FIND_IN_SET(ci.survey_priority_3, cr.consulting_priorities) THEN 3 ELSE 0 END) +
-                        (CASE WHEN ci.survey_priority_4 IS NOT NULL AND FIND_IN_SET(ci.survey_priority_4, cr.consulting_priorities) THEN 2 ELSE 0 END)
-                    ) > 10 THEN 30
-                    ELSE 10
-                END +
-                CASE
-                    WHEN ci.child_mbti = 'INFP' AND cr.co_mbti IN ('ENFJ', 'ENTJ') THEN 20
-                    WHEN ci.child_mbti = 'ENFP' AND cr.co_mbti IN ('ENFJ', 'ENTJ') THEN 20
-                    WHEN ci.child_mbti = 'INFJ' AND cr.co_mbti IN ('ENFP', 'ENTP') THEN 20
-                    WHEN ci.child_mbti = 'ENFJ' AND cr.co_mbti IN ('ENFP', 'ENTJ', 'ENTP') THEN 20
-                    WHEN ci.child_mbti = 'INTJ' AND cr.co_mbti IN ('ISTP', 'ESTP') THEN 20
-                    WHEN ci.child_mbti = 'ENTJ' AND cr.co_mbti IN ('ISTP', 'ESTP') THEN 20
-                    WHEN ci.child_mbti = 'INTP' AND cr.co_mbti IN ('ISTP', 'ESTP') THEN 20
-                    WHEN ci.child_mbti = 'ENTP' AND cr.co_mbti IN ('ESTP') THEN 20
-                    WHEN ci.child_mbti = 'ISFP' AND cr.co_mbti IN ('ISTP', 'ESTP') THEN 20
-                    WHEN ci.child_mbti = 'ESFP' AND cr.co_mbti IN ('ISTP', 'ESTP') THEN 20
-                    WHEN ci.child_mbti = 'ISTP' AND cr.co_mbti IN ('ISTP', 'ESTP') THEN 20
-                    WHEN ci.child_mbti = 'ESTP' AND cr.co_mbti IN ('ISTP', 'ESTP') THEN 20
-                    WHEN ci.child_mbti = 'ISFJ' AND cr.co_mbti IN ('ISTP', 'ESTP') THEN 20
-                    WHEN ci.child_mbti = 'ESFJ' AND cr.co_mbti IN ('ISTP', 'ESTP') THEN 20
-                    WHEN ci.child_mbti = 'ISTJ' AND cr.co_mbti IN ('ISTP', 'ESTP') THEN 20
-                    WHEN ci.child_mbti = 'ESTJ' AND cr.co_mbti IN ('ISTP', 'ESTP') THEN 20
-                    ELSE 0
-                END DESC;
- 
-    """
-    print(f"Executing all_match query with child_id: {child_id}")  # Debugging line
-    return counselordb.execute(query, (child_id,))
-
-
-def priority_match(child_id):
-    if child_id is None:
-        return []
-
-    query = """
-            SELECT
-                co.co_id,
-                co.co_name,
-                co.co_mbti, -- 상담사의 MBTI
-                co.co_consulting, -- 상담사의 상담 유형
-                AVG(r.consulting_scope) AS avg_consulting_scope,
-                GROUP_CONCAT(DISTINCT r.consulting_priority ORDER BY r.consulting_priority) AS consulting_priorities,
-                SUM(CASE
-                    WHEN r.consulting_priority = c.survey_priority_1 THEN 5
-                    WHEN r.consulting_priority = c.survey_priority_2 THEN 4
-                    WHEN r.consulting_priority = c.survey_priority_3 THEN 3
-                    WHEN r.consulting_priority = c.survey_priority_4 THEN 2
-                    ELSE 0
-                END) AS total_rating
-            FROM
-                CHILD_INFO.child_info_list c
-            LEFT JOIN
-                COUNSELOR.counselor_list co ON 1=1
-            LEFT JOIN
-                REVIEW.review_list r ON co.co_id = r.co_id AND (
-                    r.consulting_priority = c.survey_priority_1 OR
-                    r.consulting_priority = c.survey_priority_2 OR
-                    r.consulting_priority = c.survey_priority_3 OR
-                    r.consulting_priority = c.survey_priority_4
-                )
-            WHERE
-                c.child_id = %s
-            GROUP BY
-                c.child_id, c.child_name, co.co_id, co.co_name, co.co_mbti, co.co_consulting
-            ORDER BY
-                total_rating DESC;
-    """
-    print(f"Executing priority_match query with child_id: {child_id}")
-    return child_infodb.execute(query, (child_id,))
-
-@app.route('/mbti_match_detail/<counselor_id>', endpoint='mbti_match_detail')
-def mbti_match_detail_html(counselor_id):
-    child_id = session.get('child_id')
-    counselor_name_query = """
-        SELECT co_name
-        FROM COUNSELOR.counselor_list
-        WHERE co_id = %s
-    """
-    counselor_name_data = counselordb.execute(counselor_name_query, (counselor_id,))
-    counselor_name = counselor_name_data[0][0] if counselor_name_data else 'Unknown'
-
-    query = """
-        SELECT day_of_week, start_time, end_time
-        FROM COUNSELOR_SCHEDULE.schedule_list
-        WHERE co_id = %s
-    """
-    schedule_data = schedule_listdb.execute(query, (counselor_id,))
-
-    days = ['월', '화', '수', '목', '금']
-    times = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
-
-    schedule = {day: {time: False for time in times} for day in days}
-
-    for day in days:
-        schedule[day]['12:00'] = True
-
-    for row in schedule_data:
-        day_of_week, start_time, end_time = row
-        
-        if isinstance(start_time, timedelta):
-            start_time = (datetime.min + start_time).time()
-        if isinstance(end_time, timedelta):
-            end_time = (datetime.min + end_time).time()
-
-        start_idx = times.index(start_time.strftime('%H:%M'))
-
-        end_idx = times.index(end_time.strftime('%H:%M')) if end_time.strftime('%H:%M') in times else len(times)
-
-        for idx in range(start_idx, end_idx):
-            schedule[day_of_week][times[idx]] = True
-
-    return render_template('user/mbti_match_detail.html', counselor_name=counselor_name, schedule=schedule, days=days, times=times, counselor_id=counselor_id)
-
-@app.route('/submit_selection/<int:counselor_id>', methods=['POST'])
-def submit_selection(counselor_id):
-    try:
-        data = request.json
-        selected_times = data.get('selectedTimes', [])
-        child_id = session.get('child_id')
-
-        current_counselor_query = """
-            SELECT co_id FROM CHILD_INFO.child_info_list
-            WHERE child_id = %s
-        """
-        current_counselor_data = child_infodb.execute(current_counselor_query, (child_id,))
-        current_counselor_id = current_counselor_data[0][0] if current_counselor_data else None
-
-        if current_counselor_id and current_counselor_id != counselor_id:
-            return jsonify({
-                'success': False,
-                'require_confirmation': True,
-                'message': '기존 상담사가 존재합니다. 상담사를 변경하시겠습니까?'
-            }), 200
-
-        merged_times = merge_times(selected_times, counselor_id)
-
-        print("Merged Times:")
-        for time_slot in merged_times:
-            print(time_slot)
-
-        consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
-        
-        for time_slot in merged_times:
-            day_of_week = convert_day_of_week(time_slot['day_of_week'])
-            start_time = time_slot['start_time']
-            end_time = time_slot['end_time']
-
-            insert_query = f"""
-                INSERT INTO COUNSELOR_SCHEDULE.schedule_list (co_id, child_id, day_of_week, start_time, end_time, consultation_code)
-                VALUES ({counselor_id}, '{child_id}', '{day_of_week}', '{start_time}', '{end_time}', '{consultation_code}')
-            """
-            try:
-                schedule_listdb.insert(insert_query)
-            except Exception as e:
-                print(f"Failed to execute query: {str(e)}")
-                return jsonify({'success': False, 'message': str(e)}), 500
-
-        update_query = f"""
-            UPDATE CHILD_INFO.child_info_list
-            SET co_id = {counselor_id}
-            WHERE child_id = '{child_id}'
-        """
-        try:
-            child_infodb.update(update_query)
-        except Exception as e:
-            print(f"Failed to execute update query: {str(e)}")
-            return jsonify({'success': False, 'message': str(e)}), 500
-
-        return jsonify({'success': True}), 200
-
-    except Exception as e:
-        logging.error(f"Error in submit_selection: {str(e)}")
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-@app.route('/confirm_change_selection/<int:counselor_id>', methods=['POST'])
-def confirm_change_selection(counselor_id):
-    try:
-        data = request.json
-        selected_times = data.get('selectedTimes', [])
-        child_id = session.get('child_id')
-
-        delete_query = f"""
-            DELETE FROM COUNSELOR_SCHEDULE.schedule_list
-            WHERE child_id = '{child_id}'
-        """
-        print(f"Executing delete query: {delete_query}")
-        try:
-            schedule_listdb.delete(delete_query)
-        except Exception as e:
-            print(f"Failed to execute delete query: {str(e)}")
-            return jsonify({'success': False, 'message': str(e)}), 500
-
-        merged_times = merge_times(selected_times, counselor_id)
-
-        print("Merged Times:")
-        for time_slot in merged_times:
-            print(time_slot)
-
-        consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
-        
-        for time_slot in merged_times:
-            day_of_week = convert_day_of_week(time_slot['day_of_week'])
-            start_time = time_slot['start_time']
-            end_time = time_slot['end_time']
-
-            insert_query = f"""
-                INSERT INTO COUNSELOR_SCHEDULE.schedule_list (co_id, child_id, day_of_week, start_time, end_time, consultation_code)
-                VALUES ({counselor_id}, '{child_id}', '{day_of_week}', '{start_time}', '{end_time}', '{consultation_code}')
-            """
-            try:
-                schedule_listdb.insert(insert_query)
-            except Exception as e:
-                print(f"Failed to execute query: {str(e)}")
-                return jsonify({'success': False, 'message': str(e)}), 500
-            
-        update_query = f"""
-            UPDATE CHILD_INFO.child_info_list
-            SET co_id = {counselor_id}
-            WHERE child_id = '{child_id}'
-        """
-        try:
-            child_infodb.update(update_query)
-        except Exception as e:
-            print(f"Failed to execute update query: {str(e)}")
-            return jsonify({'success': False, 'message': str(e)}), 500
-
-        return jsonify({'success': True}), 200
-
-    except Exception as e:
-        logging.error(f"Error in confirm_change_selection: {str(e)}")
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-@app.route('/change_selection/<int:counselor_id>', methods=['POST'])
-def change_selection(counselor_id):
-    try:
-        data = request.json
-        selected_times = data.get('selectedTimes', [])
-        child_id = session.get('child_id')
-
-        current_counselor_query = """
-            SELECT co_id FROM CHILD_INFO.child_info_list
-            WHERE child_id = %s
-        """
-        current_counselor_data = child_infodb.execute(current_counselor_query, (child_id,))
-        current_counselor_id = current_counselor_data[0][0] if current_counselor_data else None
-
-        if current_counselor_id and current_counselor_id != counselor_id:
-            return jsonify({
-                'success': False,
-                'message': '상담사를 다시 확인해 주세요.'
-            }), 200
-
-        delete_query = f"""
-            DELETE FROM COUNSELOR_SCHEDULE.schedule_list
-            WHERE child_id = '{child_id}'
-        """
-        try:
-            schedule_listdb.delete(delete_query)
-        except Exception as e:
-            print(f"Failed to execute delete query: {str(e)}")
-            return jsonify({'success': False, 'message': str(e)}), 500
-
-        merged_times = merge_times(selected_times, counselor_id)
-
-        consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
-
-        for time_slot in merged_times:
-            day_of_week = convert_day_of_week(time_slot['day_of_week'])
-            start_time = time_slot['start_time']
-            end_time = time_slot['end_time']
-
-            insert_query = f"""
-                INSERT INTO COUNSELOR_SCHEDULE.schedule_list (co_id, child_id, day_of_week, start_time, end_time, consultation_code)
-                VALUES ({counselor_id}, '{child_id}', '{day_of_week}', '{start_time}', '{end_time}', '{consultation_code}')
-            """
-            try:
-                schedule_listdb.insert(insert_query)
-            except Exception as e:
-                print(f"Failed to execute query: {str(e)}")
-                return jsonify({'success': False, 'message': str(e)}), 500
-
-        return jsonify({'success': True}), 200
-
-    except Exception as e:
-        logging.error(f"Error in change_selection: {str(e)}")
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-def convert_day_of_week(day):
-    day_map = {
-        "월요일": "월",
-        "화요일": "화",
-        "수요일": "수",
-        "목요일": "목",
-        "금요일": "금",
-        "토요일": "토",
-        "일요일": "일"
-    }
-    return day_map.get(day, day)
-
-def merge_times(selected_times, co_id):
-    merged_times = []
-    times_by_day = {}
-
-    for time_slot in selected_times:
-        day_of_week = time_slot['day_of_week']
-        start_time = datetime.strptime(time_slot['start_time'], '%H:%M').time()
-        end_time = datetime.strptime(time_slot['end_time'], '%H:%M').time()
-
-        if day_of_week not in times_by_day:
-            times_by_day[day_of_week] = []
-
-        times_by_day[day_of_week].append((start_time, end_time))
-
-    for day, times in times_by_day.items():
-        times.sort()
-
-        current_start = times[0][0]
-        current_end = times[0][1]
-
-        for start_time, end_time in times[1:]:
-            if start_time <= current_end:
-                current_end = max(current_end, end_time)
+#mbti 점수 부여 - 20점  
+Best_mbti = {
+    'INFP': ['ENFJ', 'ENTJ'],
+    'ENFP': ['ENFJ', 'ENTJ'],
+    'INFJ': ['ENFP', 'ENTP'],
+    'ENFJ': ['ENFP', 'ENTJ', 'ENTP'],
+    'INTJ': ['ISTP', 'ESTP'],
+    'ENTJ': ['ISTP', 'ESTP'],
+    'INTP': ['ISTP', 'ESTP'],
+    'ENTP': ['ESTP'],
+    'ISFP': ['ISTP', 'ESTP'],
+    'ESFP': ['ISTP', 'ESTP'],
+    'ISTP': ['ISTP', 'ESTP'],
+    'ESTP': ['ISTP', 'ESTP'],
+    'ISFJ': ['ISTP', 'ESTP'],
+    'ESFJ': ['ISTP', 'ESTP'],
+    'ISTJ': ['ISTP', 'ESTP'],
+    'ESTJ': ['ISTP', 'ESTP']
+}
+
+def get_child_mbti():
+    query = "SELECT child_id, child_mbti FROM CHILD_INFO.child_info_list"
+    result = child_infodb.fetch_all(query)
+    return result
+
+def get_counselor_mbti():
+    query = "SELECT co_id, co_name, co_mbti FROM COUNSELOR.counselor_list"
+    result = counselordb.fetch_all(query)
+    return result
+
+def mbti_match():
+    result_mbti = {}
+
+    child_mbti_results = get_child_mbti()
+    counselor_mbti_results = get_counselor_mbti()
+
+    for child_id, child_mbti in child_mbti_results:
+        result_mbti[child_id] = {} 
+
+        for co_id, co_name, co_mbti in counselor_mbti_results:
+            if child_mbti in Best_mbti and co_mbti in Best_mbti[child_mbti]:
+                result_mbti[child_id][co_id] = 20
             else:
-                merged_times.append({
-                    'co_id': co_id,
-                    'day_of_week': day,
-                    'start_time': current_start.strftime('%H:%M'),
-                    'end_time': current_end.strftime('%H:%M')
-                })
-                current_start = start_time
-                current_end = end_time
+                result_mbti[child_id][co_id] = 0
 
-        merged_times.append({
-            'co_id': co_id,
-            'day_of_week': day,
-            'start_time': current_start.strftime('%H:%M'),
-            'end_time': current_end.strftime('%H:%M')
-        })
+    return result_mbti
 
-    return merged_times
+def combine_scores():
+    scores_for_all = calculate_scores_for_all()
+    scores_avg_consulting_scope = calculate_avg_consulting_scope()
+    total_ratings = calculate_total_rating()
+    mbti_match_results = mbti_match()
 
-@app.route('/get_counselor_schedule')
-def get_counselor_schedule():
+    combined_scores = {}
+
+    for child_id, child_scores in scores_for_all.items():
+        combined_scores[child_id] = {}
+
+        for co_id, score_all in child_scores.items():
+            score_avg_consulting_scope = scores_avg_consulting_scope.get(co_id, 0)
+            total_rating = total_ratings.get(child_id, {}).get(co_id, 0)
+            mbti_score = mbti_match_results.get(child_id, {}).get(co_id, 0)
+
+            combined_score = score_all + score_avg_consulting_scope + total_rating + mbti_score
+
+            combined_scores[child_id][co_id] = combined_score
+
+    return combined_scores
+
+
+
+def get_best_counselors():
+    all_combined_scores = combine_scores()
+    results = []
+
+    for child_id, scores in all_combined_scores.items():
+        sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        child_results = {"child_id": child_id, "top_counselors": []}
+
+        for co_id, total_score in sorted_scores:
+            if total_score <= 0:
+                continue
+
+            query = f"SELECT co_id, co_name, co_consulting FROM COUNSELOR.counselor_list WHERE co_id = {co_id};"
+            result = child_infodb.execute(query)
+         
+            if result:
+                co_info = result[0] 
+                co_name, co_consulting = co_info[1], co_info[2]
+                counselor_info = {
+                    "co_id": co_id,
+                    "co_name": co_name,
+                    "co_consulting": co_consulting,
+                    "total_score": total_score,
+                }
+                child_results["top_counselors"].append(counselor_info)
+
+        results.append(child_results)
+
+    return results
+
+@app.route('/mbti_match', methods=['GET','POST'])
+def print_matching_counselors():
+    # Get the child_id from the session
+    logged_in_child_id = session.get('child_id')
+    option_value = request.form.get('option')
+
+    if option_value == '0':
+        best_counselors_result = get_best_counselors()
+
+        result_html = ""
+
+        for i, child_result in enumerate(best_counselors_result):
+            child_id = child_result["child_id"]
+            top_counselors = child_result["top_counselors"]
+
+            # Check if the current child_id matches the logged-in child_id
+            if logged_in_child_id and child_id != logged_in_child_id:
+                continue
+
+            if top_counselors:
+                for j, counselor_info in enumerate(top_counselors):
+                    co_id = counselor_info["co_id"]
+                    co_name = counselor_info["co_name"]
+                    co_consulting = counselor_info["co_consulting"]
+                    total_score = counselor_info["total_score"]
+
+                    
+
+                    result_html += f"""
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-lg-6 mt-4">
+                            <div class="member d-flex align-items-start" data-counselor-id="{co_id}">
+                                <div class="teampic">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
+                                </div>
+                                <div class="member-info">
+                                    <h4>{co_name}</h4>
+                                    <hr class="my-1">
+                                    
+                                    <p>{co_consulting}</p>
+                                    <p>Total Score: {total_score}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    """
+            else:
+                result_html += f"일치하는 상담사가 없습니다: {child_id}<br>"
+
+        return result_html
+        
+    elif option_value == '1':
+        child_survey_consulting = get_all_child_survey_consulting()
+        counselor_survey_consulting = get_all_counselor_survey_consulting()
+
+        result_html = ""
+
+        for child_row in child_survey_consulting:
+            child_id, child_consulting = child_row
+
+            # Check if the current child_id matches the logged-in child_id
+            if logged_in_child_id and child_id != logged_in_child_id:
+                continue
+
+            matching_counselors = [
+                (co_id, co_consulting, co_name) for co_id, co_consulting, co_name in counselor_survey_consulting
+                if all(survey_consulting in co_consulting.split(', ') for survey_consulting in child_consulting.split(', '))
+            ]
+
+            if matching_counselors:
+                for co_id, co_consulting, co_name in matching_counselors:
+                    result_html += f"""
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-lg-6 mt-4">
+                            <div class="member d-flex align-items-start" data-counselor-id="{co_id}">
+                                <div class="teampic">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
+                                </div>
+                                <div class="member-info">
+                                    <h4> {co_name}</h4>
+                                    <hr class="my-1">
+                                    
+                                    
+                                    <p>{co_consulting}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    """
+            else:
+                result_html += f"일치하는 상담사가 없습니다: {child_id}<br>"
+
+        return result_html
+
+    elif option_value == '2':
+        try:
+            # SQL 쿼리
+            query = """
+                SELECT
+                    c.child_id,
+                    c.child_name,
+                    r.co_id,
+                    r.co_name,
+                    SUM(CASE
+                        WHEN r.consulting_priority = c.survey_priority_1 THEN 5
+                        WHEN r.consulting_priority = c.survey_priority_2 THEN 4
+                        WHEN r.consulting_priority = c.survey_priority_3 THEN 3
+                        WHEN r.consulting_priority = c.survey_priority_4 THEN 2
+                        ELSE 0
+                    END) AS total_rating
+                FROM
+                    CHILD_INFO.child_info_list c
+                JOIN
+                    REVIEW.review_list r ON c.survey_priority_1 = r.consulting_priority
+                    OR c.survey_priority_2 = r.consulting_priority
+                    OR c.survey_priority_3 = r.consulting_priority
+                    OR c.survey_priority_4 = r.consulting_priority
+                GROUP BY
+                    c.child_id, c.child_name, r.co_id, r.co_name
+                ORDER BY
+                    total_rating DESC;
+            """
+            # 쿼리 문자열을 출력해봅니다.
+
+            # 쿼리 실행
+            result = child_infodb.execute(query)
+
+            # 결과를 HTML로 가공
+            result_html = ""
+            for row in result:
+                child_id, child_name, co_id, co_name, total_rating = row
+
+                # Check if the current child_id matches the logged-in child_id
+                if logged_in_child_id and child_id != logged_in_child_id:
+                    continue
+
+                result_html += f"""
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-lg-6 mt-4">
+                            <div class="member d-flex align-items-start" data-counselor-id="{co_id}">
+                                <div class="teampic">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
+                                </div>
+                                <div class="member-info">
+                                    <h4>{co_name}</h4>
+                                    <hr class="my-1">
+                                    
+                                    <p>Total Score: {total_rating}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                """
+            # HTML 결과를 클라이언트에게 전달
+            return result_html
+
+        except Exception as e:
+            print(f"Error calculating total rating: {e}")
+            return None
+
+    # MBTI 궁합순 상담사 추천
+    elif option_value == '3':
+        try:
+            query_child = """
+            SELECT child_id, child_mbti FROM CHILD_INFO.child_info_list
+            """
+            query_counselor = """
+            SELECT co_id, co_mbti, co_name FROM COUNSELOR.counselor_list
+            """
+            result_child = child_infodb.execute(query_child)
+            result_counselor = counselordb.execute(query_counselor)
+            
+            result_html = ""
+            # Compatibility 함수를 이용하여 Child_mbti와 co_mbti 값의 궁합 점수 확인
+            comp_results = []
+            for child_id, child_mbti in result_child:
+                for co_id, co_mbti, co_name in result_counselor:
+                    comp_result = Compatibility(child_mbti, co_mbti)
+                    
+                    if comp_result is not None:
+                        comp_results.append((child_id, co_id, co_name, comp_result))
+            
+            sorted_counselor = sorted(comp_results, key=lambda x:x[3], reverse=True)
+
+            for child_id, co_id, co_name, comp_result in sorted_counselor:
+                        result_html += f"""
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-lg-6 mt-4">
+                                    <div class="member d-flex align-items-start" data-counselor-id="{co_id}">
+                                        <div class="teampic">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
+                                        </div>
+                                        <div class="member-info">
+                                            <h4>{co_name}</h4>
+                                            <hr class="my-1">                                 
+                                            <p>{'❤️' * comp_result}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        """
+
+            return result_html
+
+        except Exception as e:
+            print(f"평균 호환성 계산 중 오류 발생: {e}")
+            return None
+
+    elif option_value == '4':
+        try:
+        # SQL 쿼리
+            query = """
+            SELECT co_name, co_id, AVG(consulting_scope) AS avg_consulting_scope
+            FROM REVIEW.review_list
+            GROUP BY co_id, co_name
+            ORDER BY avg_consulting_scope DESC;
+        """
+
+        # 쿼리 실행
+            result = review_listdb.execute(query)
+
+        # 결과를 HTML로 가공
+            result_html = ""
+            for row in result:
+                co_name, co_id, avg_consulting_scope = row
+                star_rating = round(avg_consulting_scope)
+
+                result_html += f"""
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-6 mt-4">
+                        <div class="member d-flex align-items-start" data-counselor-id="{co_id}">
+                            <div class="teampic">
+                                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" class="img-fluid" alt="">
+                            </div>
+                            <div class="member-info">
+                                <h4>{co_name}</h4>
+                                <hr class="my-1">
+                                
+                                <p>{star_rating}</p>
+                                <div class="review-flex">
+                                    {'⭐' *  star_rating}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                """
+
+            return result_html
+
+        except Exception as e:
+            print(f"Error calculating average consulting scope: {e}")
+            return None
+    return render_template('user/mbti_match.html')
+
+@app.route('/timetable')
+def timetable():
     counselor_id = request.args.get('counselorId')
     if not counselor_id:
         return "상담사 ID가 제공되지 않았습니다.", 400
@@ -1845,16 +1174,15 @@ def get_counselor_schedule():
         app.logger.error(f"Error fetching schedule: {e}")
         return "서버 오류가 발생했습니다.", 500
 
-    return render_template('user/get_counselor_schedule.html', counselor_id=counselor_id, reserved_timeslots=reserved_timeslots, available_timeslots=available_timeslots)
-
+    return render_template('user/timetable.html', counselor_id=counselor_id, reserved_timeslots=reserved_timeslots, available_timeslots=available_timeslots)
 
 @app.route('/reserve_timeslot', methods=['POST'])
 def reserve_timeslot():
     data = request.get_json()
     app.logger.info(f"Received data: {data}")  # 수신된 데이터 로그 출력
 
-    # 세션에서 child_id 가져오기
-    child_id = session.get('child_id')
+    # 세션에서 child_name 가져오기
+    child_id = session.get('child_name')
     counselor_id = data.get('counselorId')
     day = data.get('day')
     start = data.get('start')
@@ -1870,54 +1198,45 @@ def reserve_timeslot():
         start_time = datetime.strptime(start, '%H:%M').time()
         end_time = datetime.strptime(end, '%H:%M').time()
 
-        # 현재 배정된 상담사 확인
-        check_co_query = """
-            SELECT co_id FROM child_info_list
-            WHERE child_id = %s
-        """
-        child_infodb_cursor = child_infodb.get_cursor()
-        child_infodb_cursor.execute(check_co_query, (child_id,))
-        current_co_id_result = child_infodb_cursor.fetchone()
-
-        if current_co_id_result:
-            current_co_id = current_co_id_result[0]
-            if current_co_id and current_co_id != counselor_id:
-                app.logger.error("Child already assigned to a different counselor")
-                child_infodb_cursor.close()  # 커서 닫기
-                return jsonify({"error": "이미 다른 상담사에게 배정된 아동입니다."}), 400
-        else:
-            # co_id가 없으면 삽입
-            insert_co_query = """
-                INSERT INTO child_info_list (child_id, co_id)
-                VALUES (%s, %s)
-            """
-            child_infodb_cursor.execute(insert_co_query, (child_id, counselor_id))
-
         # 중복 예약 확인
         check_query = """
             SELECT COUNT(*) FROM schedule_list
-            WHERE co_id = %s AND child_id = %s AND day_of_week = %s
+            WHERE child_id = %s
         """
         cursor = schedule_listdb.get_cursor()
-        cursor.execute(check_query, (counselor_id, child_id, day))
+        cursor.execute(check_query, (child_id,))
         count = cursor.fetchone()[0]
 
         if count > 0:
-            app.logger.error("Duplicate entry found")
-            cursor.close()  # 커서 닫기
-            return jsonify({"error": "동일한 요일에는 예약을 할 수 없습니다."}), 400
+            # 업데이트 쿼리
+            update_query = """
+                UPDATE schedule_list
+                SET co_id = %s, day_of_week = %s, start_time = %s, end_time = %s, consultation_code = %s
+                WHERE child_id = %s
+            """
+            consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
+            cursor.execute(update_query, (counselor_id, day, start_time, end_time, consultation_code, child_id))
+            schedule_listdb.conn.commit()
+        else:
+            # 삽입 쿼리
+            insert_query = """
+                INSERT INTO schedule_list (co_id, child_id, day_of_week, start_time, end_time, consultation_code)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
+            cursor.execute(insert_query, (counselor_id, child_id, day, start_time, end_time, consultation_code))
+            schedule_listdb.conn.commit()
 
-        # 상담 코드를 포함하여 새로운 일정 항목을 데이터베이스에 삽입하는 SQL 쿼리
-        consultation_code = random.choice(string.ascii_uppercase) + ''.join(random.choices(string.digits, k=5))
-
-        insert_query = """
-            INSERT INTO schedule_list (co_id, child_id, day_of_week, start_time, end_time, consultation_code)
-            VALUES (%s, %s, %s, %s, %s, %s)
+        # CHILD_INFO.child_info_list 테이블에 co_id 업데이트
+        update_query_child_info = """
+            UPDATE child_info_list
+            SET co_id = %s
+            WHERE child_id = %s
         """
-        cursor.execute(insert_query, (counselor_id, child_id, day, start_time, end_time, consultation_code))
-        
-        schedule_listdb.conn.commit()  # 트랜잭션 커밋
-        child_infodb.conn.commit()  # 트랜잭션 커밋
+        child_infodb_cursor = child_infodb.get_cursor()
+        child_infodb_cursor.execute(update_query_child_info, (counselor_id, child_id))
+        child_infodb.conn.commit()
+
         cursor.close()  # 커서 닫기
         child_infodb_cursor.close()  # 커서 닫기
 
@@ -1925,7 +1244,6 @@ def reserve_timeslot():
     except Exception as e:
         app.logger.error(f"Error reserving timeslot: {e}")
         return jsonify({"error": "서버 오류가 발생했습니다."}), 500
-
 
 
 @app.route('/mbti_result') 
@@ -1961,6 +1279,7 @@ def mbti_test_html():
 
 @app.route('/user_counseling') 
 def user_counseling_html():
+    
     return render_template('user/user_counseling.html')
 
 @app.route('/chat') 
@@ -2191,7 +1510,7 @@ def review_check():
     if search_query:
         query += f" OR c.co_name LIKE '%{search_query}%'"
 
-    query += " GROUP BY c.co_id ORDER BY c.co_name;"
+    query += " GROUP BY c.co_name, c.co_mbti, c.co_consulting ORDER BY c.co_name;"
 
     # DB 쿼리 실행
     result = review_listdb.execute(query)
@@ -2234,7 +1553,7 @@ def review_all():
         JOIN
             COUNSELOR.counselor_list c ON c.co_name = r.co_name
         GROUP BY 
-            c.co_id
+            c.co_name, c.co_mbti, c.co_consulting
         ORDER BY 
             c.co_name;
     """
