@@ -1937,26 +1937,31 @@ def mbti_result_html():
 
 @app.route('/save_mbti_result', methods=['POST'])
 def save_mbti_result():
-    child_id = session.get('child_id')
-    if child_id:
-        try:
-            data = request.get_json()  # JSON 데이터 가져오기
-            child_mbti = data.get('result') 
-            insert_query = f"""
-                UPDATE CHILD_INFO.child_info_list 
-                SET child_mbti = '{child_mbti}' 
-                WHERE child_id = '{child_id}';
-            """
-            child_infodb.insert(insert_query)
-            return "저장 완료"
+    try:
+        child_id = session.get('child_id')
+        if not child_id:
+            return jsonify({"error": "로그인을 해주세요."}), 401
 
-        except Exception as e:
-            error_message = '오류가 발생했습니다.'
-            print(f"Error Type: {type(e)}")
-            print(f"Error Details: {e.args}")
-            return "오류가 발생하여 MBTI 저장에 실패했습니다."
-    else:
-        return "로그인을 해주세요."
+        data = request.get_json()  # JSON 데이터 가져오기
+        child_mbti = data.get('result') 
+
+        if not child_mbti:
+            return jsonify({"error": "MBTI 결과가 제공되지 않았습니다."}), 400
+
+        insert_query = f"""
+            UPDATE CHILD_INFO.child_info_list 
+            SET child_mbti = '{child_mbti}' 
+            WHERE child_id = '{child_id}';
+        """
+        child_infodb.insert(insert_query)
+        return jsonify({"message": "저장 완료"}), 200
+
+    except Exception as e:
+        error_message = '오류가 발생했습니다.'
+        print(f"Error Type: {type(e)}")
+        print(f"Error Details: {e}")
+        return jsonify({"error": "오류가 발생하여 MBTI 저장에 실패했습니다."}), 500
+
 
 @app.route('/mbti_test') 
 def mbti_test_html():
