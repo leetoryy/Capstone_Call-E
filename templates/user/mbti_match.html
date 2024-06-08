@@ -5,130 +5,93 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
+    <!-- boxicon -->
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
     <!-- CSS -->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{{ url_for('static', filename='css/user/mbti_match.css') }}"
-    />
-    <!-- Bootstrap LINK -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
-    />
-    <!-- font-awesome LINK -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
-    />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user/mbti_match.css') }}" />
   </head>
   <body>
-    <section id="team" class="team section-bg">
-      <div class="section-title">
-        <h2>상담사 매칭</h2>
-        <p>원하시는 상담사를 선택해주세요</p>
+    <header>
+      <img src="/static/images/icon3.png" alt="Call-E" id="logo" />
+      <span id="userNameSpan">{{ session['child_name'] }} 님</span>
+      <div class="header-flex">
+        <input type="text" placeholder=" 원하는 콘텐츠를 검색해보세요" id="search-bar" />
+        <i class="bx bx-search"></i>
       </div>
-      <div class="container">
-        <div class="row d-flex justify-content-center">
-          <select class="form-select" aria-label="Default select example">
-            <option value="0" selected>Call-E 추천순</option>
-            <option value="1">고민연관순</option>
-            <option value="2">사전설문 우선순</option>
-            <option value="3">MBTI 궁합순</option>
-            <option value="4">상담 만족도순</option>
-          </select>
+      <div class="header-right">
+        <i class="bx bxs-user-circle" id="user-icon"></i>
+        <i class="bx bxs-bell" id="alarm-icon"></i>
+        <a href="/user_home"><i class="bx bxs-home" id="home-icon"></i></a>
+      </div>
+    </header>
+    <div class="container">
+      <div class="card">
+        <div class="left-section">
+          <div class="lists-header">
+            <p>상담사 추천 리스트</p>
+          </div>
+          <input type="text" placeholder="상담사 이름 검색" id="search-consultant" />
+          <div class="filter-tags">
+            <button class="filter-tag" id="call-e" value="0">Call-E 추천순</button>
+            <button class="filter-tag" id="concern" value="1">고민연관순</button>
+            <button class="filter-tag" id="mbti" value="2">MBTI 궁합순</button>
+            <button class="filter-tag" id="review" value="3">상담 만족도순</button>
+            <button class="filter-tag" id="survey" value="4">사전설문 우선순</button>
+          </div>
         </div>
-        <div class="container" id="counselors-container"></div>
-      </div>
-    </section>
-    <!-- 상담사 상세 정보 모달 -->
-    <div
-      class="modal fade"
-      id="counselorModal"
-      tabindex="-1"
-      aria-labelledby="counselorModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="counselorModalLabel">상담 가능 시간</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+        <div class="right-section">
+          <div class="lists-header">
+            <span>모든 상담사 {{ reviews|length }}명</span>
           </div>
-          <div class="modal-body">
-            <!-- 상담 가능한 시간표 정보를 동적으로 채웁니다 -->
-            <iframe
-              id="scheduleFrame"
-              style="width: 100%; height: 500px"
-              frameborder="0"
-              src=""
-            ></iframe>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              닫기
-            </button>
-          </div>
+          <div class="lists">
+            {% for review in reviews %}
+            <a class="list" href="/mbti_match_detail/{{ review.co_id}}">
+              <img src="/static/images/profile.png" alt="Profile" class="profile-pic" />
+              <div class="list-text">
+                <span class="list-name">{{ review.co_name }}</span>
+                <span class="list-rating"><i class="bx bxs-star"></i>{{ review.avg_consulting_scope }}</span>
+                <p>{{ review.co_mbti }}</p>
+              </div>
+              <div class="list-details">
+                <p>{{ review.co_consulting }}</p>
+                <p>{{ review.consulting_priorities }}</p>
+              </div>
+            </a>
+            {% endfor %}
+          </div>          
         </div>
       </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
-    <script>
-      $(document).ready(function () {
-        // 서버로부터 상담사 정보 업데이트
-        function updateCounselors(optionValue) {
-          $.ajax({
-            url: "/mbti_match",
-            method: "POST",
-            data: { option: optionValue },
-            success: function (data) {
-              $("#counselors-container").html(data);
-            },
-            error: function () {
-              console.error("상담사 정보를 가져오는 중 오류가 발생했습니다.");
-            },
-          });
-        }
-
-        updateCounselors("0");
-
-        $("select.form-select").on("change", function () {
-          updateCounselors($(this).val());
-        });
-
-        // 이벤트 위임을 사용하여 동적으로 생성된 .member 요소에 대한 클릭 이벤트 처리
-        $(document).on("click", ".member", function () {
-          var counselorId = $(this).data("counselor-id");
-          console.log("Counselor ID: ", counselorId); // 콘솔에서 ID 확인
-          if (counselorId) {
-            $("#scheduleFrame").attr(
-              "src",
-              "/timetable?counselorId=" + counselorId
-            );
-
-            $("#counselorModal").modal("show");
-          } else {
-            alert("상담사 ID가 없습니다.");
-          }
-        });
-      });
-    </script>
+    
   </body>
 </html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const filterTags = document.querySelectorAll(".filter-tag");
+
+    filterTags.forEach((tag) => {
+        tag.addEventListener("click", function () {
+            filterTags.forEach((tag) => tag.classList.remove("active"));
+            this.classList.add("active");
+
+            const filterValue = this.getAttribute('value');
+            $.ajax({
+                url: "/mbti_match",
+                method: "POST",
+                data: { filter: filterValue },
+                success: function (response) {
+                    // Update the .lists element with the new HTML
+                    $(".lists").html(response.html);
+                    // Update the count of all counselors
+                    $(".lists-header span").text(`모든 상담사 ${response.count}명`);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                }
+            });
+        });
+    });
+});
+
+</script>
