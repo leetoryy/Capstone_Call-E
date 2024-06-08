@@ -71,3 +71,15 @@ schedule_list_conn = pymysql.connect(host='orion.mokpo.ac.kr',
                        db='COUNSELOR_SCHEDULE', 
                        charset='utf8')
 schedule_list_cur = schedule_list_conn.cursor()
+
+#=====
+journal_list_conn = None
+journal_list_cur = None
+
+journal_list_conn = pymysql.connect(host='orion.mokpo.ac.kr',
+                       port=8397,
+                       user='root',
+                       passwd='ScE1234**',
+                       db='JOURNAL', 
+                       charset='utf8')
+journal_list_cur = journal_list_conn.cursor()

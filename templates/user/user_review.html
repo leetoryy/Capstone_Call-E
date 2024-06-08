@@ -21,7 +21,7 @@
       <div class="header-right">
         <i class="bx bxs-user-circle" id="user-icon"></i>
         <i class="bx bxs-bell" id="alarm-icon"></i>
-        <i class="bx bxs-home" id="home-icon"></i>
+        <a href="/user_home"><i class="bx bxs-home" id="home-icon"></i></a>
       </div>
     </header>
     <div class="container">
@@ -86,21 +86,6 @@
                   <input type="checkbox" id="area9" checked />
                   <label for="area9" class="cb1"></label>
                   <label>위기대응 및 안정화</label>
-                </div>
-              </div>
-            </div>
-            <div class="filter-group">
-              <div class="filter-category">성별</div>
-              <div class="input-group-checkbox">
-                <div class="checkbox-group3">
-                  <input type="checkbox" id="area10" checked />
-                  <label for="area10" class="cb1"></label>
-                  <label>남자</label>
-                </div>
-                <div class="checkbox-group3">
-                  <input type="checkbox" id="area11" checked />
-                  <label for="area11" class="cb1"></label>
-                  <label>여자</label>
                 </div>
               </div>
             </div>
@@ -281,110 +266,109 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
   function updateResultsCount() {
-    var resultCount = $('.list').length;
-    $('#results-count').text('검색결과 ' + resultCount + '건');
-}
+    var resultCount = $(".list").length;
+    $("#results-count").text("검색결과 " + resultCount + "건");
+  }
 
-$(document).ready(function() {
+  $(document).ready(function () {
     // 초기 로드 시 서버에서 데이터를 가져옴
     $.ajax({
-        url: '/reviewall',
-        method: 'POST',
-        success: function(response) {
-            $('.lists').html(response);
-            updateResultsCount();
-        },
-        error: function(xhr, status, error) {
-            console.error("Error occurred: " + error);
-        }
+      url: "/reviewall",
+      method: "POST",
+      success: function (response) {
+        $(".lists").html(response);
+        updateResultsCount();
+      },
+      error: function (xhr, status, error) {
+        console.error("Error occurred: " + error);
+      },
+    });
   });
-});
 
-$(document).ready(function() {
-    $('.reset-filters').click(function() {
-        $('input[type="checkbox"]').prop('checked', true);
+  $(document).ready(function () {
+    $(".reset-filters").click(function () {
+      $('input[type="checkbox"]').prop("checked", true);
+      $.ajax({
+        url: "/reviewall",
+        method: "POST",
+        success: function (response) {
+          $(".lists").html(response);
+          updateResultsCount();
+        },
+        error: function (xhr, status, error) {
+          console.error("Error occurred: " + error);
+        },
+      });
+    });
+
+    $('.checkbox-group1 input[type="checkbox"], .checkbox-group2 input[type="checkbox"], .checkbox-group4 input[type="checkbox"]').change(function () {
+      var $group = $(this).closest(".input-group-checkbox");
+      var isChecked = $group.find('input[type="checkbox"]:checked').length > 0;
+      if (!isChecked) {
+        $(this).prop("checked", true);
+        alert("각 항목에서 최소 한 개의 옵션을 선택해야 합니다.");
+      }
+      sendData();
+    });
+
+    $("#search-consultant").on("input", function () {
+      var searchQuery = $(this).val().trim(); // 입력란의 값을 가져옴
+      if (searchQuery.length > 2) {
+        // 최소 3자 이상 입력될 때만 요청 보냄
         $.ajax({
-            url: '/reviewall',
-            method: 'POST',
-            success: function(response) {
-                $('.lists').html(response);
-                updateResultsCount();
-            },
-            error: function(xhr, status, error) {
-                console.error("Error occurred: " + error);
-            }
+          url: "/reviewcheck",
+          type: "POST",
+          data: { searchQuery: searchQuery },
+          success: function (response) {
+            $(".lists").html(response); // 서버로부터 받은 응답으로 리스트를 업데이트
+            updateResultsCount();
+          },
+          error: function (xhr, status, error) {
+            console.log("Error:", error);
+          },
         });
-    });
-
-    $('.checkbox-group1 input[type="checkbox"], .checkbox-group2 input[type="checkbox"], .checkbox-group4 input[type="checkbox"]').change(function() {
-        var $group = $(this).closest('.input-group-checkbox');
-        var isChecked = $group.find('input[type="checkbox"]:checked').length > 0;
-        if (!isChecked) {
-            $(this).prop('checked', true);
-            alert('각 항목에서 최소 한 개의 옵션을 선택해야 합니다.');
-        }
-        sendData();
-    });
-
-    $('#search-consultant').on('input', function() {
-        var searchQuery = $(this).val().trim();  // 입력란의 값을 가져옴
-        if (searchQuery.length > 2) {  // 최소 3자 이상 입력될 때만 요청 보냄
-            $.ajax({
-                url: '/reviewcheck',
-                type: 'POST',
-                data: { 'searchQuery': searchQuery },
-                success: function(response) {
-                    $('.lists').html(response);  // 서버로부터 받은 응답으로 리스트를 업데이트
-                    updateResultsCount();
-                },
-                error: function(xhr, status, error) {
-                    console.log('Error:', error);
-                }
-            });
-        }
+      }
     });
 
     function sendData() {
-        var consultationAreas = [];
-        var keywords = [];
-        var mbti = [];
+      var consultationAreas = [];
+      var keywords = [];
+      var mbti = [];
 
-        $('.checkbox-group1 input[type="checkbox"]:checked').each(function() {
-            var labelText = $(this).siblings('label').last().text().trim();
-            consultationAreas.push(labelText);
-        });
+      $('.checkbox-group1 input[type="checkbox"]:checked').each(function () {
+        var labelText = $(this).siblings("label").last().text().trim();
+        consultationAreas.push(labelText);
+      });
 
-        $('.checkbox-group2 input[type="checkbox"]:checked').each(function() {
-            var labelText = $(this).siblings('label').last().text().trim();
-            keywords.push(labelText);
-        });
+      $('.checkbox-group2 input[type="checkbox"]:checked').each(function () {
+        var labelText = $(this).siblings("label").last().text().trim();
+        keywords.push(labelText);
+      });
 
-        $('.checkbox-group4 input[type="checkbox"]:checked').each(function() {
-            var labelText = $(this).siblings('label').last().text().trim();
-            mbti.push(labelText);
-        });
+      $('.checkbox-group4 input[type="checkbox"]:checked').each(function () {
+        var labelText = $(this).siblings("label").last().text().trim();
+        mbti.push(labelText);
+      });
 
-        $.ajax({
-            url: '/reviewcheck',
-            type: 'POST',
-            data: {
-                'consultationAreas': consultationAreas,
-                'keywords': keywords,
-                'mbti': mbti,
-                'searchQuery': $('#search-consultant').val().trim()
-            },
-            success: function(response) {
-              $('.lists').html(response);
-              updateResultsCount();
-            },
-            error: function(xhr, status, error) {
-                console.log('Error:', error);
-            }
-        });
+      $.ajax({
+        url: "/reviewcheck",
+        type: "POST",
+        data: {
+          consultationAreas: consultationAreas,
+          keywords: keywords,
+          mbti: mbti,
+          searchQuery: $("#search-consultant").val().trim(),
+        },
+        success: function (response) {
+          $(".lists").html(response);
+          updateResultsCount();
+        },
+        error: function (xhr, status, error) {
+          console.log("Error:", error);
+        },
+      });
     }
 
-    
-
     updateResultsCount();
-});
+  });
 </script>

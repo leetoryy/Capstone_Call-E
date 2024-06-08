@@ -39,7 +39,7 @@
           <a href="/counsel_schedule"><i class="bx bxs-notepad icon"></i> 일정 확인 </a>
         </li>
         <li>
-          <a href="/counsel_counseling"><i class="bx bxs-video-plus icon"></i> 상담 진행 </a>
+          <a href="/counsel_review"><i class="bx bxs-star-half icon"></i> 리뷰 조회 </a>
         </li>
       </ul>
     </section>
@@ -90,66 +90,22 @@
               <h2>상담 일지 조회</h2>
               <box-icon name="down-arrow-alt"></box-icon>
             </div>
+            <div class="input-search">
+              <input type="date" id="dateInput" />
+              <input type="text" id="searchInput" placeholder="아동 이름을 검색하세요" />
+              <i class="bx bx-search icon" id="searchIcon" style="cursor: pointer"></i>
+            </div>
             <div class="table-list">
               <table class="table-fill">
                 <thead class="table-head">
                   <tr>
                     <th class="text-center" style="cursor: pointer" onclick="sortTable(0)">제목 <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(1)">아동이름 <i class="bx bxs-chevron-down"></i></th>
-                    <th class="text-center" style="cursor: pointer" onclick="sortTable(2)">상담분야 <i class="bx bxs-chevron-down"></i></th>
+                    <th class="text-center" style="cursor: pointer" onclick="sortTable(1)">아동 이름 <i class="bx bxs-chevron-down"></i></th>
+                    <th class="text-center" style="cursor: pointer" onclick="sortTable(2)">상담 분야 <i class="bx bxs-chevron-down"></i></th>
                     <th class="text-center" style="cursor: pointer" onclick="sortTable(3)">날짜 <i class="bx bxs-chevron-down"></i></th>
                   </tr>
                 </thead>
-                <tbody class="table-hover">
-                  <tr>
-                    <td class="text-center">MBTI 검사 결과</td>
-                    <td class="text-center">강아동</td>
-                    <td class="text-center">발달 상담</td>
-                    <td class="text-center">2024.05.13</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">최근 고민</td>
-                    <td class="text-center">임아동</td>
-                    <td class="text-center">발달 상담</td>
-                    <td class="text-center">2024.05.13</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">현재 심리 상태</td>
-                    <td class="text-center">박아동</td>
-                    <td class="text-center">학교 상담</td>
-                    <td class="text-center">2024.05.12</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">MBTI 검사 결과</td>
-                    <td class="text-center">이아동</td>
-                    <td class="text-center">학교 상담</td>
-                    <td class="text-center">2024.05.12</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">현재 심리 상태</td>
-                    <td class="text-center">이아동</td>
-                    <td class="text-center">학교 상담</td>
-                    <td class="text-center">2024.05.12</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">MBTI 검사 결과</td>
-                    <td class="text-center">최아동</td>
-                    <td class="text-center">발달 상담</td>
-                    <td class="text-center">2024.05.11</td>
-                  </tr>
-
-                  <tr>
-                    <td class="text-center">MBTI 검사 결과</td>
-                    <td class="text-center">김아동</td>
-                    <td class="text-center">발달 상담</td>
-                    <td class="text-center">2024.05.11</td>
-                  </tr>
-                </tbody>
+                <tbody class="table-hover" id="journal-list"></tbody>
               </table>
             </div>
           </div>
@@ -161,5 +117,19 @@
     <!-- JS -->
     <script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/counselor/child_list.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascript/counselor/counsel_view.js') }}"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const table = document.querySelector(".table-hover");
+        table.addEventListener("click", function (e) {
+          const target = e.target.closest("tr");
+          if (target) {
+            const childId = target.getAttribute("data-child-id");
+            const consultingDay = target.getAttribute("data-consulting-day");
+            window.location.href = `/counsel_view_edit?child_id=${childId}&consulting_day=${consultingDay}`;
+          }
+        });
+      });
+    </script>
   </body>
 </html>

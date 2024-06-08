@@ -612,11 +612,11 @@ li.selected {
 .xyz::before {
   content: "";
   border-radius: 50%;
-  height: 15px;
-  width: 15px;
+  height: 12px;
+  width: 12px;
   background-color: rgb(170, 169, 169);
   position: absolute;
-  left: -30px;
+  left: -28px;
   top: 50%;
   transform: translateY(-50%);
 }
@@ -643,12 +643,12 @@ li.selected {
 }
 
 .timeline-time {
-  font-weight: bold; 
+  font-weight: bold;
   margin-right: 10px;
 }
 
 .timeline-content {
-  font-weight: normal; 
+  font-weight: normal;
 }
 
 /* 타임라인 */
@@ -797,6 +797,41 @@ td.text-right {
   background-color: var(--primary-color);
   color: white;
 }
+
+.input-search {
+  position: relative;
+  float: right;
+  margin-bottom: 10px;
+}
+
+#dateInput {
+  font-size: 15px;
+  padding: 5px 10px;
+  border: 2px solid var(--grey);
+  background-color: var(--grey);
+  border-radius: 5px;
+  outline: none;
+  margin-right: 5px;
+}
+
+#searchInput {
+  width: 220px;
+  font-size: 15px;
+  padding: 6px 12px;
+  border: 2px solid var(--grey);
+  background-color: var(--grey);
+  border-radius: 5px;
+  outline: none;
+}
+
+.input-search .icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 16px;
+  color: var(--dark-grey);
+}
+
 /* MAIN */
 /* CONTENT */
 

@@ -23,12 +23,17 @@ class DBconnector:
         if self.conn is not None and self.conn.open:
             self.conn.close()
     
-    def execute(self, sql):
+    def execute(self, sql, params=None):
         self.__connect__()
-        self.cur.execute(sql)
-        result = self.cur.fetchall()  # 모든 결과를 받아옴
-        self.__disconnect__()
-        return result  # 결과 반환
+        try:
+            if params:
+                self.cur.execute(sql, params)
+            else:
+                self.cur.execute(sql)
+            result = self.cur.fetchall()
+            return result
+        finally:
+            self.__disconnect__()
         
     def fetch_all(self, sql):
         self.__connect__()

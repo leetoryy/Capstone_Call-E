@@ -4,17 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
-    <!-- favicon -->
     <link rel="icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
-    <!-- boxicon -->
     <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet" />
-    <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/counselor/counsel_schedule.css') }}" />
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css" rel="stylesheet" />
   </head>
   <body>
-    <!-- SIDEBAR -->
     <section id="sidebar">
       <a href="/counselor_home" class="brand"><img src="/static/images/icon.png" width="50" alt="" />Call-E</a>
       <ul class="side-menu">
@@ -40,13 +36,11 @@
           <a href="/counsel_schedule" class="active"><i class="bx bxs-notepad icon"></i> 일정 확인 </a>
         </li>
         <li>
-          <a href="/counsel_counseling"><i class="bx bxs-video-plus icon"></i> 상담 진행 </a>
+          <a href="/counsel_review"><i class="bx bxs-star-half icon"></i> 리뷰 조회 </a>
         </li>
       </ul>
     </section>
-    <!-- SIDEBAR -->
     <section id="content">
-      <!-- NAVBAR -->
       <nav>
         <i class="bx bx-menu toggle-sidebar"></i>
         <form action="#">
@@ -75,8 +69,6 @@
           </ul>
         </div>
       </nav>
-      <!-- NAVBAR -->
-      <!-- MAIN -->
       <main>
         <div class="data">
           <div class="content-data">
@@ -84,14 +76,38 @@
           </div>
         </div>
       </main>
-      <!-- MAIN -->
     </section>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction/main.min.js"></script>
-    <!-- JS -->
-    <script src="/static/javascript/counselor/counselor_home.js"></script>
-    <script src="/static/javascript/counselor/counsel_schedule.js"></script>
+    <script src="{{ url_for('static', filename='javascript/counselor/counselor_home.js') }}"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          var calendarEl = document.getElementById("calendar");
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+              initialView: "dayGridMonth",
+              headerToolbar: {
+                  left: "prev,next today",
+                  center: "title",
+                  right: "dayGridMonth,timeGridWeek,timeGridDay",
+              },
+              events: {{ schedule_events|tojson }},
+              editable: false, // 수정 비활성화
+              selectable: false, // 선택 비활성화
+              selectMirror: false, // 선택 미러링 비활성화
+              dayMaxEvents: true,
+              displayEventTime: false, // 시간 정보 표시 비활성화
+              select: function (arg) {
+                  // 선택 기능 비활성화
+              },
+              eventClick: function (arg) {
+                  // 클릭 이벤트 비활성화
+              },
+          });
+          calendar.render();
+          // 이벤트 데이터 콘솔에 출력
+          console.log("FullCalendar events data:", {{ schedule_events|tojson }});
+      });
+    </script>
   </body>
 </html>
