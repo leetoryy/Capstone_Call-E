@@ -106,7 +106,9 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'mbti_match'
       } else {
         // 실패한 경우에 대한 처리
-        console.error('Failed to update child MBTI');
+        response.json().then(data => {
+          console.error('Failed to update child MBTI:', data.error);
+        });
       }
     })
     .catch(error => {

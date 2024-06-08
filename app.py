@@ -329,23 +329,26 @@ def join_html():
 @app.route('/check_id_duplicate', methods=['POST'])
 def check_id_duplicate():
     try:
-        # 클라이언트로부터 전달된 아이디
-        child_id = request.form.get('child_id')
+        # 클라이언트로부터 전달된 아이디를 JSON 형식으로 받음
+        data = request.get_json()
+        child_id = data.get('child_id', None)
+
+        if not child_id:
+            raise ValueError("No child_id provided")
 
         # 데이터베이스에서 아이디 중복 확인
         query = f"SELECT COUNT(*) FROM CHILD.child_list WHERE child_id = '{child_id}'"
-        result = childdb.execute(query)
+        result = childdb.fetch_one(query)
 
         # 디버깅: 쿼리와 결과 확인
         print(f"Query: {query}")
         print(f"Query result: {result}")
 
-        # 결과가 없는 경우에 대한 예외 처리
-        if result is None or not result:
-            raise Exception(f"Query returned no result for child_id '{child_id}'. Full result: {result}")
+        if result is None:
+            raise Exception(f"Query returned no result for child_id '{child_id}'")
 
         # 결과를 JSON 형식으로 반환
-        is_duplicate = result[0][0] > 0
+        is_duplicate = result[0] > 0
         return jsonify({"query_result": result, "duplicate": is_duplicate})
 
     except Exception as e:
@@ -1934,26 +1937,31 @@ def mbti_result_html():
 
 @app.route('/save_mbti_result', methods=['POST'])
 def save_mbti_result():
-    child_id = session.get('child_id')
-    if child_id:
-        try:
-            data = request.get_json()  # JSON 데이터 가져오기
-            child_mbti = data.get('result') 
-            insert_query = f"""
-                UPDATE CHILD_INFO.child_info_list 
-                SET child_mbti = '{child_mbti}' 
-                WHERE child_id = '{child_id}';
-            """
-            child_infodb.insert(insert_query)
-            return "저장 완료"
+    try:
+        child_id = session.get('child_id')
+        if not child_id:
+            return jsonify({"error": "로그인을 해주세요."}), 401
 
-        except Exception as e:
-            error_message = '오류가 발생했습니다.'
-            print(f"Error Type: {type(e)}")
-            print(f"Error Details: {e.args}")
-            return "오류가 발생하여 MBTI 저장에 실패했습니다."
-    else:
-        return "로그인을 해주세요."
+        data = request.get_json()  # JSON 데이터 가져오기
+        child_mbti = data.get('result') 
+
+        if not child_mbti:
+            return jsonify({"error": "MBTI 결과가 제공되지 않았습니다."}), 400
+
+        insert_query = f"""
+            UPDATE CHILD_INFO.child_info_list 
+            SET child_mbti = '{child_mbti}' 
+            WHERE child_id = '{child_id}';
+        """
+        child_infodb.insert(insert_query)
+        return jsonify({"message": "저장 완료"}), 200
+
+    except Exception as e:
+        error_message = '오류가 발생했습니다.'
+        print(f"Error Type: {type(e)}")
+        print(f"Error Details: {e}")
+        return jsonify({"error": "오류가 발생하여 MBTI 저장에 실패했습니다."}), 500
+
 
 @app.route('/mbti_test') 
 def mbti_test_html():
