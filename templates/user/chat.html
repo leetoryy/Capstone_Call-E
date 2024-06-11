@@ -245,126 +245,170 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        var childID = getQueryParameter("child_id");
-        var counselor = getQueryParameter("counselor_id");
-        var videoId = counselor ? 'localVideo' : (childID ? 'remoteVideo' : null);
-        var penguinId = counselor ? 'penguin' : (childID ? 'penguin_child' : null);
-        
     
-        if (videoId) {
-            const videoElement = document.getElementById(videoId);
-            const canvasElement = document.getElementById('canvas');
-            const canvasCtx = canvasElement.getContext('2d');
-            const penguinElement = document.getElementById(penguinId);
-            let currentPenguinState = 'penguin1';
-            let eyeClosedCounter = 0;
-            let mouthOpenCounter = 0;
-            const stateChangeDelay = 500;
-    
-            const faceMesh = new FaceMesh({
-                locateFile: (file) => {
-                    return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
-                }
-            });
-    
-            faceMesh.setOptions({
-              maxNumFaces: 1,
-              refineLandmarks: true,
-              minDetectionConfidence: 0.5,
-              minTrackingConfidence: 0.5
-          });
-          
-          faceMesh.onResults(onResults);
-          
-          const camera = new Camera(videoElement, {
-              onFrame: async () => {
-                  await faceMesh.send({ image: videoElement });
-              },
-              width: 640,
-              height: 480
-          });
-          
-          function startCamera() {
-              camera.start();
-          }
-          
-          function processLandmarks(landmarks) {
-              const leftEyeUpper = landmarks[159];
-              const leftEyeLower = landmarks[145];
-              const rightEyeUpper = landmarks[386];
-              const rightEyeLower = landmarks[374];
-              const mouthUpper = landmarks[13];
-              const mouthLower = landmarks[14];
-          
-              const leftEyeOpen = leftEyeUpper.y < leftEyeLower.y - 0.01;
-              const rightEyeOpen = rightEyeUpper.y < rightEyeLower.y - 0.01;
-              const mouthOpen = mouthUpper.y < mouthLower.y - 0.02;
-          
-              let newPenguinState = currentPenguinState;
-          
-              if (leftEyeOpen && rightEyeOpen && !mouthOpen) {
-                  newPenguinState = 'penguin1';
-              } else if (leftEyeOpen && rightEyeOpen && mouthOpen) {
-                  mouthOpenCounter++;
-                  if (mouthOpenCounter > stateChangeDelay / 100) {
-                      newPenguinState = 'penguin2';
-                      mouthOpenCounter = 0;
-                  }
-              } else if (!leftEyeOpen && !rightEyeOpen && !mouthOpen) {
-                  eyeClosedCounter++;
-                  if (eyeClosedCounter > stateChangeDelay / 100) {
-                      newPenguinState = 'penguin3';
-                      eyeClosedCounter = 0;
-                  }
-              } else if (!leftEyeOpen && !rightEyeOpen && mouthOpen) {
-                  mouthOpenCounter++;
-                  if (mouthOpenCounter > stateChangeDelay / 100) {
-                      newPenguinState = 'penguin4';
-                      mouthOpenCounter = 0;
-                  }
-              } else {
-                  eyeClosedCounter = 0;
-                  mouthOpenCounter = 0;
-              }
-          
-              if (newPenguinState !== currentPenguinState) {
-                  currentPenguinState = newPenguinState;
-                  updatePenguinState();
-              }
-          }
-          
-          function updatePenguinState() {
-              penguinElement.style.backgroundImage = `url('/static/images/${currentPenguinState}.jpg')`;
-          }
-          
-          function onResults(results) {
-              if (results.multiFaceLandmarks.length > 0) {
-                  canvasCtx.save();
-                  canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-          
-                  const landmarks = results.multiFaceLandmarks[0];
-          
-                  drawConnectors(canvasCtx, landmarks, FACEMESH_TESSELATION,
-                      { color: '#C0C0C070', lineWidth: 1 });
-                  drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYE, { color: '#FF3030' });
-                  drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYEBROW, { color: '#FF3030' });
-                  drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYE, { color: '#30FF30' });
-                  drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYEBROW, { color: '#30FF30' });
-                  drawConnectors(canvasCtx, landmarks, FACEMESH_FACE_OVAL, { color: '#E0E0E0' });
-                  drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, { color: '#E0E0E0' });
-          
-                  processLandmarks(landmarks);
-          
-                  canvasCtx.restore();
-                }
-            }
-    
-            startCamera(); // 카메라를 시작하는 함수를 호출합니다.
+  document.addEventListener("DOMContentLoaded", function () {
+    var childID = getQueryParameter("child_id");
+    var counselor = getQueryParameter("counselor_id");
+    var videoId = counselor ? 'localVideo' : (childID ? 'remoteVideo' : null);
+    var penguinId = counselor ? 'penguin' : (childID ? 'penguin_child' : null);
+
+    if (videoId) {
+      const videoElement = document.getElementById(videoId);
+      const canvasElement = document.getElementById('canvas');
+      const canvasCtx = canvasElement.getContext('2d');
+      const penguinElement = document.getElementById(penguinId);
+      let currentPenguinState = 'penguin1';
+
+      const faceMesh = new FaceMesh({
+        locateFile: (file) => {
+          return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
         }
-    });
-    
-    </script>
+      });
+
+      const images = {};
+      const imageSources = [
+        'penguin1.png', 'penguin2.png', 'penguin3.png', 'penguin4.png',
+        'penguin5.png', 'penguin6.png', 'penguin7.png', 'penguin8.png',
+        'penguin9.png', 'penguin10.png', 'penguin11.png', 'penguin12.png',
+        'penguin13.png', 'penguin14.png', 'penguin15.png', 'penguin16.png',
+        'penguin17.png', 'penguin18.png'
+      ];
+
+      // Preload images
+      imageSources.forEach(src => {
+        const img = new Image();
+        img.src = `/static/images/penguin/${src}`;
+        images[src] = img;
+      });
+
+      faceMesh.setOptions({
+        maxNumFaces: 1,
+        refineLandmarks: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+
+      faceMesh.onResults(onResults);
+
+      const camera = new Camera(videoElement, {
+        onFrame: async () => {
+          await faceMesh.send({ image: videoElement });
+        },
+        width: 640,
+        height: 480
+      });
+
+      function startCamera() {
+        camera.start();
+      }
+
+      function onResults(results) {
+        if (results.multiFaceLandmarks.length > 0) {
+          const landmarks = results.multiFaceLandmarks[0];
+
+          const leftEyeUpper = landmarks[159];
+          const leftEyeLower = landmarks[145];
+          const rightEyeUpper = landmarks[386];
+          const rightEyeLower = landmarks[374];
+          const mouthUpper = landmarks[13];
+          const mouthLower = landmarks[14];
+          const noseTip = landmarks[1];
+          const leftCheek = landmarks[234];
+          const rightCheek = landmarks[454];
+
+          const leftEyeOpenRatio = (leftEyeLower.y - leftEyeUpper.y) / (leftEyeUpper.y + leftEyeLower.y);
+          const rightEyeOpenRatio = (rightEyeLower.y - rightEyeUpper.y) / (rightEyeUpper.y + rightEyeLower.y);
+
+          const leftEyeOpen = leftEyeOpenRatio > 0.1; // Lowered threshold
+          const rightEyeOpen = rightEyeOpenRatio > 0.1; // Lowered threshold
+
+          const mouthOpenRatio = (mouthLower.y - mouthUpper.y) / (mouthUpper.y + mouthLower.y);
+          const mouthOpen = mouthOpenRatio > 0.05; // Lowered threshold
+          const mouthSlightlyOpen = mouthOpenRatio > 0.025 && !mouthOpen; // Lowered threshold
+
+          // Calculate face direction using nose tip and eyes
+          const faceDirectionRatio = (landmarks[454].x - landmarks[234].x);
+          const faceMidpoint = (landmarks[454].x + landmarks[234].x) / 2;
+          const noseToMidpointRatio = noseTip.x - faceMidpoint;
+          let facing = 'center';
+
+          if (noseToMidpointRatio > faceDirectionRatio * 0.2) {
+            facing = 'right';
+          } else if (noseToMidpointRatio < -faceDirectionRatio * 0.2) {
+            facing = 'left';
+          }
+
+          let newPenguinState = currentPenguinState;
+
+          if (facing === 'center') {
+            if (leftEyeOpen && rightEyeOpen && !mouthOpen && !mouthSlightlyOpen) {
+              newPenguinState = 'penguin1';
+            } else if (leftEyeOpen && rightEyeOpen && mouthSlightlyOpen) {
+              newPenguinState = 'penguin2';
+            } else if (leftEyeOpen && rightEyeOpen && mouthOpen) {
+              newPenguinState = 'penguin3';
+            } else if (!leftEyeOpen && !rightEyeOpen && !mouthOpen && !mouthSlightlyOpen) {
+              newPenguinState = 'penguin4';
+            } else if (!leftEyeOpen && !rightEyeOpen && mouthSlightlyOpen) {
+              newPenguinState = 'penguin5';
+            } else if (!leftEyeOpen && !rightEyeOpen && mouthOpen) {
+              newPenguinState = 'penguin6';
+            }
+          } else if (facing === 'right') {
+            if (leftEyeOpen && rightEyeOpen && !mouthOpen && !mouthSlightlyOpen) {
+              newPenguinState = 'penguin7';
+            } else if (leftEyeOpen && rightEyeOpen && mouthSlightlyOpen) {
+              newPenguinState = 'penguin8';
+            } else if (leftEyeOpen && rightEyeOpen && mouthOpen) {
+              newPenguinState = 'penguin9';
+            } else if (!leftEyeOpen && !rightEyeOpen && !mouthOpen && !mouthSlightlyOpen) {
+              newPenguinState = 'penguin10';
+            } else if (!leftEyeOpen && !rightEyeOpen && mouthSlightlyOpen) {
+              newPenguinState = 'penguin11';
+            } else if (!leftEyeOpen && !rightEyeOpen && mouthOpen) {
+              newPenguinState = 'penguin12';
+            }
+          } else if (facing === 'left') {
+            if (leftEyeOpen && rightEyeOpen && !mouthOpen && !mouthSlightlyOpen) {
+              newPenguinState = 'penguin13';
+            } else if (leftEyeOpen && rightEyeOpen && mouthSlightlyOpen) {
+              newPenguinState = 'penguin14';
+            } else if (leftEyeOpen && rightEyeOpen && mouthOpen) {
+              newPenguinState = 'penguin15';
+            } else if (!leftEyeOpen && !rightEyeOpen && !mouthOpen && !mouthSlightlyOpen) {
+              newPenguinState = 'penguin16';
+            } else if (!leftEyeOpen && !rightEyeOpen && mouthSlightlyOpen) {
+              newPenguinState = 'penguin17';
+            } else if (!leftEyeOpen && !rightEyeOpen && mouthOpen) {
+              newPenguinState = 'penguin18';
+            }
+          }
+
+          if (newPenguinState !== currentPenguinState) {
+            currentPenguinState = newPenguinState;
+            penguinElement.style.backgroundImage = `url('/static/images/penguin/${currentPenguinState}.png')`;
+          }
+
+          canvasCtx.save();
+          canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+          drawConnectors(canvasCtx, landmarks, FACEMESH_TESSELATION,
+            { color: '#C0C0C070', lineWidth: 1 });
+          drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYE, { color: '#FF3030' });
+          drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYEBROW, { color: '#FF3030' });
+          drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYE, { color: '#30FF30' });
+          drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYEBROW, { color: '#30FF30' });
+          drawConnectors(canvasCtx, landmarks, FACEMESH_FACE_OVAL, { color: '#E0E0E0' });
+          drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, { color: '#E0E0E0' });
+
+          canvasCtx.restore();
+        }
+      }
+
+      startCamera();
+    }
+  });
+</script>
     
   </body>
 </html>

@@ -940,7 +940,7 @@ def survey_pre_html():
             child_infodb.insert(insert_query)
             print(f"Query: {insert_query}")
             
-            return render_template('user/mbti_home.html')
+            return render_template('counselor/join.html')
                 
         except Exception as e:
             error_message = '오류가 발생했습니다.'
