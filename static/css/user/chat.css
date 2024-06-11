@@ -27,6 +27,7 @@ h1 {
   align-items: center;
   min-height: 100vh;
   justify-content: center;
+  padding: 40px;
 }
 .centered-content h1 {
   font-size: 50px;
@@ -283,3 +284,54 @@ textarea {
 #saveReview:hover {
   background-color: #16382c;
 }
+
+.btn-danger {
+  margin: 0 10px;
+}
+
+
+#penguin {
+  display: inline-block;
+  width: 200px;
+  height: 200px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url('/static/images/penguin1.jpg');
+}
+
+#penguin_child {
+  display: inline-block;
+  width: 600px;
+  height: 470px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url('/static/images/penguin1.jpg');
+}
+
+
+.video-container {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.video-container video,
+.video-container #penguin,
+.video-container #canvas {
+  width: 200px;
+  height: 150px;
+}
+
+
+#canvas {
+  display: none;
+}
+
+
+
+
+
+
+

@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
     <link rel="icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
-	  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" rel="payload" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user/chat.css') }}" />
   </head>
@@ -23,14 +25,17 @@
           상담 코드를 입력해주세요
         </p>
         <div class="input-group input-group-lg" style="max-width: 400px">
-          <input id="roomName" type="text" class="form-control form-control-lg" placeholder="Enter room" />
+          <input id="roomName" type="text" class="form-control form-control-lg" placeholder="상담 코드 입력" />
           <button id="btnConnect" class="btn btn-primary btn-lg" type="button">참가하기</button>
         </div>
       </div>
-
+      
       <div id="roomDiv" class="d-none d-flex flex-column align-items-center mt-3">
+        
         <div id="remoteVideoContainer" style="width: 600px; height: 450px; display: flex; align-items: center; justify-content: center; background-color: #363636">
-          <video id="remoteVideo" autoplay style="width: 100%; height: 100%; object-fit: contain"></video>
+          <canvas id="canvas"></canvas>
+        <div id="penguin_child" class="d-none"></div>
+          <video id="remoteVideo" autoplay style="width: 100%; height: 100%; object-fit: contain" class ="d-none" ></video>
         </div>
 
         <div class="d-flex mt-3">
@@ -104,8 +109,13 @@
             </div>
           </div>
         </div>
-
-        <video muted id="localVideo" autoplay style="width: 200px; height: 200px; position: absolute; bottom: 20px; right: 20px"></video>
+        <!-- 상담자만 볼 수 있는 펭귄 div -->
+        <div class="video-container">
+          <video muted id="localVideo" autoplay></video>
+          <canvas id="canvas"></canvas>
+          <div id="penguin" class="d-none"></div>
+        </div>
+        
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js"></script>
@@ -154,14 +164,18 @@
             var modal = new bootstrap.Modal(document.getElementById("endCallModal"));
             modal.show();
           });
+          document.getElementById('penguin_child').classList.remove('d-none');
         } else if (counselor) {
           // counselor가 존재하는 경우 경고창을 띄웁니다.
           document.getElementById("endCall").addEventListener("click", function () {
             alert("돌아가서 상담일지를 작성해주세요.");
             window.location.href = "/counselor_home?counselor_id=" + encodeURIComponent(counselorId);
           });
+          document.getElementById('penguin').classList.remove('d-none'); // 상담자일 때 penguin div 표시
+          document.getElementById('remoteVideo').classList.remove('d-none');
         }
       });
+      
 
       document.getElementById("saveReview").addEventListener("click", function () {
         // 별점을 가져오는 코드
@@ -227,5 +241,130 @@
           });
       });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var childID = getQueryParameter("child_id");
+        var counselor = getQueryParameter("counselor_id");
+        var videoId = counselor ? 'localVideo' : (childID ? 'remoteVideo' : null);
+        var penguinId = counselor ? 'penguin' : (childID ? 'penguin_child' : null);
+        
+    
+        if (videoId) {
+            const videoElement = document.getElementById(videoId);
+            const canvasElement = document.getElementById('canvas');
+            const canvasCtx = canvasElement.getContext('2d');
+            const penguinElement = document.getElementById(penguinId);
+            let currentPenguinState = 'penguin1';
+            let eyeClosedCounter = 0;
+            let mouthOpenCounter = 0;
+            const stateChangeDelay = 500;
+    
+            const faceMesh = new FaceMesh({
+                locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+                }
+            });
+    
+            faceMesh.setOptions({
+              maxNumFaces: 1,
+              refineLandmarks: true,
+              minDetectionConfidence: 0.5,
+              minTrackingConfidence: 0.5
+          });
+          
+          faceMesh.onResults(onResults);
+          
+          const camera = new Camera(videoElement, {
+              onFrame: async () => {
+                  await faceMesh.send({ image: videoElement });
+              },
+              width: 640,
+              height: 480
+          });
+          
+          function startCamera() {
+              camera.start();
+          }
+          
+          function processLandmarks(landmarks) {
+              const leftEyeUpper = landmarks[159];
+              const leftEyeLower = landmarks[145];
+              const rightEyeUpper = landmarks[386];
+              const rightEyeLower = landmarks[374];
+              const mouthUpper = landmarks[13];
+              const mouthLower = landmarks[14];
+          
+              const leftEyeOpen = leftEyeUpper.y < leftEyeLower.y - 0.01;
+              const rightEyeOpen = rightEyeUpper.y < rightEyeLower.y - 0.01;
+              const mouthOpen = mouthUpper.y < mouthLower.y - 0.02;
+          
+              let newPenguinState = currentPenguinState;
+          
+              if (leftEyeOpen && rightEyeOpen && !mouthOpen) {
+                  newPenguinState = 'penguin1';
+              } else if (leftEyeOpen && rightEyeOpen && mouthOpen) {
+                  mouthOpenCounter++;
+                  if (mouthOpenCounter > stateChangeDelay / 100) {
+                      newPenguinState = 'penguin2';
+                      mouthOpenCounter = 0;
+                  }
+              } else if (!leftEyeOpen && !rightEyeOpen && !mouthOpen) {
+                  eyeClosedCounter++;
+                  if (eyeClosedCounter > stateChangeDelay / 100) {
+                      newPenguinState = 'penguin3';
+                      eyeClosedCounter = 0;
+                  }
+              } else if (!leftEyeOpen && !rightEyeOpen && mouthOpen) {
+                  mouthOpenCounter++;
+                  if (mouthOpenCounter > stateChangeDelay / 100) {
+                      newPenguinState = 'penguin4';
+                      mouthOpenCounter = 0;
+                  }
+              } else {
+                  eyeClosedCounter = 0;
+                  mouthOpenCounter = 0;
+              }
+          
+              if (newPenguinState !== currentPenguinState) {
+                  currentPenguinState = newPenguinState;
+                  updatePenguinState();
+              }
+          }
+          
+          function updatePenguinState() {
+              penguinElement.style.backgroundImage = `url('/static/images/${currentPenguinState}.jpg')`;
+          }
+          
+          function onResults(results) {
+              if (results.multiFaceLandmarks.length > 0) {
+                  canvasCtx.save();
+                  canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+          
+                  const landmarks = results.multiFaceLandmarks[0];
+          
+                  drawConnectors(canvasCtx, landmarks, FACEMESH_TESSELATION,
+                      { color: '#C0C0C070', lineWidth: 1 });
+                  drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYE, { color: '#FF3030' });
+                  drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYEBROW, { color: '#FF3030' });
+                  drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYE, { color: '#30FF30' });
+                  drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYEBROW, { color: '#30FF30' });
+                  drawConnectors(canvasCtx, landmarks, FACEMESH_FACE_OVAL, { color: '#E0E0E0' });
+                  drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, { color: '#E0E0E0' });
+          
+                  processLandmarks(landmarks);
+          
+                  canvasCtx.restore();
+                }
+            }
+    
+            startCamera(); // 카메라를 시작하는 함수를 호출합니다.
+        }
+    });
+    
+    </script>
+    
   </body>
 </html>

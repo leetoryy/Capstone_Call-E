@@ -730,7 +730,7 @@ def get_counsel_view_data():
     SELECT jl.co_id, jl.child_id, jl.consulting_day, jl.consulting_title, cl.child_name, cl.survey_consulting
     FROM JOURNAL.journal_list jl 
     JOIN CHILD_INFO.child_info_list cl ON cl.child_id = jl.child_id 
-    WHERE cl.co_id = %s
+    WHERE jl.co_id = %s
     """
     
     try:
@@ -1504,7 +1504,7 @@ def all_match(child_id):
                 END DESC;
  
     """
-    print(f"Executing all_match query with child_id: {child_id}")  # Debugging line
+    print(f"Executing all_match query with child_id: {child_id}")
     return counselordb.execute(query, (child_id,))
 
 

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
     <link rel="icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
-	  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
     <!-- boxicon -->
     <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
     <!-- CSS -->
@@ -30,7 +30,9 @@
       <div class="card">
         <div class="left-section">
           <div class="counselor-profile">
-            <div class="profile-picture"></div>
+            <div class="profile-picture">
+              <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile Picture" class="profile-img" />
+            </div>
             <div class="profile-details">
               <h2>{{ counselor_name }}</h2>
               <p>{{ counselor_consulting }}</p>

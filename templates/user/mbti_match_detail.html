@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
     <link rel="icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
-	  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
     <!-- boxicon -->
     <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
     <!-- CSS -->
@@ -34,9 +34,9 @@
             <h1>상담 시간 선택</h1>
           </div>
           <div class="text-ex">
-            <h4 class="line-spacing">1. 시간표를 클릭하여 시간을 선택할 수 있습니다.</h4>
-            <h4 class="line-spacing">2. 회색으로 칠해진 시간은 선택할 수 없습니다.</h4>
-            <h4 class="line-spacing">3. 상담 시간을 모두 선택하면 아래 버튼을 클릭합니다.</h4>
+            <h4 class="line-spacing">1. 시간표를 클릭하여 시간을 <br />선택할 수 있습니다.</h4>
+            <h4 class="line-spacing">2. 회색으로 칠해진 시간은 <br />선택할 수 없습니다.</h4>
+            <h4 class="line-spacing">3. 상담 시간을 모두 선택하면 <br />아래 버튼을 클릭합니다.</h4>
           </div>
           <div class="btns">
             <button class="btn-check apply">신청하기</button>
@@ -71,7 +71,7 @@
         </div>
       </div>
     </div>
-    <input type="hidden" id="co_id" value="{{ counselor_id }}">
+    <input type="hidden" id="co_id" value="{{ counselor_id }}" />
     <!-- JS -->
     <script src="{{ url_for('static', filename='javascript/user/match_timetable.js') }}"></script>
   </body>
