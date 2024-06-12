@@ -1963,6 +1963,8 @@ def save_mbti_result():
         return jsonify({"error": "오류가 발생하여 MBTI 저장에 실패했습니다."}), 500
 
 
+
+
 @app.route('/mbti_test') 
 def mbti_test_html():
     return render_template('user/mbti_test.html')
@@ -2045,7 +2047,7 @@ def handle_review_submission():
     reviewText = data['reviewText'].replace("'", "\\'")  # SQL 인젝션 방지를 위한 간단한 처리
     reviewDate = data['reviewDate']
     childID = data['childID']
-    counselorID = data['counselorID']
+    counselorId = data['counselorId']
     tags = data['tags'].replace("'", "\\'")  # SQL 인젝션 방지를 위한 간단한 처리
 
     # 데이터를 콘솔에 출력합니다.
@@ -2053,11 +2055,11 @@ def handle_review_submission():
     print('Received review text:', reviewText)
     print('Received review date:', reviewDate)
     print('Received child ID:', childID)
-    print('Received counselorID:', counselorID)
+    print('Received counselor:', counselorId)
     print('Received tags:', tags)
 
     # 상담사 이름을 조회합니다.
-    sql_query = f"SELECT co_name FROM COUNSELOR.counselor_list WHERE co_id = '{counselorID}';"
+    sql_query = f"SELECT co_name FROM COUNSELOR.counselor_list WHERE co_id = '{counselorId}';"
     results = counselordb.query(sql_query)
     if results:
         counselor_name = results[0][0]
@@ -2066,14 +2068,14 @@ def handle_review_submission():
         # 상담 정보를 데이터베이스에 저장합니다.
         insert_consulting_sql = f"""
         INSERT INTO consulting_list (child_id, co_id, consulting_day)
-        VALUES ('{childID}', '{counselorID}', '{reviewDate}');
+        VALUES ('{childID}', '{counselorId}', '{reviewDate}');
         """
         try:
             consulting_listdb.insert(insert_consulting_sql)
             # 리뷰 정보를 데이터베이스에 저장합니다.
             insert_review_sql = f"""
             INSERT INTO review_list (co_id, co_name, child_id, consulting_day, consulting_priority, consulting_scope, consulting_etc)
-            VALUES ('{counselorID}', '{counselor_name}', '{childID}', '{reviewDate}', '{tags}', '{rating}', '{reviewText}');
+            VALUES ('{counselorId}', '{counselor_name}', '{childID}', '{reviewDate}', '{tags}', '{rating}', '{reviewText}');
             """
             try:
                 review_listdb.insert(insert_review_sql)
