@@ -2034,6 +2034,7 @@ def handle_room_code():
     # 결과 반환
     if results:
         co_id = results[0][0]  # 첫 번째 행의 첫 번째 열 값만 추출
+        session['counselorId'] = co_id
         print(co_id)
         return jsonify({'co_id': co_id})
     else:
@@ -2047,8 +2048,9 @@ def handle_review_submission():
     reviewText = data['reviewText'].replace("'", "\\'")  # SQL 인젝션 방지를 위한 간단한 처리
     reviewDate = data['reviewDate']
     childID = data['childID']
-    counselorId = data['counselorId']
+    # counselorId = data['counselorId']
     tags = data['tags'].replace("'", "\\'")  # SQL 인젝션 방지를 위한 간단한 처리
+    counselorId = session.get('counselorId')
 
     # 데이터를 콘솔에 출력합니다.
     print('Received rating:', rating)
