@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
     <link rel="icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
-	  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" rel="payload" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user/chat.css') }}" />
   </head>
@@ -23,14 +25,17 @@
           상담 코드를 입력해주세요
         </p>
         <div class="input-group input-group-lg" style="max-width: 400px">
-          <input id="roomName" type="text" class="form-control form-control-lg" placeholder="Enter room" />
+          <input id="roomName" type="text" class="form-control form-control-lg" placeholder="상담 코드 입력" />
           <button id="btnConnect" class="btn btn-primary btn-lg" type="button">참가하기</button>
         </div>
       </div>
-
+      
       <div id="roomDiv" class="d-none d-flex flex-column align-items-center mt-3">
+        
         <div id="remoteVideoContainer" style="width: 600px; height: 450px; display: flex; align-items: center; justify-content: center; background-color: #363636">
-          <video id="remoteVideo" autoplay style="width: 100%; height: 100%; object-fit: contain"></video>
+          <canvas id="canvas"></canvas>
+        <div id="penguin_child" class="d-none"></div>
+          <video id="remoteVideo" autoplay style="width: 100%; height: 100%; object-fit: contain" class ="d-none" ></video>
         </div>
 
         <div class="d-flex mt-3">
@@ -104,8 +109,13 @@
             </div>
           </div>
         </div>
-
-        <video muted id="localVideo" autoplay style="width: 200px; height: 200px; position: absolute; bottom: 20px; right: 20px"></video>
+        <!-- 상담자만 볼 수 있는 펭귄 div -->
+        <div class="video-container">
+          <video muted id="localVideo" autoplay></video>
+          <canvas id="canvas"></canvas>
+          <div id="penguin" class="d-none"></div>
+        </div>
+        
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js"></script>
@@ -147,6 +157,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         var childID = getQueryParameter("child_id"); // URL에서 child_id 추출
         var counselor = getQueryParameter("counselor_id"); // URL에서 counselor 추출
+        console.log("상담사 아이디:", counselor);
 
         if (childID) {
           // child_id가 존재하는 경우에만 모달 관련 이벤트 리스너를 설정
@@ -154,14 +165,18 @@
             var modal = new bootstrap.Modal(document.getElementById("endCallModal"));
             modal.show();
           });
+          document.getElementById('penguin_child').classList.remove('d-none');
         } else if (counselor) {
           // counselor가 존재하는 경우 경고창을 띄웁니다.
           document.getElementById("endCall").addEventListener("click", function () {
             alert("돌아가서 상담일지를 작성해주세요.");
             window.location.href = "/counselor_home?counselor_id=" + encodeURIComponent(counselorId);
           });
+          document.getElementById('penguin').classList.remove('d-none'); // 상담자일 때 penguin div 표시
+          document.getElementById('remoteVideo').classList.remove('d-none');
         }
       });
+      
 
       document.getElementById("saveReview").addEventListener("click", function () {
         // 별점을 가져오는 코드
@@ -195,7 +210,7 @@
         // 여기서 childID는 어떤 방식으로든 URL 쿼리에서 가져옵니다.
         const childID = getQueryParameter("child_id"); // 이 함수가 정의되어 있어야 합니다.
         console.log("Child ID:", childID);
-        console.log("Counselor ID:", counselorId);
+        
 
         // 모든 필수 입력 항목을 확인합니다.
         if (!rating || reviewText === "" || selectedTags.length === 0) {
@@ -209,7 +224,7 @@
             "Content-Type": "application/json", // 내용 타입을 JSON으로 설정
           },
           body: JSON.stringify({
-            counselorID: counselorId,
+            //counselorId: counselorId,
             rating: rating,
             reviewText: reviewText,
             reviewDate: formattedDate,
@@ -227,5 +242,174 @@
           });
       });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script>
+    
+  document.addEventListener("DOMContentLoaded", function () {
+    var childID = getQueryParameter("child_id");
+    var counselor = getQueryParameter("counselor_id");
+    var videoId = counselor ? 'localVideo' : (childID ? 'remoteVideo' : null);
+    var penguinId = counselor ? 'penguin' : (childID ? 'penguin_child' : null);
+
+    if (videoId) {
+      const videoElement = document.getElementById(videoId);
+      const canvasElement = document.getElementById('canvas');
+      const canvasCtx = canvasElement.getContext('2d');
+      const penguinElement = document.getElementById(penguinId);
+      let currentPenguinState = 'penguin1';
+
+      const faceMesh = new FaceMesh({
+        locateFile: (file) => {
+          return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+        }
+      });
+
+      const images = {};
+      const imageSources = [
+        'penguin1.png', 'penguin2.png', 'penguin3.png', 'penguin4.png',
+        'penguin5.png', 'penguin6.png', 'penguin7.png', 'penguin8.png',
+        'penguin9.png', 'penguin10.png', 'penguin11.png', 'penguin12.png',
+        'penguin13.png', 'penguin14.png', 'penguin15.png', 'penguin16.png',
+        'penguin17.png', 'penguin18.png'
+      ];
+
+      // Preload images
+      imageSources.forEach(src => {
+        const img = new Image();
+        img.src = `/static/images/penguin/${src}`;
+        images[src] = img;
+      });
+
+      faceMesh.setOptions({
+        maxNumFaces: 1,
+        refineLandmarks: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+
+      faceMesh.onResults(onResults);
+
+      const camera = new Camera(videoElement, {
+        onFrame: async () => {
+          await faceMesh.send({ image: videoElement });
+        },
+        width: 640,
+        height: 480
+      });
+
+      function startCamera() {
+        camera.start();
+      }
+
+      function onResults(results) {
+        if (results.multiFaceLandmarks.length > 0) {
+          const landmarks = results.multiFaceLandmarks[0];
+
+          const leftEyeUpper = landmarks[159];
+          const leftEyeLower = landmarks[145];
+          const rightEyeUpper = landmarks[386];
+          const rightEyeLower = landmarks[374];
+          const mouthUpper = landmarks[13];
+          const mouthLower = landmarks[14];
+          const noseTip = landmarks[1];
+          const leftCheek = landmarks[234];
+          const rightCheek = landmarks[454];
+
+          const leftEyeOpenRatio = (leftEyeLower.y - leftEyeUpper.y) / (leftEyeUpper.y + leftEyeLower.y);
+          const rightEyeOpenRatio = (rightEyeLower.y - rightEyeUpper.y) / (rightEyeUpper.y + rightEyeLower.y);
+
+          const leftEyeOpen = leftEyeOpenRatio > 0.1; // Lowered threshold
+          const rightEyeOpen = rightEyeOpenRatio > 0.1; // Lowered threshold
+
+          const mouthOpenRatio = (mouthLower.y - mouthUpper.y) / (mouthUpper.y + mouthLower.y);
+          const mouthOpen = mouthOpenRatio > 0.05; // Lowered threshold
+          const mouthSlightlyOpen = mouthOpenRatio > 0.025 && !mouthOpen; // Lowered threshold
+
+          // Calculate face direction using nose tip and eyes
+          const faceDirectionRatio = (landmarks[454].x - landmarks[234].x);
+          const faceMidpoint = (landmarks[454].x + landmarks[234].x) / 2;
+          const noseToMidpointRatio = noseTip.x - faceMidpoint;
+          let facing = 'center';
+
+          if (noseToMidpointRatio > faceDirectionRatio * 0.2) {
+            facing = 'right';
+          } else if (noseToMidpointRatio < -faceDirectionRatio * 0.2) {
+            facing = 'left';
+          }
+
+          let newPenguinState = currentPenguinState;
+
+          if (facing === 'center') {
+            if (leftEyeOpen && rightEyeOpen && !mouthOpen && !mouthSlightlyOpen) {
+              newPenguinState = 'penguin1';
+            } else if (leftEyeOpen && rightEyeOpen && mouthSlightlyOpen) {
+              newPenguinState = 'penguin2';
+            } else if (leftEyeOpen && rightEyeOpen && mouthOpen) {
+              newPenguinState = 'penguin3';
+            } else if (!leftEyeOpen && !rightEyeOpen && !mouthOpen && !mouthSlightlyOpen) {
+              newPenguinState = 'penguin4';
+            } else if (!leftEyeOpen && !rightEyeOpen && mouthSlightlyOpen) {
+              newPenguinState = 'penguin5';
+            } else if (!leftEyeOpen && !rightEyeOpen && mouthOpen) {
+              newPenguinState = 'penguin6';
+            }
+          } else if (facing === 'right') {
+            if (leftEyeOpen && rightEyeOpen && !mouthOpen && !mouthSlightlyOpen) {
+              newPenguinState = 'penguin7';
+            } else if (leftEyeOpen && rightEyeOpen && mouthSlightlyOpen) {
+              newPenguinState = 'penguin8';
+            } else if (leftEyeOpen && rightEyeOpen && mouthOpen) {
+              newPenguinState = 'penguin9';
+            } else if (!leftEyeOpen && !rightEyeOpen && !mouthOpen && !mouthSlightlyOpen) {
+              newPenguinState = 'penguin10';
+            } else if (!leftEyeOpen && !rightEyeOpen && mouthSlightlyOpen) {
+              newPenguinState = 'penguin11';
+            } else if (!leftEyeOpen && !rightEyeOpen && mouthOpen) {
+              newPenguinState = 'penguin12';
+            }
+          } else if (facing === 'left') {
+            if (leftEyeOpen && rightEyeOpen && !mouthOpen && !mouthSlightlyOpen) {
+              newPenguinState = 'penguin13';
+            } else if (leftEyeOpen && rightEyeOpen && mouthSlightlyOpen) {
+              newPenguinState = 'penguin14';
+            } else if (leftEyeOpen && rightEyeOpen && mouthOpen) {
+              newPenguinState = 'penguin15';
+            } else if (!leftEyeOpen && !rightEyeOpen && !mouthOpen && !mouthSlightlyOpen) {
+              newPenguinState = 'penguin16';
+            } else if (!leftEyeOpen && !rightEyeOpen && mouthSlightlyOpen) {
+              newPenguinState = 'penguin17';
+            } else if (!leftEyeOpen && !rightEyeOpen && mouthOpen) {
+              newPenguinState = 'penguin18';
+            }
+          }
+
+          if (newPenguinState !== currentPenguinState) {
+            currentPenguinState = newPenguinState;
+            penguinElement.style.backgroundImage = `url('/static/images/penguin/${currentPenguinState}.png')`;
+          }
+
+          canvasCtx.save();
+          canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+          drawConnectors(canvasCtx, landmarks, FACEMESH_TESSELATION,
+            { color: '#C0C0C070', lineWidth: 1 });
+          drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYE, { color: '#FF3030' });
+          drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYEBROW, { color: '#FF3030' });
+          drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYE, { color: '#30FF30' });
+          drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYEBROW, { color: '#30FF30' });
+          drawConnectors(canvasCtx, landmarks, FACEMESH_FACE_OVAL, { color: '#E0E0E0' });
+          drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, { color: '#E0E0E0' });
+
+          canvasCtx.restore();
+        }
+      }
+
+      startCamera();
+    }
+  });
+</script>
+    
   </body>
 </html>

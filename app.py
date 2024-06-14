@@ -730,7 +730,7 @@ def get_counsel_view_data():
     SELECT jl.co_id, jl.child_id, jl.consulting_day, jl.consulting_title, cl.child_name, cl.survey_consulting
     FROM JOURNAL.journal_list jl 
     JOIN CHILD_INFO.child_info_list cl ON cl.child_id = jl.child_id 
-    WHERE cl.co_id = %s
+    WHERE jl.co_id = %s
     """
     
     try:
@@ -940,7 +940,7 @@ def survey_pre_html():
             child_infodb.insert(insert_query)
             print(f"Query: {insert_query}")
             
-            return render_template('user/mbti_home.html')
+            return render_template('counselor/join.html')
                 
         except Exception as e:
             error_message = '오류가 발생했습니다.'
@@ -1504,7 +1504,7 @@ def all_match(child_id):
                 END DESC;
  
     """
-    print(f"Executing all_match query with child_id: {child_id}")  # Debugging line
+    print(f"Executing all_match query with child_id: {child_id}")
     return counselordb.execute(query, (child_id,))
 
 
@@ -1963,6 +1963,8 @@ def save_mbti_result():
         return jsonify({"error": "오류가 발생하여 MBTI 저장에 실패했습니다."}), 500
 
 
+
+
 @app.route('/mbti_test') 
 def mbti_test_html():
     return render_template('user/mbti_test.html')
@@ -2032,6 +2034,7 @@ def handle_room_code():
     # 결과 반환
     if results:
         co_id = results[0][0]  # 첫 번째 행의 첫 번째 열 값만 추출
+        session['counselorId'] = co_id
         print(co_id)
         return jsonify({'co_id': co_id})
     else:
@@ -2045,19 +2048,20 @@ def handle_review_submission():
     reviewText = data['reviewText'].replace("'", "\\'")  # SQL 인젝션 방지를 위한 간단한 처리
     reviewDate = data['reviewDate']
     childID = data['childID']
-    counselorID = data['counselorID']
+    # counselorId = data['counselorId']
     tags = data['tags'].replace("'", "\\'")  # SQL 인젝션 방지를 위한 간단한 처리
+    counselorId = session.get('counselorId')
 
     # 데이터를 콘솔에 출력합니다.
     print('Received rating:', rating)
     print('Received review text:', reviewText)
     print('Received review date:', reviewDate)
     print('Received child ID:', childID)
-    print('Received counselorID:', counselorID)
+    print('Received counselor:', counselorId)
     print('Received tags:', tags)
 
     # 상담사 이름을 조회합니다.
-    sql_query = f"SELECT co_name FROM COUNSELOR.counselor_list WHERE co_id = '{counselorID}';"
+    sql_query = f"SELECT co_name FROM COUNSELOR.counselor_list WHERE co_id = '{counselorId}';"
     results = counselordb.query(sql_query)
     if results:
         counselor_name = results[0][0]
@@ -2066,14 +2070,14 @@ def handle_review_submission():
         # 상담 정보를 데이터베이스에 저장합니다.
         insert_consulting_sql = f"""
         INSERT INTO consulting_list (child_id, co_id, consulting_day)
-        VALUES ('{childID}', '{counselorID}', '{reviewDate}');
+        VALUES ('{childID}', '{counselorId}', '{reviewDate}');
         """
         try:
             consulting_listdb.insert(insert_consulting_sql)
             # 리뷰 정보를 데이터베이스에 저장합니다.
             insert_review_sql = f"""
             INSERT INTO review_list (co_id, co_name, child_id, consulting_day, consulting_priority, consulting_scope, consulting_etc)
-            VALUES ('{counselorID}', '{counselor_name}', '{childID}', '{reviewDate}', '{tags}', '{rating}', '{reviewText}');
+            VALUES ('{counselorId}', '{counselor_name}', '{childID}', '{reviewDate}', '{tags}', '{rating}', '{reviewText}');
             """
             try:
                 review_listdb.insert(insert_review_sql)

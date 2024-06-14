@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Call-E</title>
     <link rel="icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
-	  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon2.png') }}" />
     <!-- boxicon -->
     <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet" />
     <!-- CSS -->
@@ -38,22 +38,22 @@
       <a class="card" id="survey" href="/survey_pre_edit" style="background-color: #6ab9ea">
         <div class="card-title">사전 설문</div>
         <div class="text">사전 설문을 수정할 수 있어요</div>
-        <img src="/static/images/penguin05.png" alt="Penguin1" width="200px" />
+        <img src="{{ url_for('static', filename='images/penguin05.png') }}" alt="Penguin1" width="200px" />
       </a>
       <a class="card" id="mbti" href="/mbti_home" style="background-color: #63c9a2">
         <div class="card-title">MBTI</div>
         <div class="text">나의 MBTI를 알 수 있어요</div>
-        <img src="/static/images/penguin03.png" alt="Penguin2" width="200px" />
+        <img src="{{ url_for('static', filename='images/penguin03.png') }}" alt="Penguin2" width="200px" />
       </a>
       <a class="card" id="consultation" href="/user_counsel_view" style="background-color: #f6c946">
         <div class="card-title">상담 일지</div>
         <div class="text">상담 일지를 볼 수 있어요</div>
-        <img src="/static/images/penguin04.png" alt="Penguin3" width="200px" />
+        <img src="{{ url_for('static', filename='images/penguin04.png') }}" alt="Penguin3" width="200px" />
       </a>
       <a class="card" id="reviews" href="/user_review" style="background-color: #ea8e9f">
         <div class="card-title">리뷰</div>
         <div class="text">리뷰를 볼 수 있어요</div>
-        <img src="/static/images/penguin02.png" alt="Penguin4" width="200px" />
+        <img src="{{ url_for('static', filename='images/penguin02.png') }}" alt="Penguin4" width="200px" />
       </a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
